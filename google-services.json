@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "1037316389652",
+    "project_id": "play-integrity-eioejdqu2prhg1h",
+    "storage_bucket": "play-integrity-eioejdqu2prhg1h.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037316389652:android:6d342ba79be33049bce001",
+        "android_client_info": {
+          "package_name": "com.inmeet.inmeet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1037316389652-6jufof7i37r441rtjmn61ed7754gpb74.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inmeet.inmeet",
+            "certificate_hash": "f3bed93a21a736451fd682a839a0226d9392417b"
+          }
+        },
+        {
+          "client_id": "1037316389652-b9bb6p38gmuaj2l5p3iffseap4f4sau8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inmeet.inmeet",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1037316389652-j72ipgu3fckf2dh71hv4274mtq6to68q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRAGzj_a1puSQVV7hM4ntvNuMkjbqJP18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1037316389652-j72ipgu3fckf2dh71hv4274mtq6to68q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1037316389652-gb1ervtr4h8ukj25nrum2h907ubsvsl4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.inmeet.inmeet"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

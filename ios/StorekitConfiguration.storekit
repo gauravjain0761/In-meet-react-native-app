@@ -1,0 +1,63 @@
+{
+  "identifier" : "14A7509C",
+  "nonRenewingSubscriptions" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "0ACFEBE8",
+      "localizations" : [
+        {
+          "description" : "buy ",
+          "displayName" : "Buy VIP three month",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.inmeet.inmeet.vip.three.month",
+      "referenceName" : "Three Month Subscribe",
+      "type" : "NonRenewingSubscription"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "B11612DB",
+      "localizations" : [
+        {
+          "description" : "buy",
+          "displayName" : "Buy Six Month ",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.inmeet.inmeet.vip.six.month",
+      "referenceName" : "Six Month Subscribe",
+      "type" : "NonRenewingSubscription"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "3B899776",
+      "localizations" : [
+        {
+          "description" : "Buy",
+          "displayName" : "Buy Twelve Month ",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.inmeet.inmeet.vip.twelve.month",
+      "referenceName" : "Twelve Month Subscribe",
+      "type" : "NonRenewingSubscription"
+    }
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 2,
+    "minor" : 0
+  }
+}

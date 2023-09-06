@@ -1,0 +1,25 @@
+{
+  "cli": {
+    "version": ">= 0.54.1"
+  },
+  "build": {
+    "development": {
+      "env":{
+        "ANDROID_SDK_ROOT": "C:/Users/user/AppData/Local/Android/Sdk"
+      },
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "image": "ubuntu-18.04-jdk-11-ndk-r19c"
+      }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}

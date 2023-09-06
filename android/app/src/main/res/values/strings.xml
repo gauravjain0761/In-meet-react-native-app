@@ -1,0 +1,10 @@
+<resources>
+  <string name="app_name">InMeet</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="facebook_app_id">799427287833790</string>
+  <string name="facebook_client_token">4744efa231560208250dd3fc4a32787c</string>
+  <string name="fb_login_protocol_scheme">fb799427287833790</string>
+  <string name="line_channel_id" translatable="false">1657559878</string>
+  <string name="expo_runtime_version">1.0.0</string>
+</resources>
