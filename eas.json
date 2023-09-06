@@ -1,23 +1,45 @@
 {
   "cli": {
-    "version": ">= 0.54.1"
+    "version": ">= 2.3.0",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
-    "development": {
-      "env":{
-        "ANDROID_SDK_ROOT": "C:/Users/user/AppData/Local/Android/Sdk"
-      },
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk",
-        "image": "ubuntu-18.04-jdk-11-ndk-r19c"
-      }
+    "base": {
+      "env": {}
     },
-    "preview": {
+    "development": {
+      "developmentClient": true,
       "distribution": "internal"
     },
-    "production": {}
+    "preview": {
+      "channel": "preview",
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk",
+        "image" : "ubuntu-18.04-jdk-11-ndk-r19c"
+      },
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production",
+      "ios": {
+        "credentialsSource": "local"
+      }
+    },
+    "devclient": {
+      "extends": "base",
+      "releaseChannel": "default",
+      "developmentClient": true,
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "credentialsSource": "local"
+      }
+    }
   },
   "submit": {
     "production": {}
