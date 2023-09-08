@@ -27,60 +27,62 @@ import Loader from '~/components/common/Loader';
 import { updateEmail, updatePassword } from '~/store/registerSlice';
 import { mapIcon } from '~/constants/IconsMapping';
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors?.black1,
-    alignItems: 'center',
-    paddingHorizontal: 40,
-    paddingTop: 96,
-  },
-  subtitleText: {
-    color: theme.colors?.white,
-    paddingTop: 24,
-    fontWeight:'700',
-    letterSpacing:0.56
-  },
-  captionFourText: {
-    color: theme.colors?.white,
-    paddingTop: '6%',
-  },
-  loginButtonContainer: {
-    width: '100%',
-    paddingTop: "4.8%",
-  },
-  hairline: {
-    backgroundColor: theme.colors?.black4,
-    height: 1,
-    width: 120
-  },
-  hairlineView: {
-   flexDirection:'row',
-   alignItems:'center',
-  },
-  
-  socialMediaIconContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-  },
-  socialMediaIcon: {
-    paddingLeft: 40,
-  },
-  buttonContainer: {
-    width: '100%',
-    justifyContent: 'flex-end',
-  },
-  registerButtonContainer: {
-    paddingTop: '4.8%',
-    width: '100%',
-  },
-  bodyText: {
-    color: theme.colors?.black4,
-    marginHorizontal:16
-  },
-}));
+const useStyles = makeStyles(theme => {
+  return ({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors?.black1,
+      alignItems: 'center',
+      paddingHorizontal: 40,
+      paddingTop: 96,
+    },
+    subtitleText: {
+      color: theme.colors?.white,
+      paddingTop: 24,
+      fontWeight: '700',
+      letterSpacing: 0.56
+    },
+    captionFourText: {
+      color: theme.colors?.white,
+      paddingTop: '6%',
+    },
+    loginButtonContainer: {
+      width: '100%',
+      marginTop: "4.8%",
+    },
+    hairline: {
+      backgroundColor: theme.colors?.black4,
+      height: 1,
+      width: 120
+    },
+    hairlineView: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+
+    socialMediaIconContainer: {
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'space-between',
+      paddingVertical: 16,
+    },
+    socialMediaIcon: {
+      paddingLeft: 40,
+    },
+    buttonContainer: {
+      width: '100%',
+      justifyContent: 'flex-end',
+    },
+    registerButtonContainer: {
+      marginTop: '4.8%',
+      width: '100%',
+    },
+    bodyText: {
+      color: theme.colors?.black4,
+      marginHorizontal: 16
+    },
+  });
+});
 
 WebBrowser.maybeCompleteAuthSession();
 

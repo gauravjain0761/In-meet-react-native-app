@@ -1,4 +1,12 @@
-import { View, Text, TextInput, KeyboardAvoidingView, Keyboard, Platform, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  KeyboardAvoidingView,
+  Keyboard,
+  Platform,
+  Image,
+} from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -31,7 +39,7 @@ const ScreenContainer = styled(Platform.OS === 'ios' ? KeyboardAvoidingView : Vi
   flex: 1;
 `;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
   },
@@ -49,7 +57,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors?.white,
     paddingBottom: 28,
     textAlign: 'center',
-    paddingTop:10
+    paddingTop: 10,
   },
   helpContainer: {
     flexDirection: 'row',
@@ -68,8 +76,8 @@ const useStyles = makeStyles(theme => ({
   label: {
     color: '#fff',
     marginBottom: 5,
-    fontFamily:'roboto',
-    fontSize:fontSize(14)
+    fontFamily: 'roboto',
+    fontSize: fontSize(14),
   },
 }));
 
@@ -100,7 +108,7 @@ export default function RegisterPhoneScreen(props: RegisterPhoneScreenProps): JS
       phone: '',
     },
   });
-  
+
   const onSubmit = async (data: any) => {
     const { phone } = data;
     Keyboard.dismiss();
@@ -150,92 +158,98 @@ export default function RegisterPhoneScreen(props: RegisterPhoneScreenProps): JS
   //       return <></>;
   //     },
   //   });
-  // });  
+  // });
 
   return (
-    <View  style={styles.outerContainer}>
-    <KeyboardAwareScrollView
-      // scrollEventThrottle={800}
-      // onScroll={onDismissInput}
-      style={styles.outerContainer}>
-      <View style={styles.container}>
-      <Header containerStyle={{paddingHorizontal:20,}}/>
-      <Image
-       source={mapIcon.illus3zIcon}
-       style={{
-         width: 332,
-         height: 203,
-         position: 'absolute',
-         right:0
-       }}
-     />
-        <TitleOne style={styles.titleText}>請輸入電話號碼</TitleOne>
-        <Controller
-          control={control}
-          rules={{
-            required: '這是必填欄位',
-            pattern: {
-              value: /((?=(09))[0-9]{10})$/i,
-              message: '輸入的格式不正確',
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View style={{paddingHorizontal:40}}> 
-              <Text style={styles.label}>
-                電話
-                <Text style={{ color: theme?.colors?.pink }}> *</Text>
-              </Text>
-              <TextInput
-                value={value}
-                onBlur={() => {
-                  onBlur();
-                  Keyboard.dismiss();
-                }}
-                ref={inputRef}
-                keyboardType="number-pad"
-                textContentType="telephoneNumber"
-                onChangeText={(text)=>{
-                  onChange(text)
-                  if(text.length >1 ) setDisabledValue(false)
-
-                }}
-                keyboardAppearance="dark"
-                placeholder="請輸入電話號碼"
-                onSubmitEditing={handleSubmit(onSubmit)}
-                placeholderTextColor={theme.colors.black4}
-                style={{
-                  borderRadius: 30,
-                  backgroundColor: theme.colors.black2,
-                  paddingVertical: 15,
-                  fontFamily:'roboto',
-                  fontSize:fontSize(14),
-                  paddingHorizontal: 20,
-                  color: theme.colors.white,
-                  ...(!isEmpty(errors) && {
-                    borderColor: theme.colors.pink,
-                    borderWidth: 1,
-                  }),
-                }}
-              />
-            </View>
-          )}
-          name="phone"
-        />
-        <View style={{ justifyContent: 'center' ,paddingLeft:58,bottom:5}}>
-          <ErrorMessage
-            errors={errors}
-            name="phone"
-            render={({ message }) => (
-              <CaptionFour style={{ color: theme.colors.pink, paddingVertical: 8 }}>
-                {message}
-              </CaptionFour>
-            )}
+    <View style={styles.outerContainer}>
+      <KeyboardAwareScrollView
+        // scrollEventThrottle={800}
+        // onScroll={onDismissInput}
+        style={styles.outerContainer}>
+        <View style={styles.container}>
+          <Header containerStyle={{ paddingHorizontal: 20 }} />
+          <Image
+            source={mapIcon.illus3zIcon}
+            style={{
+              width: 332,
+              height: 203,
+              position: 'absolute',
+              right: 0,
+            }}
           />
+          <TitleOne style={styles.titleText}>請輸入電話號碼</TitleOne>
+          <Controller
+            control={control}
+            rules={{
+              required: '這是必填欄位',
+              pattern: {
+                value: /((?=(09))[0-9]{10})$/i,
+                message: '輸入的格式不正確',
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View style={{ paddingHorizontal: 40 }}>
+                <Text style={styles.label}>
+                  電話
+                  <Text style={{ color: theme?.colors?.pink }}> *</Text>
+                </Text>
+                <TextInput
+                  value={value}
+                  onBlur={() => {
+                    onBlur();
+                    Keyboard.dismiss();
+                  }}
+                  ref={inputRef}
+                  keyboardType="number-pad"
+                  textContentType="telephoneNumber"
+                  onChangeText={(text) => {
+                    onChange(text);
+                    if (text.length > 1) setDisabledValue(false);
+                  }}
+                  keyboardAppearance="dark"
+                  placeholder="請輸入電話號碼"
+                  onSubmitEditing={handleSubmit(onSubmit)}
+                  placeholderTextColor={theme.colors.black4}
+                  style={{
+                    borderRadius: 30,
+                    backgroundColor: theme.colors.black2,
+                    paddingVertical: 15,
+                    fontFamily: 'roboto',
+                    fontSize: fontSize(14),
+                    paddingHorizontal: 20,
+                    color: theme.colors.white,
+                    ...(!isEmpty(errors) && {
+                      borderColor: theme.colors.pink,
+                      borderWidth: 1,
+                    }),
+                  }}
+                />
+              </View>
+            )}
+            name="phone"
+          />
+          <View style={{ justifyContent: 'center', paddingLeft: 58, bottom: 5 }}>
+            <ErrorMessage
+              errors={errors}
+              name="phone"
+              render={({ message }) => (
+                <CaptionFour style={{ color: theme.colors.pink, paddingVertical: 8 }}>
+                  {message}
+                </CaptionFour>
+              )}
+            />
+          </View>
         </View>
-
-      </View>
-    </KeyboardAwareScrollView>
-      <ButtonTypeTwo disabled={disabledValue} disabledStyle={{backgroundColor:theme?.colors?.pink1,}}  disabledTitleStyle={{color:theme?.colors?.white}} containerStyle={{paddingHorizontal:40,paddingBottom:30}} loading={isLoading} title="下一步" onPress={handleSubmit(onSubmit)} />
+      </KeyboardAwareScrollView>
+      <ButtonTypeTwo
+        disabled={disabledValue}
+        disabledStyle={{ backgroundColor: theme?.colors?.pink1 }}
+        disabledTitleStyle={{ color: theme?.colors?.white }}
+        containerStyle={{ marginHorizontal: 40, marginTop: 30 }}
+        loading={isLoading}
+        title="下一步"
+        onPress={handleSubmit(onSubmit)}
+      />
     </View>
   );
 }

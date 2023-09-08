@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import React from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useState } from 'react';
 import ReactNativeModal from 'react-native-modal';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { SubTitleTwo } from './Text';
@@ -7,6 +7,7 @@ import { ButtonTypeTwo, UnChosenButton } from './Button';
 import { mapIcon } from '~/constants/IconsMapping';
 import Picker from 'react-native-picker-select';
 import { fontSize } from '~/helpers/Fonts';
+import DynamicallySelectedPicker from './DynamicallySelectedPicker';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     borderTopLeftRadius:15,
     borderTopRightRadius:15,
-    paddingHorizontal: 25,
+    paddingHorizontal: 24,
   },
   headerStyle:{
   flexDirection:'row',
@@ -34,8 +35,8 @@ const useStyles = makeStyles(theme => ({
     marginRight:20
   },
   buttonStyle: {
-    paddingTop: 10,
-    paddingBottom:20
+    marginTop: 10,
+    marginBottom:20
   },
   modalView:{
     borderRadius:10
@@ -67,8 +68,9 @@ export default function CityModal(props: ICommonModal) {//用CommonModalComponen
     data,
   } = props;
   const styles = useStyles();
-  const [selectValue, setSelectValue] = React.useState({ label: "",
-    value: "",});
+  const [selectedItemIndex, setSelectedItemIndex] = useState<number>(4);
+  const windowWidth = Dimensions.get('window').width;
+  const height = 300;
 
   const handleCloseModal = () => {
     if (onClose) {
@@ -76,8 +78,13 @@ export default function CityModal(props: ICommonModal) {//用CommonModalComponen
     }
   };
   const handleConfirmModal = () => {
-    onConfirm(selectValue);
+    const vlaue =data.filter((item:any,index:number)=>{
+      return index === selectedItemIndex
+    })
+
+    onConfirm(vlaue[0]);
   };
+
 
   return (
     <ReactNativeModal
@@ -96,16 +103,26 @@ export default function CityModal(props: ICommonModal) {//用CommonModalComponen
            </TouchableOpacity>
           <SubTitleTwo style={styles.titleText}>{modalText}</SubTitleTwo>
           </View>
-          <View style={{alignItems:'center',height:260}}>
-            <ScrollView showsVerticalScrollIndicator={false}> 
+          <View style={{alignItems:'center',height:300}}>
+            {/* <ScrollView showsVerticalScrollIndicator={false}> 
               {data.map((item:any)=>{
                 return <TouchableOpacity onPress={()=>setSelectValue(item)} style={[styles.modalView,{backgroundColor: item.label == selectValue.label ?  "#4A4D5A" :"transparent"}]}>
                   <Text style={styles.valueText}>{item.label}</Text>
                 </TouchableOpacity>
               })}
-            </ScrollView>
+            </ScrollView> */}
 
-         
+          <DynamicallySelectedPicker
+              items={data}
+              onScroll={({ index }) => setSelectedItemIndex(index)}
+              onMomentumScrollBegin={({ index }) => setSelectedItemIndex(index)}
+              onMomentumScrollEnd={({ index }) => setSelectedItemIndex(index)}
+              onScrollBeginDrag={({ index }) => setSelectedItemIndex(index)}
+              onScrollEndDrag={({ index }) => setSelectedItemIndex(index)}
+              initialSelectedIndex={selectedItemIndex}
+              height={height}
+              width={windowWidth}
+            />
           </View>
           <ButtonTypeTwo containerStyle={styles.buttonStyle} title={buttonOneTitle} onPress={handleConfirmModal} />
         </View> 

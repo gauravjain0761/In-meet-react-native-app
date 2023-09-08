@@ -50,7 +50,7 @@ interface FormData {
   avatar: ImageResult | null;
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     flex: 1,
     position: 'relative',
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors?.white,
     paddingBottom: 15,
     textAlign: 'center',
-    marginTop:15
+    marginTop: 15,
   },
   bodyText: {
     color: theme.colors?.black4,
@@ -133,7 +133,7 @@ const useStyles = makeStyles(theme => ({
     marginHorizontal: 60,
     padding: 0,
     height: 40,
-    marginTop:23
+    marginTop: 23,
   },
   actionSheetContainer: {
     opacity: 1,
@@ -155,8 +155,8 @@ const useStyles = makeStyles(theme => ({
   },
   keypointText: {
     color: theme.colors?.pink,
-    fontFamily:'roboto',
-    fontSize:fontSize(12)
+    fontFamily: 'roboto',
+    fontSize: fontSize(12),
   },
 }));
 
@@ -189,7 +189,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
         options,
         cancelButtonIndex: 2,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         if (buttonIndex === 0) {
           const openImagePickerAsync = async () => {
             try {
@@ -261,7 +261,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
           };
           openCameraAsync();
         }
-      },
+      }
     );
   };
 
@@ -270,7 +270,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
       setLoading(true);
       const { latitude, longitude } = await openLocationAsync({});
       const { data } = await dispatch(
-        patchRegister({ ...register, phone: `${register.phone}` }),
+        patchRegister({ ...register, phone: `${register.phone}` })
       ).unwrap();
 
       if (data?.id) {
@@ -285,7 +285,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
               },
               fileType: 'AVATAR',
               userId: data?.id,
-            }),
+            })
           ).unwrap();
         }
 
@@ -294,7 +294,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
         // clear the data and the flag on landing screen
         await clearUserStorage();
         const loginResponse = await dispatch(
-          loginUser({ username: register.phone, password: register.password, latitude, longitude }),
+          loginUser({ username: register.phone, password: register.password, latitude, longitude })
         ).unwrap();
         if (loginResponse.code !== 20000) {
           throw loginResponse;
@@ -327,21 +327,21 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
   return (
     <SafeAreaView style={styles.container}>
       <Image
-          source={mapIcon.illus3zIcon}
-          style={{
-            width: 332,
-            height: 203,
-            position: 'absolute',
-            right:0
-          }}
-        />
+        source={mapIcon.illus3zIcon}
+        style={{
+          width: 332,
+          height: 203,
+          position: 'absolute',
+          right: 0,
+        }}
+      />
       <ScrollView style={{ flexGrow: 1 }}>
         <ProgressBar step={2} />
         <View style={styles.bodyContainer}>
           <TouchableOpacity
             onPress={backToPrevious}
             style={{ position: 'absolute', left: 20, top: 20 }}>
-            {mapIcon.backIcon({size:22})}
+            {mapIcon.backIcon({ size: 22 })}
           </TouchableOpacity>
           <TitleOne style={styles.titleText}>上傳大頭照</TitleOne>
           <Controller
@@ -361,7 +361,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
                     </View>
                     <ButtonTypeTwo
                       onPress={() => handlePressOnEdit(onChange)}
-                      buttonStyle={styles.editButtonStyle}
+                      containerStyle={styles.editButtonStyle}
                       title={<SubTitleOne style={styles.editButtonText}>換一張</SubTitleOne>}
                     />
                   </>
@@ -370,19 +370,24 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
                     <View style={styles.avatarContainer}>
                       <ButtonTypeTwo
                         onPress={() => handlePressOnEdit(onChange)}
-                        buttonStyle={{ height: 48, width: 48, borderRadius: 24, marginTop: 30 }}
+                        containerStyle={{ height: 48, width: 48, borderRadius: 48, marginTop: 30 }}
                         icon={<Entypo name="plus" size={24} color="#fff" />}
                       />
                       <ButtonTypeTwo
                         onPress={() => handlePressOnEdit(onChange)}
-                        buttonStyle={{ width: 208, marginTop: 40, marginBottom: 0 }}
-                        title={<SubTitleTwo style={{ color: '#fff' }}>{"上傳照片"}</SubTitleTwo>}
+                        containerStyle={{
+                          borderRadius: 30,
+                          width: 208,
+                          marginTop: 40,
+                          marginBottom: 0,
+                        }}
+                        title={<SubTitleTwo style={{ color: '#fff' }}>{'上傳照片'}</SubTitleTwo>}
                       />
                     </View>
                     <CaptionFour style={styles.bodyText}>
                       {'請上傳 '}
-                      <Text style={styles.keypointText}>{"五官清晰的真人照片"}</Text>
-                      {"，才能增加配對成功率唷"}
+                      <Text style={styles.keypointText}>{'五官清晰的真人照片'}</Text>
+                      {'，才能增加配對成功率唷'}
                     </CaptionFour>
                   </View>
                 )}
@@ -393,9 +398,11 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
       </ScrollView>
       <View style={styles.footerContainer}>
         <ButtonTypeTwo
+          // activeOpacity={0.9}
           loading={loading}
           title={<SubTitleOne style={styles.chosenButtonText}>完成</SubTitleOne>}
           onPress={handleSubmit(onSubmit)}
+          containerStyle={{ borderRadius: 30 }}
         />
       </View>
     </SafeAreaView>

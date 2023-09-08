@@ -247,7 +247,9 @@ export default function ForgetPasswordVerifyMailScreen(
             />
           )}
     </KeyboardAwareScrollView>
-        <ButtonTypeTwo title="下一步" containerStyle={{paddingHorizontal:40,bottom:30}}  onPress={handleSubmit(onSubmit)}   />
+        <ButtonTypeTwo title="下一步" containerStyle={{marginHorizontal:40,marginBottom:30}}  
+        onPress={handleSubmit(onSubmit)} 
+         />
     </View>
   );
 }

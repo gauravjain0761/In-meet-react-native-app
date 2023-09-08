@@ -414,6 +414,7 @@ export default function RegisterNameScreen(props: RegisterNameScreenProps) {
               <ButtonTypeTwo
                 title="下一步"
                 onPress={handleSubmit(onSubmit)}
+              
                 style={styles.buttonstyle}
               />
             </View>
@@ -438,7 +439,7 @@ export default function RegisterNameScreen(props: RegisterNameScreenProps) {
           label: cityName,
           value: cityValue,
         }))}
-        onConfirm={(value:any)=>{
+        onConfirm={(value:any)=>{          
           setValue('religion', value?.value)
           setSelectValue(value.label)
           setCollectionModal(false)

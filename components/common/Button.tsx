@@ -8,7 +8,7 @@ import React from 'react';
 import { Text, View } from '../../components/Themed';
 import { BodyTwo, SubTitleOne } from './Text';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   testWidth: {
     width: '100%',
   },
@@ -34,13 +34,13 @@ const useStyles = makeStyles(theme => ({
     borderColor: theme.colors?.pink,
     borderRadius: 30,
     height: 50,
-    paddingHorizontal:16
+    paddingHorizontal: 16,
   },
   chosenTitle: {
     color: theme.colors?.pink,
-    flex:1,
-    fontFamily:'roboto',
-    fontWeight:'700'
+    flex: 1,
+    fontFamily: 'roboto',
+    fontWeight: '700',
   },
   unChosenButton: {
     backgroundColor: theme.colors?.white,
@@ -48,14 +48,13 @@ const useStyles = makeStyles(theme => ({
     borderColor: theme.colors?.black4,
     borderRadius: 30,
     height: 50,
-    paddingHorizontal:16
-
+    paddingHorizontal: 16,
   },
   unChosenTitle: {
     color: theme.colors?.black4,
-    fontFamily:'roboto',
-    fontWeight:'500',
-    flex:1,
+    fontFamily: 'roboto',
+    fontWeight: '500',
+    flex: 1,
   },
   typeFourChosenButton: {
     flexDirection: 'row',
@@ -116,19 +115,31 @@ function IconButton(props: ButtonProps) {
 }
 
 function ChatButton(props: ButtonProps) {
-  const { buttonStyle, titleStyle } = props;
+  const { buttonStyle, titleStyle, containerStyle } = props;
   const styles = useStyles(props);
-  return <Button {...props} buttonStyle={[styles.chatButtonStyle, buttonStyle]} />;
+  return (
+    <Button
+      {...props}
+      buttonStyle={[styles.chatButtonStyle, buttonStyle]}
+      containerStyle={[{ borderRadius: 30 }, containerStyle]}
+    />
+  );
 }
 
 function LikeButton(props: ButtonProps) {
-  const { buttonStyle, titleStyle } = props;
+  const { buttonStyle, titleStyle, containerStyle } = props;
   const styles = useStyles(props);
-  return <Button {...props} buttonStyle={[styles.likeButtonStyle, buttonStyle]} />;
+  return (
+    <Button
+      {...props}
+      buttonStyle={[styles.likeButtonStyle, buttonStyle]}
+      containerStyle={[{ borderRadius: 30 }, containerStyle]}
+    />
+  );
 }
 
 function ButtonTypeOne(props: ButtonProps) {
-  const { buttonStyle, titleStyle } = props;
+  const { buttonStyle, titleStyle, containerStyle } = props;
   const styles = useStyles(props);
 
   return (
@@ -136,24 +147,26 @@ function ButtonTypeOne(props: ButtonProps) {
       {...props}
       buttonStyle={[styles.type1Button, buttonStyle]}
       titleStyle={[styles.type1Text, titleStyle]}
+      containerStyle={[{ borderRadius: 30 }, containerStyle]}
     />
   );
 }
 
 function ButtonTypeTwo(props: ButtonProps) {
-  const { buttonStyle, titleStyle } = props;
+  const { buttonStyle, titleStyle, containerStyle } = props;
   const styles = useStyles(props);
   return (
     <Button
       {...props}
       buttonStyle={[styles.type2Button, buttonStyle]}
       titleStyle={[styles.type2Text, titleStyle]}
+      containerStyle={[{ borderRadius: 30 }, containerStyle]}
     />
   );
 }
 
 function ChosenButton(props: ButtonProps) {
-  const { buttonStyle, titleStyle } = props;
+  const { buttonStyle, titleStyle, containerStyle } = props;
   const styles = useStyles(props);
   return (
     <Button
@@ -161,18 +174,20 @@ function ChosenButton(props: ButtonProps) {
       buttonStyle={[styles.chosenButton, buttonStyle]}
       titleStyle={[styles.chosenTitle, titleStyle]}
       loadingProps={{ color: 'black' }}
-    
+      containerStyle={[{ borderRadius: 30 }, containerStyle]}
     />
   );
 }
 function UnChosenButton(props: ButtonProps) {
-  const { buttonStyle, titleStyle } = props;
+  const { buttonStyle, titleStyle, containerStyle } = props;
+
   const styles = useStyles(props);
   return (
     <Button
       {...props}
       buttonStyle={[styles.unChosenButton, buttonStyle]}
       titleStyle={[styles.unChosenTitle, titleStyle]}
+      containerStyle={[{ borderRadius: 30 }, containerStyle]}
     />
   );
 }
@@ -182,7 +197,7 @@ interface IButtonTypeFourProps extends ButtonProps {
   dollars: string;
 }
 function ButtonTypeFourChosen(props: IButtonTypeFourProps) {
-  const { buttonStyle, titleStyle, months, dollars } = props;
+  const { buttonStyle, titleStyle, months, dollars, containerStyle } = props;
   const styles = useStyles(props);
 
   function CustomView() {
@@ -194,7 +209,12 @@ function ButtonTypeFourChosen(props: IButtonTypeFourProps) {
     );
   }
   return (
-    <Button {...props} title={<CustomView />} buttonStyle={[styles.typeFourButton, buttonStyle]} />
+    <Button
+      {...props}
+      title={<CustomView />}
+      buttonStyle={[styles.typeFourButton, buttonStyle]}
+      containerStyle={[{ borderRadius: 30 }, containerStyle]}
+    />
   );
 }
 function ButtonTypeFourUnChosen(props: IButtonTypeFourProps) {

@@ -32,8 +32,8 @@ import { updatePassword } from '~/store/registerSlice';
 const useStyles = makeStyles(theme => ({
   container: {
     flex: 1,
-    paddingHorizontal: 40,
-    paddingTop: 100,
+    marginHorizontal: 40,
+    marginTop: 100,
     backgroundColor: theme.colors?.black1,
   },
   outerContainer: {
@@ -159,7 +159,7 @@ export default function RegisterPasswordScreen(props: RegisterPasswordScreenProp
             }
             right={mapIcon.invisiblePassword()}
           />
-          <ButtonTypeTwo title="下一步" onPress={handleSubmit(onSubmit)} />
+          <ButtonTypeTwo title="下一步" onPress={handleSubmit(onSubmit)}  />
         </SafeAreaView>
       </KeyboardAwareScrollView>
     </FormProvider>

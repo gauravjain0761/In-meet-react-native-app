@@ -1,8 +1,7 @@
 {
   "expo": {
     "name": "InMeet",
-    "owner": "sean_hsieh",
-    "slug": "inmeet-react-native",
+    "slug": "inmeet",
     "originalFullName": "@sean_hsieh/inmeet-react-native",
     "version": "1.2.3",
     "orientation": "portrait",
@@ -32,16 +31,24 @@
       },
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "NSPhotoLibraryUsageDescription": "InMeet 需要存取你的相片，以便創建頭貼、貼文、個人資料",
+        "NSPhotoLibraryUsageDescription": "The app accesses your photos to let you share them with your friends.",
         "NSCameraUsageDescription": "允許系統存取 InMeet 上和相機相關的功能，例如拍攝個人頭貼",
         "NSMicrophoneUsageDescription": "此功能需要麥克風存取權，同意麥克風權限",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "推薦內容將根據你所在位置顯示",
-        "NSLocationAlwaysUsageDescription": "推薦內容將根據你所在位置顯示"
+        "NSLocationAlwaysUsageDescription": "推薦內容將根據你所在位置顯示",
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ]
       },
       "buildNumber": "22"
     },
     "android": {
-      "versionCode": 42,
+      "versionCode": 46,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -70,11 +77,6 @@
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "1cca05d6-795e-4e76-ba48-021b15079e01"
-      }
-    },
     "plugins": [
       [
         "expo-facebook",
@@ -101,6 +103,15 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/f583c3de-0bc1-4ec7-8898-b8be37312a48"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0ba3593c-e736-4eca-b1d2-aae16351d208"
+      }
+    }
   }
 }

@@ -107,11 +107,11 @@ export default function ForgetPasswordScreen(props: ForgetPasswordScreenProps) {
           // disabled={disabledValue}
           // disabledStyle={{ backgroundColor: theme?.colors?.pink1 }}
           // disabledTitleStyle={{ color: theme?.colors?.white }}
-          containerStyle={{ paddingHorizontal: 40, paddingBottom: 30 }}
+          containerStyle={{ marginHorizontal: 40, marginBottom: 30 }}
           loading={isLoading}
           title="送出"
           onPress={handleSubmit(onSubmit)}
-        />
+                  />
       </View>
     </FormProvider>
   );

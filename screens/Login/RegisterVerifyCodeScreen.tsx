@@ -209,7 +209,7 @@ export default function RegisterVerifyCodeScreen(props: RegisterVerifyCodeProps)
             <UnChosenButton
               buttonStyle={{
                 height: 32,
-                width: 190,
+                width: 200,
                 padding: 0,
                 marginBottom: 40,
                 alignItems: 'center',
@@ -250,7 +250,9 @@ export default function RegisterVerifyCodeScreen(props: RegisterVerifyCodeProps)
             />
           )}
       </KeyboardAwareScrollView>
-          <ButtonTypeTwo title="下一步" containerStyle={{paddingHorizontal:40,bottom:30}} onPress={handleSubmit(onSubmit)} />
+          <ButtonTypeTwo title="下一步" containerStyle={{marginHorizontal:40,marginBottom:30}}
+           onPress={handleSubmit(onSubmit)} 
+           />
         </View>
     </FormProvider>
   );
