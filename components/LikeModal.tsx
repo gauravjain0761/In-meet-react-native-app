@@ -12,24 +12,25 @@ import { userApi } from '~/api/UserAPI';
 import { selectAccount, selectToken } from '~/store/userSlice';
 import Empty from '../assets/images/like-empty.png';
 import LikeCircleCard from './common/Card/LikeCircleCard';
+import { fontSize } from '~/helpers/Fonts';
 
 const useStyles = makeStyles(theme => ({
   container: {
     flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center',
+    alignItems: 'center', 
+    borderRadius: 50,
   },
   cardContainer: {
     backgroundColor: '#383A44',
-    borderRadius: 15,
-    paddingVertical: 24,
+    borderRadius: 50,
     width: '100%',
     height: '85%',
   },
   inputWrapper: {
     backgroundColor: '#666F7387',
     borderRadius: 20,
-    height: 45,
+    height: 48,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -37,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     paddingHorizontal: 10,
     marginBottom: 20,
     marginHorizontal: 16,
-  },
+      },
   titleText: { color: theme.colors?.black1, textAlign: 'center' },
   subTitleText: { color: theme.colors?.white, textAlign: 'center' },
   likeIconContainer: {
@@ -63,11 +64,11 @@ const useStyles = makeStyles(theme => ({
     fontSize: 14,
   },
   tabButton: {
-    height: 33,
+    height:35,
     width: 156,
   },
   tabButtonUnfocos: {
-    height: 33,
+    height:35,
     width: 156,
     backgroundColor: 'transparent',
   },
@@ -79,6 +80,14 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
   },
+  listView:{
+    height:3,
+    width:13,
+    alignSelf:'center',
+    backgroundColor:theme.colors.white,
+    marginBottom:18,
+    marginTop:10
+  }
 }));
 
 interface ILikeModal {
@@ -146,9 +155,10 @@ export default function LikeModal(props: ILikeModal) {
           style={{
             color: theme.colors.black4,
             textAlign: 'center',
-            fontSize: 16,
+            fontSize: fontSize(16),
             lineHeight: 25,
             marginBottom: 4,
+            fontFamily:'roboto'
           }}>
           暫無資料
         </Text>
@@ -156,22 +166,23 @@ export default function LikeModal(props: ILikeModal) {
           style={{
             color: theme.colors.black4,
             textAlign: 'center',
-            fontSize: 14,
+            fontSize: fontSize(14),
             lineHeight: 25,
+            fontFamily:'roboto'
           }}>
-          別擔心，快到MEET尋找志同道合的朋友吧！
+          {"別擔心，快到MEET尋找志\n同道合的朋友吧！"}
         </Text>
       </View>
     );
   };
-
+  
   return (
     <ReactNativeModal
       animationInTiming={1000}
       animationOutTiming={1200}
-      backdropOpacity={0.5}
+      backdropOpacity={1}
       isVisible={isVisible}
-      style={{ width: '100%', margin: 0 }}>
+      style={{ width: '100%', margin: 0, }}>
       <View style={styles.container}>
         <Pressable
           onPress={onClose}
@@ -186,15 +197,16 @@ export default function LikeModal(props: ILikeModal) {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <AntDesign name="close" size={20} color="white" />
+          <AntDesign name="close" size={20} color={theme.colors.white} />
         </Pressable>
         <View style={styles.cardContainer}>
-          <View style={{ backgroundColor: theme.colors.black1 }}>
+          <View style={{ backgroundColor: theme.colors.black1, borderRadius: 50, }}>
+            <View style={styles.listView}/>
             <View style={styles.inputWrapper}>
               <ButtonTypeTwo
                 title="心動對象"
                 buttonStyle={tabSelected === TABS.LIKE ? styles.tabButton : styles.tabButtonUnfocos}
-                titleStyle={{ fontSize: 14 }}
+                titleStyle={{ fontSize: 14,bottom:2 }}
                 onPress={() => {
                   if (tabSelected !== TABS.LIKE) {
                     setTabSelected(TABS.LIKE);
@@ -206,7 +218,7 @@ export default function LikeModal(props: ILikeModal) {
                 buttonStyle={
                   tabSelected === TABS.VISIT ? styles.tabButton : styles.tabButtonUnfocos
                 }
-                titleStyle={{ fontSize: 14 }}
+                titleStyle={{ fontSize: 14,bottom:2 }}
                 onPress={() => {
                   if (tabSelected !== TABS.VISIT) {
                     setTabSelected(TABS.VISIT);

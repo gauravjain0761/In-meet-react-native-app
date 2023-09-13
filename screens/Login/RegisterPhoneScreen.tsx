@@ -245,7 +245,7 @@ export default function RegisterPhoneScreen(props: RegisterPhoneScreenProps): JS
         disabled={disabledValue}
         disabledStyle={{ backgroundColor: theme?.colors?.pink1 }}
         disabledTitleStyle={{ color: theme?.colors?.white }}
-        containerStyle={{ marginHorizontal: 40, marginTop: 30 }}
+        containerStyle={{ marginHorizontal: 40, marginBottom: 30 }}
         loading={isLoading}
         title="下一步"
         onPress={handleSubmit(onSubmit)}

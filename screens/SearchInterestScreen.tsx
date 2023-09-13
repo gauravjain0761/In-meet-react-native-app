@@ -18,9 +18,10 @@ import { IInterest, ILikeInfo } from '~/store/interestSlice';
 import { ButtonTypeTwo, ChosenButton } from '~/components/common/Button';
 import LikeCard from '~/components/common/Card/LikeCard';
 import { Text } from '~/components/Themed';
-
+import SafeAreaView from 'react-native-safe-area-view';
 import Empty from '../assets/images/like-empty.png';
 import LikeModal from '~/components/LikeModal';
+import { fontSize } from '~/helpers/Fonts';
 
 const { height } = Dimensions.get('window');
 
@@ -36,11 +37,11 @@ const useStyles = makeStyles(theme => ({
   header: {
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingBottom: 10,
+    paddingBottom: 15,
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: theme.colors?.black1,
-    paddingTop: 60,
+    paddingTop: 30,
   },
   topBarNavText: {
     color: theme.colors?.white,
@@ -60,7 +61,7 @@ const useStyles = makeStyles(theme => ({
   inputWrapper: {
     backgroundColor: '#666F7387',
     borderRadius: 20,
-    height: 45,
+    height: 48,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -76,11 +77,11 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors?.white,
   },
   tabButton: {
-    height: 33,
+    height:35,
     width: 156,
   },
   tabButtonUnfocos: {
-    height: 33,
+    height:35,
     width: 156,
     backgroundColor: 'transparent',
   },
@@ -143,9 +144,10 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
           style={{
             color: theme.colors.black4,
             textAlign: 'center',
-            fontSize: 16,
+            fontSize: fontSize(16),
             lineHeight: 25,
             marginBottom: 4,
+            fontFamily:'roboto'
           }}>
           暫無資料
         </Text>
@@ -153,10 +155,11 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
           style={{
             color: theme.colors.black4,
             textAlign: 'center',
-            fontSize: 14,
+            fontSize: fontSize(14),
             lineHeight: 25,
+            fontFamily:'roboto'
           }}>
-          別擔心，快到MEET尋找志同道合的朋友吧！
+         {"別擔心，快到MEET尋找志\n同道合的朋友吧！"}
         </Text>
       </View>
     );
@@ -165,7 +168,7 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
   return (
     <Loader isLoading={false}>
       <LikeModal isVisible={modalOpen} onClose={() => setModalOpen(false)} />
-      <View style={styles.header}>
+      <SafeAreaView  style={styles.header}>
         <BodyThree style={styles.topBarNavText}>LIKE</BodyThree>
         <Pressable
           onPress={() => setModalOpen(true)}
@@ -180,13 +183,13 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
           }}>
           {mapIcon.footprintIcon()}
         </Pressable>
-      </View>
+      </SafeAreaView>
       <View style={{ backgroundColor: theme.colors.black1 }}>
         <View style={styles.inputWrapper}>
           <ButtonTypeTwo
             title="誰喜歡我"
             buttonStyle={tabSelected === TABS.LIKE ? styles.tabButton : styles.tabButtonUnfocos}
-            titleStyle={{ fontSize: 14 }}
+            titleStyle={{ fontSize: fontSize(14),bottom:2 }}
             onPress={() => {
               if (tabSelected !== TABS.LIKE) {
                 setTabSelected(TABS.LIKE);
@@ -196,7 +199,7 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
           <ButtonTypeTwo
             title="誰來看我"
             buttonStyle={tabSelected === TABS.VISIT ? styles.tabButton : styles.tabButtonUnfocos}
-            titleStyle={{ fontSize: 14 }}
+            titleStyle={{ fontSize: fontSize(14),bottom:2 }}
             onPress={() => {
               if (tabSelected !== TABS.VISIT) {
                 setTabSelected(TABS.VISIT);

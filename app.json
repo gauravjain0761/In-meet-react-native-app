@@ -48,7 +48,7 @@
       "buildNumber": "22"
     },
     "android": {
-      "versionCode": 46,
+      "versionCode": 48,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

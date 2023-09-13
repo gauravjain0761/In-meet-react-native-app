@@ -111,7 +111,8 @@ export default function ForgetPasswordScreen(props: ForgetPasswordScreenProps) {
           loading={isLoading}
           title="送出"
           onPress={handleSubmit(onSubmit)}
-                  />
+          
+        />
       </View>
     </FormProvider>
   );

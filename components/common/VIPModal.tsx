@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CaptionFour } from './Text';
 import { ButtonTypeTwo, UnChosenButton } from './Button';
 import VIP from '../../assets/images/VIP.png';
+import { fontSize } from '~/helpers/Fonts';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     width: 168,
   },
   textStyle: {
-    fontSize: 14,
+    fontSize: fontSize(14),
   },
 }));
 
@@ -79,11 +80,12 @@ export default function VIPModal(props: IConfirmModal) {
           <Image source={VIP} style={{ width: 160, height: 140 }} />
           <Text
             style={{
-              fontSize: 18,
+              fontSize: fontSize(18),
               fontWeight: '600',
               color: '#fff',
               textAlign: 'center',
               marginVertical: 10,
+              fontFamily:'roboto'
             }}>
             升級VIP
           </Text>

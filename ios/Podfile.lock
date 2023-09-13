@@ -128,8 +128,15 @@ PODS:
   - EXSplashScreen (0.14.2):
     - ExpoModulesCore
     - React-Core
+  - EXStructuredHeaders (2.1.1)
   - EXTrackingTransparency (2.1.0):
     - ExpoModulesCore
+  - EXUpdates (0.11.7):
+    - EXManifests
+    - ExpoModulesCore
+    - EXStructuredHeaders
+    - EXUpdatesInterface
+    - React-Core
   - EXUpdatesInterface (0.5.2)
   - EXWebBrowser (10.1.1):
     - ExpoModulesCore
@@ -535,7 +542,9 @@ DEPENDENCIES:
   - EXRandom (from `../node_modules/expo-random/ios`)
   - EXScreenOrientation (from `../node_modules/expo-screen-orientation/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
+  - EXStructuredHeaders (from `../node_modules/expo-structured-headers/ios`)
   - EXTrackingTransparency (from `../node_modules/expo-tracking-transparency/ios`)
+  - EXUpdates (from `../node_modules/expo-updates/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - EXWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -663,8 +672,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-screen-orientation/ios"
   EXSplashScreen:
     :path: "../node_modules/expo-splash-screen/ios"
+  EXStructuredHeaders:
+    :path: "../node_modules/expo-structured-headers/ios"
   EXTrackingTransparency:
     :path: "../node_modules/expo-tracking-transparency/ios"
+  EXUpdates:
+    :path: "../node_modules/expo-updates/ios"
   EXUpdatesInterface:
     :path: "../node_modules/expo-updates-interface/ios"
   EXWebBrowser:
@@ -785,7 +798,9 @@ SPEC CHECKSUMS:
   EXRandom: 1d00fd04d7d874c0c9d1ff87cee59ffe0b638a3d
   EXScreenOrientation: ca9375ec57e5706128062867516da0b03a97ef64
   EXSplashScreen: 21669e598804ee810547dbb6692c8deb5dd8dbf3
+  EXStructuredHeaders: 4993087b2010dbcc510f5d92555b36f523425e8d
   EXTrackingTransparency: 0622e1c7e10f5cae378f6d77dc6fdf433c9a7d81
+  EXUpdates: a83e036243b0f6ece53a8c1cb883b6751c88a5f8
   EXUpdatesInterface: 13270752afb8c61f83a09117e6b04a682b2db9eb
   EXWebBrowser: f1573262c5de753987ed526c630076eda130804d
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6

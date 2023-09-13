@@ -11,13 +11,14 @@ import { calculateAge } from '~/helpers/convertDate';
 import { CITYEnum } from '~/constants/mappingValue';
 import { RootState, useAppDispatch } from '~/store';
 import VIPModal from '../VIPModal';
+import { fontSize } from '~/helpers/Fonts';
 
 const { width } = Dimensions.get('window');
 const useStyles = makeStyles(theme => ({
   cardContainer: {
     alignItems: 'center',
-    height: 146,
-    width: (width - 32 - 13) / 3,
+    // height: 146,
+    width: (width - 32 - 40) / 3,
     borderRadius: 15,
     position: 'relative',
     overflow: 'hidden',
@@ -90,7 +91,7 @@ export default function LikeCircleCard(props: ILikeCard) {
       <TouchableOpacity onPress={handlePress} activeOpacity={0.2}>
         <View style={[styles.cardContainer, (index + 1) % 3 !== 0 && { marginRight: 20 }]}>
           <Image
-            style={styles.cardImage}
+            style={[styles.cardImage,{opacity:!isVIP ? 0.3 : 1}]}
             source={{ uri: avatar || `https://picsum.photos/id/231/200/300` }}
           />
 
@@ -110,10 +111,11 @@ export default function LikeCircleCard(props: ILikeCard) {
                   justifyContent: 'center',
                   alignItems: 'center',
                   zIndex: 2,
+                  opacity:!isVIP ? 0.3 : 1
                 }}>
                 <Ionicons name="md-heart" size={23} color="#FF4E84" />
               </View>
-              {!isVIP && (
+              {/* {!isVIP && (
                 <BlurView
                   blurAmount={1}
                   blurType="light"
@@ -127,24 +129,25 @@ export default function LikeCircleCard(props: ILikeCard) {
                     height: 40,
                   }}
                 />
-              )}
+              )} */}
             </>
           )}
-          {!isVIP && (
+          {/* {!isVIP && (
             <BlurView
               style={{
                 top: 0,
                 left: 0,
                 bottom: 0,
                 right: 0,
-                width: 100,
-                height: 100,
+                // width: 100,
+            
                 borderRadius: 50,
               }}
               blurAmount={1}
             />
-          )}
-          <View style={[{ flexDirection: 'column', flex: 1, justifyContent: 'flex-end' }]}>
+          )} */}
+          <View style={{    height: 110,}}/>
+          <View style={[{ flexDirection: 'column', flex: 1, justifyContent: 'flex-end', }]}>
             <View style={styles.cardIntroContainer}>
               <View>
                 <View
@@ -165,8 +168,8 @@ export default function LikeCircleCard(props: ILikeCard) {
                     }}
                   />
                 </View>
-                <Text style={{ color: '#A8ABBD', marginTop: 2 }}>
-                  {calculateAge(birthday)}・{CITYEnum[city]}
+                <Text style={{ color: '#A8ABBD', marginTop: 2,fontFamily:'roboto',fontSize:fontSize(14) }}>
+                {calculateAge(birthday)}・{CITYEnum[city]}
                 </Text>
               </View>
             </View>

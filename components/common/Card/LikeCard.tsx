@@ -12,6 +12,7 @@ import { calculateAge } from '~/helpers/convertDate';
 import { CITYEnum } from '~/constants/mappingValue';
 import { RootState, useAppDispatch } from '~/store';
 import VIPModal from '../VIPModal';
+import { fontSize } from '~/helpers/Fonts';
 
 const { width } = Dimensions.get('window');
 const useStyles = makeStyles(theme => ({
@@ -102,19 +103,20 @@ export default function LikeCard(props: ILikeCard) {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{ color: '#fff', textAlign: 'center', fontSize: 10, fontWeight: '500' }}>
+              <Text style={{ color: '#fff', textAlign: 'center', fontSize: fontSize(10), fontWeight: '500',fontFamily:"roboto" }}>
                 {paired_percetage}% MATCH
               </Text>
             </View>
-            <LinearGradient
+            {/* <LinearGradient
               style={styles.linearGradient}
               start={{ x: 0.5, y: 1 }}
               end={{ x: 0.5, y: 0 }}
               locations={[0, 0.5721, 1]}
-              colors={['#4A4D5A', 'rgba(74, 77, 90, 0.476938)', 'rgba(74, 77, 90, 0)']}>
+              colors={['#4A4D5A', 'rgba(74, 77, 90, 0.476938)', 'rgba(74, 77, 90, 0)']}> */}
+            <View   style={styles.linearGradient}>
               <View style={[{ flexDirection: 'column', flex: 1, justifyContent: 'flex-end' }]}>
                 <View style={styles.cardIntroContainer}>
-                  <View>
+                  <View style={{bottom:20}}>
                     <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                       <TitleOne style={styles.introText}>{name}</TitleOne>
                       <View
@@ -127,8 +129,8 @@ export default function LikeCard(props: ILikeCard) {
                         }}
                       />
                     </View>
-                    <Text style={{ color: '#fff' }}>
-                      {calculateAge(birthday)}・{CITYEnum[city]}
+                    <Text style={{ color: '#fff',fontFamily:'roboto',fontSize:fontSize(14) }}>
+                    {calculateAge(birthday)}・{CITYEnum[city]}
                     </Text>
                   </View>
                   {!hideLikeIcon && (
@@ -148,7 +150,8 @@ export default function LikeCard(props: ILikeCard) {
                   )}
                 </View>
               </View>
-            </LinearGradient>
+              </View>
+            {/* </LinearGradient> */}
           </ImageBackground>
           {!isVIP && (
             <BlurView
