@@ -8,6 +8,7 @@ import {
   Linking,
   Button,
   TouchableOpacity,
+  ImageBackground
 } from 'react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -121,6 +122,11 @@ const useStyles = makeStyles((theme) => ({
     // resizeMode: 'cover',
     borderRadius: 15,
   },
+  imageView: {
+    width: 77,
+    height: 100,
+    borderRadius: 15,
+  },
   chosenButtonText: {
     color: theme.colors?.white,
   },
@@ -181,6 +187,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
 
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
+  const [imageValue, setimageValue] = useState(null);
 
   const handlePressOnEdit = (onChange: (event: any) => void) => {
     const options = ['圖庫', '相機', '取消'];
@@ -352,51 +359,79 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
                 // required: 'This is required',
               }
             }
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.avatarWrapper}>
-                {value?.uri ? (
-                  <>
-                    <View style={styles.imageContainer}>
-                      <Image style={styles.image} source={{ uri: value?.uri }} />
-                    </View>
-                    <ButtonTypeTwo
-                      onPress={() => handlePressOnEdit(onChange)}
-                      containerStyle={styles.editButtonStyle}
-                      title={<SubTitleOne style={styles.editButtonText}>換一張</SubTitleOne>}
-                    />
-                  </>
-                ) : (
-                  <View>
-                    <View style={styles.avatarContainer}>
+            render={({ field: { onChange, value } }) => {
+              setimageValue(value?.uri);
+              return (
+                <View style={styles.avatarWrapper}>
+                  {value?.uri ? (
+                    <>
+                      <View style={styles.imageContainer}>
+                        <Image style={styles.image} source={{ uri: value?.uri }} />
+                      </View>
                       <ButtonTypeTwo
                         onPress={() => handlePressOnEdit(onChange)}
-                        containerStyle={{ height: 48, width: 48, borderRadius: 48, marginTop: 30 }}
-                        icon={<Entypo name="plus" size={24} color="#fff" />}
+                        containerStyle={styles.editButtonStyle}
+                        title={<SubTitleOne style={styles.editButtonText}>換一張</SubTitleOne>}
                       />
-                      <ButtonTypeTwo
-                        onPress={() => handlePressOnEdit(onChange)}
-                        containerStyle={{
-                          borderRadius: 30,
-                          width: 208,
-                          marginTop: 40,
-                          marginBottom: 0,
-                        }}
-                        title={<SubTitleTwo style={{ color: '#fff' }}>{'上傳照片'}</SubTitleTwo>}
-                      />
+                    </>
+                  ) : (
+                    <View>
+                      <View style={styles.avatarContainer}>
+                        <ButtonTypeTwo
+                          onPress={() => handlePressOnEdit(onChange)}
+                          containerStyle={{
+                            height: 48,
+                            width: 48,
+                            borderRadius: 48,
+                            marginTop: 30,
+                          }}
+                          icon={<Entypo name="plus" size={24} color="#fff" />}
+                        />
+                        <ButtonTypeTwo
+                          onPress={() => handlePressOnEdit(onChange)}
+                          containerStyle={{
+                            borderRadius: 30,
+                            width: 208,
+                            marginTop: 40,
+                            marginBottom: 0,
+                          }}
+                          title={<SubTitleTwo style={{ color: '#fff' }}>{'上傳照片'}</SubTitleTwo>}
+                        />
+                      </View>
+                      <CaptionFour style={styles.bodyText}>
+                        {'請上傳 '}
+                        <Text style={styles.keypointText}>{'五官清晰的真人照片'}</Text>
+                        {'，才能增加配對成功率唷'}
+                      </CaptionFour>
                     </View>
-                    <CaptionFour style={styles.bodyText}>
-                      {'請上傳 '}
-                      <Text style={styles.keypointText}>{'五官清晰的真人照片'}</Text>
-                      {'，才能增加配對成功率唷'}
-                    </CaptionFour>
-                  </View>
-                )}
-              </View>
-            )}
+                  )}
+                </View>
+              );
+            }}
           />
         </View>
       </ScrollView>
       <View style={styles.footerContainer}>
+    {imageValue &&  
+        <View
+          style={{ marginBottom: 20, backgroundColor: '#4A4D5A', borderRadius: 8, padding: 12 }}>
+          <ImageBackground borderRadius={8} style={styles.imageView} source={{ uri: imageValue }}>
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor: '#fff',
+                borderRadius: 20,
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'absolute',
+                bottom: 9,
+                right:5
+              }}>
+              {mapIcon.closeIcon({size:18})}
+            </View>
+          </ImageBackground>
+        </View>}
         <ButtonTypeTwo
           // activeOpacity={0.9}
           loading={loading}

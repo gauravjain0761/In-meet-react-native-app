@@ -42,6 +42,7 @@ export type LoginStackParamList = {
   };
   FastLoginPassWordScreen: undefined;
   LocationPermission: undefined;
+  LandingScreen?:undefined
 };
 
 export type RootStackParamList = {
@@ -63,6 +64,10 @@ export type RootStackParamList = {
   EditProfile: undefined;
   HelperRoomChatScreen: undefined;
   CollectionScreen: undefined;
+  ImageGalleryScreen:undefined;
+  PurchaseHeart:undefined
+  PurchaseVIPScreen:undefined
+  EditSignatureScreen:undefined
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

@@ -7,12 +7,13 @@ import { BodyThree } from './Text';
 import { ButtonTypeOne, ButtonTypeTwo } from './Button';
 
 import Illus1 from '~/assets/images/firstLogin/illus1.png';
-import Illus2 from '~/assets/images/firstLogin/illus2.png';
+import Illus4 from '~/assets/images/firstLogin/Illus4.png';
 import Step1 from '~/assets/images/firstLogin/photos.png';
 import Step2 from '~/assets/images/firstLogin/unlimited.png';
 import Step3 from '~/assets/images/firstLogin/world.png';
 import Step4 from '~/assets/images/firstLogin/undraw_photos_re_pvh3.png';
 import Step5 from '~/assets/images/firstLogin/vip.png';
+import { fontSize } from '~/helpers/Fonts';
 
 const { width, height } = Dimensions.get('window');
 const LAST_STEP = 4;
@@ -26,6 +27,7 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 20,
     minHeight: 350,
     alignItems: 'center',
+    marginBottom:60
   },
   modalTitle: {
     textAlign: 'center',
@@ -33,12 +35,13 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 20,
   },
   modalSubtitle: {
-    paddingTop: 5,
+    // paddingTop: 5,
     textAlign: 'center',
     color: theme.colors?.white,
-    fontSize: 22,
+    fontSize: fontSize(22),
     fontWeight: '600',
     marginBottom: 28,
+    fontFamily:"roboto"
   },
   modalBody: {
     flexGrow: 1,
@@ -136,10 +139,11 @@ export default function FirstLoginModal({
       animationType={animationType}
       transparent={transparent}
       visible={modalVisible}
+      // statusBarTranslucent={false}
       onRequestClose={() => {
         onCloseModal();
       }}>
-      <KeyboardAwareScrollView style={{ flex: 1 }}>
+      <KeyboardAwareScrollView style={{ flex: 1 }} bounces={false} scrollEnabled={false}>
         <View
           onLayout={event => {
             const { height } = event.nativeEvent.layout;
@@ -147,18 +151,18 @@ export default function FirstLoginModal({
           }}
           style={[styles.modalWrapper, { height }]}>
           <View style={styles.centeredView}>
-            <Image
+            {/* <Image
               source={Illus1}
               style={{ width: 254, height: 155, position: 'absolute', top: 0, left: -45 }}
-            />
+            /> */}
             <Image
-              source={Illus2}
+              source={Illus4}
               style={{
-                width: 332,
-                height: 203,
+                width: 400,
+                height: 250,
                 position: 'absolute',
-                top: 8.5,
-                left: 88.4,
+                // top: 8.5,
+                // left: 88.4,
               }}
             />
             <View
@@ -188,7 +192,7 @@ export default function FirstLoginModal({
             <ButtonTypeTwo
               onPress={onNext}
               title={step !== LAST_STEP ? '下一步' : '開始探索'}
-              style={{ width: 295, height: 50 }}
+              buttonStyle={{ width: 295, height: 50 }}
             />
             {step === 4 && (
               <ButtonTypeOne
@@ -197,12 +201,12 @@ export default function FirstLoginModal({
                   navigation.navigate('PurchaseVIPScreen');
                 }}
                 title="升級 VIP"
-                buttonStyle={{
+                containerStyle={{
                   backgroundColor: '#FFEBEF',
                   borderWidth: 1.5,
                   borderColor: '#FF4E84',
                   width: 295,
-                  height: 50,
+                  height: 52,
                   marginTop: 24,
                 }}
               />

@@ -209,7 +209,7 @@ export default function RegisterVerifyCodeScreen(props: RegisterVerifyCodeProps)
             <UnChosenButton
               buttonStyle={{
                 height: 32,
-                width: 200,
+                width: 260,
                 padding: 0,
                 marginBottom: 40,
                 alignItems: 'center',
@@ -219,6 +219,7 @@ export default function RegisterVerifyCodeScreen(props: RegisterVerifyCodeProps)
                 fontSize: fontSize(14),
                 color:theme?.colors?.grey6,
                 marginLeft: 3,
+                textAlign:'center'
               }}
               containerStyle={{ paddingHorizontal:40,alignItems:'center'}}
               style={{ alignSelf: 'center' }}
@@ -230,9 +231,9 @@ export default function RegisterVerifyCodeScreen(props: RegisterVerifyCodeProps)
             <ChosenButton
               buttonStyle={{
                 height: 32,
-                width: 140,
+                width: 170,
                 padding: 0,
-                marginBottom: 40,
+                // marginBottom: 40,
                 alignItems:'center'
               }}
               titleStyle={{

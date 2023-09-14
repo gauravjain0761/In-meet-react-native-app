@@ -6,6 +6,7 @@ import more from '../assets/images/icons/more.png';
 import datingSearch from '../assets/images/icons/datingSearch.png';
 import interestSearch from '../assets/images/icons/interestSearch.png';
 import forums from '../assets/images/icons/forums.png';
+import forumsMeet from '../assets/images/icons/forumsMeet.png';
 import ChatIcon from '../assets/svg_icon/icon/chaticon.svg';
 import profileIcon from '../assets/images/icons/profile.png';
 import filterIcon from '../assets/images/icons/filter.png';
@@ -58,6 +59,7 @@ export const mapIcon = {
     <Image style={{ tintColor: color }} source={interestSearch} />
   ),
   forums: ({ color }: IIcon = {}) => <Image style={{ tintColor: color }} source={forums} />,
+  forumsMeet: ({ color,size = 24 }: IIcon = {}) => <Image style={{ tintColor: color, width: size, height: size }} source={forumsMeet} />,
   chatIcon: ({ color, size = 24 }: IIcon = {}) => (
     <ChatIcon fill={color} width={size} height={size} />
   ),

@@ -107,7 +107,7 @@ const LoginStack = createNativeStackNavigator<LoginStackParamList>();
 
 function LoginNavigator() {
   return (
-    <LoginStack.Navigator initialRouteName="PreLogin" screenOptions={{ headerShown: false }}>
+    <LoginStack.Navigator initialRouteName="RegisterImage" screenOptions={{ headerShown: false }}>
       <LoginStack.Screen name="PreLogin" component={PreLoginScreen} />
       <LoginStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false,}} />
       <LoginStack.Screen name="PhoneLogin" component={PhoneLoginScreen} options={{ headerShown: false,}}  />
@@ -246,8 +246,8 @@ function BottomTabNavigator() {
         name="LandingTab"
         component={LandingNavigator}
         options={{
-          title: '首頁',
-          tabBarIcon: ({ color }) => mapIcon.datingSearch({ color }),
+          title: 'MEET',
+          tabBarIcon: ({ color }) => mapIcon.forumsMeet({ color }),
         }}
       />
       <BottomTab.Screen
