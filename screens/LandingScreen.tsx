@@ -247,6 +247,7 @@ export default function LandingScreen(props: LandingScreenProps) {
 
   const [firstLoginOpen, setFirstLoginOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const modalSeenRef = useRef({
     notificationSeen: 0,
     avatarSeen: 0,
@@ -378,6 +379,8 @@ export default function LandingScreen(props: LandingScreenProps) {
   };
 
   useEffect(() => {
+    currentIndex == 0 && setFirstLoginOpen(true);
+   
     const fromRegistered = async () => {
       const isFromRegistered = await getUserIsFromRegistered();
       if (isFromRegistered === 'isFromRegistered') {
@@ -497,6 +500,7 @@ export default function LandingScreen(props: LandingScreenProps) {
         transparent
         onCloseModal={() => {
           setFirstLoginOpen(false);
+          setCurrentIndex(1)
         }}
         modalVisible={firstLoginOpen}
       />

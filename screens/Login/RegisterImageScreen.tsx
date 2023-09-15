@@ -8,7 +8,8 @@ import {
   Linking,
   Button,
   TouchableOpacity,
-  ImageBackground
+  ImageBackground,
+  FlatList
 } from 'react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -44,7 +45,7 @@ import { loginUser, patchUserFromRegister, patchUserToken } from '~/store/userSl
 import useRequestLocation from '~/hooks/useRequestLocation';
 import Header from '~/components/common/Header';
 import { fontSize } from '~/helpers/Fonts';
-
+import dammyImage from '../../assets/images/firstLogin/bg.png';
 const { height, width } = Dimensions.get('window');
 
 interface FormData {
@@ -412,26 +413,40 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
         </View>
       </ScrollView>
       <View style={styles.footerContainer}>
-    {imageValue &&  
-        <View
-          style={{ marginBottom: 20, backgroundColor: '#4A4D5A', borderRadius: 8, padding: 12 }}>
-          <ImageBackground borderRadius={8} style={styles.imageView} source={{ uri: imageValue }}>
-            <View
-              style={{
-                width: 20,
-                height: 20,
-                backgroundColor: '#fff',
-                borderRadius: 20,
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'absolute',
-                bottom: 9,
-                right:5
-              }}>
-              {mapIcon.closeIcon({size:18})}
-            </View>
-          </ImageBackground>
-        </View>}
+        {/* {imageValue && ( */}
+          <View
+            style={{ marginBottom: 20, backgroundColor: '#4A4D5A', borderRadius: 8, padding: 12 }}>
+            < FlatList data={[0, 1, 2]}
+            numColumns={3} 
+            
+            columnWrapperStyle={{justifyContent:'space-around'}}
+            renderItem={()=>{
+              return (
+                <ImageBackground
+                  borderRadius={8}
+                  style={styles.imageView}
+                  source={dammyImage}>
+                  <View
+                    style={{
+                      width: 20,
+                      height: 20,
+                      backgroundColor: '#fff',
+                      borderRadius: 20,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      position: 'absolute',
+                      bottom: 9,
+                      right: 5,
+                    }}>
+                    {mapIcon.closeIcon({ size: 18 })}
+                  </View>
+                </ImageBackground>
+              );
+            }}
+            />
+        
+          </View>
+        {/* )} */}
         <ButtonTypeTwo
           // activeOpacity={0.9}
           loading={loading}

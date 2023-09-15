@@ -27,7 +27,6 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 20,
     minHeight: 350,
     alignItems: 'center',
-    marginBottom:60
   },
   modalTitle: {
     textAlign: 'center',

@@ -107,7 +107,7 @@ const LoginStack = createNativeStackNavigator<LoginStackParamList>();
 
 function LoginNavigator() {
   return (
-    <LoginStack.Navigator initialRouteName="RegisterImage" screenOptions={{ headerShown: false }}>
+    <LoginStack.Navigator initialRouteName="PreLogin" screenOptions={{ headerShown: false }}>
       <LoginStack.Screen name="PreLogin" component={PreLoginScreen} />
       <LoginStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false,}} />
       <LoginStack.Screen name="PhoneLogin" component={PhoneLoginScreen} options={{ headerShown: false,}}  />

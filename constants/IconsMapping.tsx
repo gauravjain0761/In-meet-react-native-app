@@ -38,6 +38,7 @@ import mobileIcon from '../assets/images/icons/mobile.png';
 import backIcon from '../assets/images/icons/icon-back.png';
 import illus3zIcon from '../assets/images/firstLogin/illus3.png';
 import closeIcon from '../assets/images/icons/close.png';
+import dammyImage from '../assets/images/firstLogin/bg.png';
 
 type IIcon = {
   color?: string;
@@ -140,6 +141,9 @@ export const mapIcon = {
   ),
   closeIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }}  source={closeIcon} />
+  ),
+  dammyImage: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={dammyImage} />
   ),
   illus3zIcon:illus3zIcon
 };
