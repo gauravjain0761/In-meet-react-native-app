@@ -1,4 +1,13 @@
-import { View, Image, Dimensions, TouchableOpacity, Share, Platform } from 'react-native';
+import {
+  View,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+  Share,
+  Platform,
+  ScrollView,
+  ImageBackground,
+} from 'react-native';
 import React, { useLayoutEffect, useRef } from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { SceneMap, TabBar, TabBarItem, TabView } from 'react-native-tab-view';
@@ -26,18 +35,24 @@ import { selectToken, selectUserId } from '~/store/userSlice';
 import { updateCurrentChatId } from '~/store/roomSlice';
 import { BLOCK_REPORT_TYPE } from '~/constants/mappingValue';
 import { color } from '@rneui/base';
+import matchBg from '../../assets/images/icons/matchBg.png';
+import SearchAboutPost from '~/components/SearchAboutPost';
+import SelectModal from '~/components/common/SelectModal';
+import VIPModal from '~/components/common/VIPModal';
+import VIPConnectLockModal from '~/components/common/VIPConnectLockModal';
 
 const { height, width } = Dimensions.get('window');
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   image: {
     width: '100%',
     aspectRatio: 1.5,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
+    height: 370,
   },
   forDefaultAvatar: {
-     top:'25%',
-    left:'12.5%',
-    height:'50%',
+    top: '25%',
+    left: '12.5%',
+    height: '50%',
     aspectRatio: 1.5,
     resizeMode: 'contain',
   },
@@ -74,10 +89,13 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
   const [collectionModal, setCollectionModal] = React.useState(false);
   const [joinVIPModal, setJoinVIPModal] = React.useState(false);
   const [chatModal, setChatModal] = React.useState(false);
+  const [selectModalShow, setSelectModalShow] = React.useState(false);
+  const [openVIP, setOpenVIP] = React.useState(false);
+  const [openLockVIP, setOpenLockVIP] = React.useState(false);
+
   const [routes] = React.useState([
     { key: 'first', title: '關於我' },
     { key: 'second', title: '動態' },
-    { key: 'third', title: '相簿' },
   ]);
   const { bottom, top } = useSafeAreaInsets();
   const userId = useSelector(selectUserId);
@@ -92,25 +110,25 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
     () => userApi.fetchUserInfoById({ token, id: currentUserId }),
     {
       refetchOnMount: true,
-    },
+    }
   );
   const { data: favoriteList } = useQuery('getFavoriteUser', () =>
-    userApi.getFavoriteUser({ token }),
+    userApi.getFavoriteUser({ token })
   );
   const { data: avatarList } = useQuery(['fetchUserAvatars', currentUserId], () =>
-    userApi.fetchUserAvatars({ token, id: currentUserId }),
+    userApi.fetchUserAvatars({ token, id: currentUserId })
   );
   const { data: blockList } = useQuery(['fetchUserBlockInfoList'], () =>
-    userApi.fetchUserBlockInfoList({ token }),
+    userApi.fetchUserBlockInfoList({ token })
   );
-  const isBlocked = blockList?.records.map(record => record.blockUser.id).includes(currentUserId);
+  const isBlocked = blockList?.records.map((record) => record.blockUser.id).includes(currentUserId);
   const isBlockedId = isBlocked
-  ? blockList?.records.filter(record => record.blockUser.id === currentUserId)[0].id
-  : 0;
+    ? blockList?.records.filter((record) => record.blockUser.id === currentUserId)[0].id
+    : 0;
   const { mutate: blockUserInfo, isLoading: isBlockUserInfoLoading } = useMutation(
     userApi.blockInfo,
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         const message = 'success';
         queryClient.invalidateQueries('fetchUserBlockInfoList');
       },
@@ -118,12 +136,12 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
         alert('there was an error');
       },
       onSettled: () => {},
-    },
+    }
   );
   const { mutate: removeBlockInfo, isLoading: isRemoveLoading } = useMutation(
     userApi.removeBlockInfo,
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         const message = 'success';
       },
       onError: () => {
@@ -132,10 +150,10 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
       onSettled: () => {
         queryClient.invalidateQueries('fetchUserBlockInfoList');
       },
-    },
+    }
   );
   const { mutate, isLoading } = useMutation(userApi.collectUser, {
-    onSuccess: data => {
+    onSuccess: (data) => {
       const message = 'success';
     },
     onError: () => {
@@ -149,9 +167,8 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
   const { mutate: removeMutate, isLoading: removeLoading } = useMutation(
     userApi.removeCollectUser,
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         const message = 'success';
-
       },
       onError: () => {
         alert('there was an error');
@@ -159,7 +176,7 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
       onSettled: () => {
         queryClient.invalidateQueries('getFavoriteUser');
       },
-    },
+    }
   );
   const [tabViewHeight, setTabViewHeight] = React.useState(100);
   const moreButtonRef = useRef();
@@ -171,7 +188,7 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
 
   const data =
     avatarList?.records.length !== 0 && avatarList
-      ? avatarList?.records.map(record => record.fileInfoResponse.url)
+      ? avatarList?.records.map((record) => record.fileInfoResponse.url)
       : [''];
 
   const openMenu = () => setVisible(true);
@@ -182,9 +199,10 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
     try {
       // TODO: share some image info or other bio to some one
       const result = await Share.share({
-        message:'情緣一線牽，交友樂無邊！找尋知音，共享喜悅，讓我們相識相知吧~~\nIOS APP:https://apps.apple.com/tw/app/inmeet/id6443790744\nAndroid APP:https://play.google.com/store/apps/details?id=com.inmeet.inmeet',
+        message:
+          '情緣一線牽，交友樂無邊！找尋知音，共享喜悅，讓我們相識相知吧~~\nIOS APP:https://apps.apple.com/tw/app/inmeet/id6443790744\nAndroid APP:https://play.google.com/store/apps/details?id=com.inmeet.inmeet',
       });
-      console.log(result.action,'action');
+      console.log(result.action, 'action');
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
           // shared with activity type of result.activityType
@@ -199,45 +217,46 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
     }
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTransparent: true,
-      headerShown: true,
-      headerShadowVisible: false,
-      headerStyle: styles.headerStyle,
-      headerTintColor: theme.colors.white,
-      headerBackTitleVisible: false,
-      headerTitleAlign: 'center',
-      headerLeft: props =>
-        Platform.OS === 'android' ? null : (
-          <HeaderBackButton {...props} onPress={navigation.goBack} />
-        ),
-      headerRight: props => {
-        return (
-          <View style={{ flexDirection: 'row' }}>
-            <TouchableOpacity onPress={onShare} style={{ paddingRight: 10 }}>
-              {mapIcon.shareIcon()}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={openMenu}>{mapIcon.more()}</TouchableOpacity>
-          </View>
-        );
-      },
-      headerTitle: '',
-    });
-  }, []);
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTransparent: true,
+  //     headerShown: true,
+  //     headerShadowVisible: false,
+  //     headerStyle: styles.headerStyle,
+  //     headerTintColor: theme.colors.white,
+  //     headerBackTitleVisible: false,
+  //     headerTitleAlign: 'center',
+  //     headerLeft: props =>
+  //         <TouchableOpacity onPress={navigation.goBack} style={{ }}>
+  //         {mapIcon.backIcon({size:28})}
+  //       </TouchableOpacity>
+  //       ,
+  //     headerRight: props => {
+  //       return (
+  //         <View style={{ flexDirection: 'row' }}>
+  //           <TouchableOpacity onPress={onShare} style={{ paddingRight: 10 }}>
+  //             {mapIcon.shareIcon()}
+  //           </TouchableOpacity>
+  //           <TouchableOpacity onPress={openMenu}>{mapIcon.more()}</TouchableOpacity>
+  //         </View>
+  //       );
+  //     },
+  //     headerTitle: '',
+  //   });
+  // }, []);
 
   const renderItem = ({ item }) => {
     if (avatarList?.records.length == 0) {
       return (
         <View style={[styles.forDefaultAvatar, { justifyContent: 'center', alignItems: 'center' }]}>
-          <mapIcon.defaultAvatar color={'#8E8E8F'}/>
+          <mapIcon.defaultAvatar color={'#8E8E8F'} />
         </View>
       );
     }
     return <Image style={styles.image} source={{ uri: item }} />;
   };
   const isCollected = favoriteList?.records
-    ?.map(record => record.favoriteUser.id)
+    ?.map((record) => record.favoriteUser.id)
     .includes(currentUserId);
   const handleLike = () => {
     if (!currentUserId || isLoading || removeLoading) {
@@ -245,7 +264,7 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
     }
     if (isCollected) {
       const dataRecordIndex = favoriteList?.records?.findIndex(
-        item => item.favoriteUser.id === currentUserId,
+        (item) => item.favoriteUser.id === currentUserId
       );
       const dataRecordId = get(favoriteList?.records, `${dataRecordIndex}.id`, '');
       if (dataRecordId) {
@@ -263,7 +282,7 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
   const renderFloatButtonContainer = () => {
     return (
       <View style={styles.floatButtonContainer}>
-        <ChatButton 
+        <ChatButton
           buttonStyle={styles.floatButton}
           onPress={() => {
             if (!userInfoData?.isChatUnLockBefore && level !== LEVEL.VIP) {
@@ -291,7 +310,6 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
           })}
         />
         <TouchableOpacity style={{ paddingRight: 16 }}></TouchableOpacity>
-        
       </View>
     );
   };
@@ -302,16 +320,63 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
   };
   const handleRemoveBlock = () => {
     if (isBlockUserInfoLoading) return;
-   removeBlockInfo({ token, id:isBlockedId });
-   Toast.show('用戶已解除封鎖');
-};
+    removeBlockInfo({ token, id: isBlockedId });
+    Toast.show('用戶已解除封鎖');
+  };
   const handleJoinVip = () => {
     navigation.push('PurchaseVIPScreen');
   };
 
+  const HeaderView = () => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          marginHorizontal: 16,
+          position: 'absolute',
+          top: 18,
+          justifyContent: 'space-between',
+          right: 0,
+          left: 0,
+        }}>
+        <TouchableOpacity
+          onPress={navigation.goBack}
+          style={{
+            position: 'absolute',
+            top: 8,
+            justifyContent: 'space-between',
+            flexDirection: 'row',
+            right: 0,
+            left: 0,
+          }}>
+          {mapIcon.backIcon({ size: 30 })}
+        </TouchableOpacity>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            position: 'absolute',
+            top: 10,
+            right: 0,
+          }}>
+          <TouchableOpacity onPress={onShare} style={{ paddingRight: 15 }}>
+            {mapIcon.shareIcon()}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setSelectModalShow(true);
+            }}>
+            {mapIcon.more()}
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.black1 }}>
-      <ConfirmChatModal
+    <>
+      <View style={{ flex: 1, backgroundColor: theme.colors.black1 }}>
+        {/* <ConfirmChatModal
         isVisible={chatModal}
         onClose={() => setChatModal(false)}
         onPurchase={() => {
@@ -356,68 +421,103 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
           setJoinVIPModal(false);
         }}
         onClose={() => setJoinVIPModal(false)}
-      />
-      <View style={{ position: 'relative', marginBottom:25}}>
-        <Menu
-          contentStyle={{
-            backgroundColor: theme.colors.black2,
-            borderRadius: 20,
-            paddingVertical: 0,
+      /> */}
+      <VIPConnectLockModal isVisible={openLockVIP} onClose={()=>{setOpenLockVIP(false)}}/>
+        <VIPModal
+          isVisible={openVIP}
+          textShow={true}
+          onClose={() => setOpenVIP(false)}
+          onConfirmCallback={()=>{
+            setTimeout(() => {
+              setOpenVIP(false)
+            }, 1000);
+            setOpenLockVIP(true)
           }}
-          visible={visible}
-          onDismiss={closeMenu}
-          anchor={{ x: width - 10, y: headerHeight }}>
-          <Menu.Item
-            style={{
-              height: 32,
-              paddingHorizontal: 5,
-              borderTopEndRadius: 20,
-              borderTopStartRadius: 20,
-            }}
-            onPress={() => {
-              if(isBlocked){
-                handleRemoveBlock();
-              }else{
-                setJoinVIPModal(true);
-                closeMenu();
-              }
-            }}
-            title={
-              <CaptionFour style={{ color: theme.colors.white, textAlign: 'center' }}>
-                {isBlocked ? '解除封鎖此用戶' : '封鎖此用戶'}
-              </CaptionFour>
-            }
-          />
-          <Menu.Item
-            style={{
-              height: 32,
-              borderBottomEndRadius: 20,
-              paddingHorizontal: 5,
-
-              borderBottomStartRadius: 20,
-            }}
-            onPress={() => {
-              navigation.navigate('ReportScreen', {
-                id: currentUserId,
-                blockReportType: BLOCK_REPORT_TYPE.USER,
-              });
-              closeMenu();
-            }}
-            title={
-              <CaptionFour style={{ color: theme.colors.pink, textAlign: 'center' }}>
-                檢舉此用戶
-              </CaptionFour>
-            }
-          />
-        </Menu>
-        <Carousel
-          onSnapToItem={setActiveSlide}
-          data={data}
-          renderItem={renderItem}
-          sliderWidth={width}
-          itemWidth={width}
         />
-        <Pagination
+        <SelectModal
+          isVisible={selectModalShow}
+          onDeletePress={()=>{
+            setSelectModalShow(false);
+            //@ts-ignore
+            navigation.navigate('ReportScreen', {
+              id: currentUserId,
+              blockReportType: BLOCK_REPORT_TYPE.USER,
+            });
+          }}
+          onSecondBtn={() => {
+            setTimeout(() => {
+              setOpenVIP(true);
+            }, 700);
+            setSelectModalShow(false);
+          }}
+          onClose={() => {
+            setSelectModalShow(false);
+          }}
+        />
+        <View style={{ marginBottom: 0, height: 370 }}>
+          {HeaderView()}
+          <Menu
+            contentStyle={{
+              backgroundColor: theme.colors.black2,
+              borderRadius: 20,
+              paddingVertical: 0,
+            }}
+            visible={visible}
+            onDismiss={closeMenu}
+            anchor={{ x: width - 10, y: headerHeight }}>
+            <Menu.Item
+              style={{
+                height: 32,
+                paddingHorizontal: 5,
+                borderTopEndRadius: 20,
+                borderTopStartRadius: 20,
+              }}
+              onPress={() => {
+                if (isBlocked) {
+                  handleRemoveBlock();
+                } else {
+                  setJoinVIPModal(true);
+                  closeMenu();
+                }
+              }}
+              title={
+                <CaptionFour style={{ color: theme.colors.white, textAlign: 'center' }}>
+                  {isBlocked ? '解除封鎖此用戶' : '封鎖此用戶'}
+                </CaptionFour>
+              }
+            />
+            <Menu.Item
+              style={{
+                height: 32,
+                borderBottomEndRadius: 20,
+                paddingHorizontal: 5,
+
+                borderBottomStartRadius: 20,
+              }}
+              onPress={() => {
+                navigation.navigate('ReportScreen', {
+                  id: currentUserId,
+                  blockReportType: BLOCK_REPORT_TYPE.USER,
+                });
+                closeMenu();
+              }}
+              title={
+                <CaptionFour style={{ color: theme.colors.pink, textAlign: 'center' }}>
+                  檢舉此用戶
+                </CaptionFour>
+              }
+            />
+          </Menu>
+          <View style={{ height: 370, zIndex: -1 }}>
+            <Carousel
+              onSnapToItem={setActiveSlide}
+              data={data}
+              renderItem={renderItem}
+              sliderWidth={width}
+              itemWidth={width}
+            />
+          </View>
+          {/* <Pagination
           dotsLength={data.length}
           activeDotIndex={activeSlide}
           containerStyle={{
@@ -437,63 +537,92 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
           dotColor={theme.colors.white}
           inactiveDotScale={1}
           inactiveDotColor="#C4C4C4"
-        />
-        {renderFloatButtonContainer()}
+        /> */}
+          {/* {renderFloatButtonContainer()} */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-around', top: -15 }}>
+            {Array.from(Array(4)).map((_e, i) => (
+              <View
+                key={i}
+                style={{
+                  width: 78,
+                  height: 4,
+                  borderRadius: 4,
+                  backgroundColor: 0 === i ? '#fff' : 'rgba(255, 255, 255, 0.3)',
+                  // marginLeft: i === 0 ? 0 : 6,
+                  // marginBottom: 24,
+                }}
+              />
+            ))}
+          </View>
+        </View>
+        <View style={{ flex: 1, zIndex: -1 }}>
+          <BioInfo userInfoData={userInfoData} />
+
+          <TabView
+            style={{
+              marginTop: 10,
+            }}
+            renderTabBar={(props) => {
+              return (
+                <TabBar
+                  {...props}
+                  style={{
+                    backgroundColor: theme.colors.black1,
+                  }}
+                  renderTabBarItem={(props) => {
+                    return (
+                      <TabBarItem
+                        {...props}
+                        style={{
+                          position: 'relative',
+                          zIndex: -1,
+                          borderBottomColor: theme.colors.black3,
+                          borderBottomWidth: 2,
+                        }}
+                      />
+                    );
+                  }}
+                  contentContainerStyle={{}}
+                  indicatorContainerStyle={{
+                    zIndex: 1,
+                  }}
+                  indicatorStyle={{
+                    // marginLeft: 10,
+                    width: (width - 10) / 2,
+                    backgroundColor: theme.colors.pink,
+                  }}
+                />
+              );
+            }}
+            navigationState={{ index, routes }}
+            renderScene={SceneMap({
+              first: () => <AboutMe userInfoData={userInfoData} adjustHeight={adjustHeight} />,
+              second: () => (
+                <SearchAboutPost userInfoData={userInfoData} adjustHeight={adjustHeight} />
+              ),
+            })}
+            onIndexChange={setIndex}
+          />
+        </View>
+        <ImageBackground
+          source={matchBg}
+          resizeMode="cover"
+          style={{ width: '100%', height: 60, position: 'absolute', bottom: 0 }}>
+          <TouchableOpacity
+            style={{
+              width: 100,
+              alignSelf: 'center',
+              alignItems: 'center',
+              // zIndex: -1,
+              backgroundColor: theme.colors.black2,
+              height: 48,
+              justifyContent: 'center',
+              borderRadius: 20,
+            }}>
+            {mapIcon.likeIcon({ color: theme.colors.pink, size: 28 })}
+          </TouchableOpacity>
+        </ImageBackground>
       </View>
-      {/* detail */}
-
-      <BioInfo  userInfoData={userInfoData} />
-
-      <TabView
-        style={
-          { 
-            marginTop: 25,
-            // paddingHorizontal: 20,
-            // height: tabViewHeight,
-          }
-        }
-        renderTabBar={props => {
-          return (
-            <TabBar
-              {...props}
-              style={{
-                backgroundColor: theme.colors.black1,
-              }}
-              renderTabBarItem={props => {
-                return (
-                  <TabBarItem
-                    {...props}
-                    style={{
-                      position: 'relative',
-                      zIndex: -1,
-                      borderBottomColor: theme.colors.black3,
-                      marginLeft: 10,
-                      marginRight: 10,
-                      borderBottomWidth: 2,
-                    }}
-                  />
-                );
-              }}
-              contentContainerStyle={{}}
-              indicatorContainerStyle={{
-                zIndex: 1,
-              }}
-              indicatorStyle={{
-                marginLeft: 10,
-                width: (width - 60) / 3,
-                backgroundColor: theme.colors.pink,
-              }}
-            />
-          );
-        }}
-        navigationState={{ index, routes }}
-        renderScene={SceneMap({
-          first: () => <AboutMe userInfoData={userInfoData} adjustHeight={adjustHeight} />,
-          second: () => <AboutPost userInfoData={userInfoData} adjustHeight={adjustHeight} />,
-          third: () => <AboutPhoto userInfoData={userInfoData} adjustHeight={adjustHeight} />,
-        })}
-        onIndexChange={setIndex}
-      />
-    </SafeAreaView>
+    </>
   );
 }

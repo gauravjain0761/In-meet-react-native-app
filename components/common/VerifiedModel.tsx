@@ -7,6 +7,7 @@ import { CaptionFour } from './Text';
 import { ButtonTypeTwo, UnChosenButton } from './Button';
 import VIP from '../../assets/images/VIP.png';
 import { fontSize } from '~/helpers/Fonts';
+import { mapIcon } from '~/constants/IconsMapping';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -15,13 +16,13 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   cardContainer: {
-    backgroundColor: '#383A44',
+    backgroundColor: 'rgba(56, 58, 68, 0.90)',
     marginHorizontal: 30,
     borderRadius: 15,
     paddingVertical: 24,
-    width: 262,
-    height: 400,
-    paddingHorizontal: 46,
+    width: 150,
+    height: 125,
+    alignItems:'center'
   },
   titleText: { color: theme.colors?.black1, textAlign: 'center' },
   subTitleText: { color: theme.colors?.white, textAlign: 'center' },
@@ -50,13 +51,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface IConfirmModal {
-  onClose: () => void;
-  isVisible: boolean;
-  onConfirmCallback: () => void;
-  textShow: boolean;
+  onClose?: () => void;
+  isVisible?: boolean;
+  onConfirmCallback?: () => void;
+  textShow?: boolean;
 }
 
-export default function VIPModal(props: IConfirmModal) {
+export default function VerifiedModel(props: IConfirmModal) {
   const { isVisible, onClose, onConfirmCallback, textShow } = props;
   const { theme } = useTheme();
   const styles = useStyles();
@@ -72,42 +73,24 @@ export default function VIPModal(props: IConfirmModal) {
   };
   return (
     <ReactNativeModal
-      animationInTiming={1000}
-      animationOutTiming={1200}
-      backdropOpacity={0.5}
+      backdropOpacity={0}
+      onBackButtonPress={handleClose}
+      onBackdropPress={handleClose}
       isVisible={isVisible}>
       <View style={styles.container}>
         <View style={styles.cardContainer}>
-          <Image source={VIP} style={{ width: 160, height: 140 }} />
+          {mapIcon.vectorIcon({size:48})}
           <Text
             style={{
-              fontSize: fontSize(18),
+              fontSize: fontSize(14),
               fontWeight: '600',
               color: '#fff',
               textAlign: 'center',
-              marginVertical: 10,
               fontFamily: 'roboto',
+              marginTop:10
             }}>
-            升級VIP
+            您的檢舉已送出
           </Text>
-          <CaptionFour style={[styles.subTitleText, { marginBottom: 27 }]}>
-            {textShow ? '升級VIP即可【XX功能】\n文字' : "加入VIP將享受到{'\n'}更快速的配對體驗"}
-          </CaptionFour>
-          <ButtonTypeTwo
-            containerStyle={[styles.buttonStyle, { marginBottom: 10, marginTop: 10 }]}
-            buttonStyle={{ height: 40 }}
-            titleStyle={styles.textStyle}
-            title="立刻加入"
-            onPress={handleConfirm}
-          />
-          <UnChosenButton
-            titleStyle={styles.textStyle}
-            buttonStyle={{ height: 40, backgroundColor: 'transparent' }}
-            containerStyle={[styles.buttonStyle, { backgroundColor: 'transparent' }]}
-            // buttonStyle={[styles.buttonStyle, { backgroundColor: 'transparent' }]}
-            title="之後再說"
-            onPress={handleClose}
-          />
         </View>
       </View>
     </ReactNativeModal>

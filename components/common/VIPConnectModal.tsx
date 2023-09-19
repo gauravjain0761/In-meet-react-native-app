@@ -1,30 +1,31 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Dimensions } from 'react-native';
 import React from 'react';
 import ReactNativeModal from 'react-native-modal';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
-import { CaptionFour } from './Text';
+import { BodyOne, CaptionFour } from './Text';
 import { ButtonTypeTwo, UnChosenButton } from './Button';
-import VIP from '../../assets/images/VIP.png';
+import InforIcon from '../../assets/images/icons/InforIcon.png';
 import { fontSize } from '~/helpers/Fonts';
+const { width } = Dimensions.get('window');
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   cardContainer: {
-    backgroundColor: '#383A44',
-    marginHorizontal: 30,
+    width: width - 60,
+    height: '42%',
+    // alignSelf: 'center',
     borderRadius: 15,
-    paddingVertical: 24,
-    width: 262,
-    height: 400,
-    paddingHorizontal: 46,
+    backgroundColor: theme.colors?.white,
+    alignItems:'center',
   },
   titleText: { color: theme.colors?.black1, textAlign: 'center' },
-  subTitleText: { color: theme.colors?.white, textAlign: 'center' },
+  subTitleText: { color: theme.colors?.black1, textAlign: 'center' },
   likeIconContainer: {
     marginTop: 15,
     marginBottom: 15,
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   diffText: { color: theme.colors?.black4, textAlign: 'center' },
   buttonStyle: {
     // height: 40,
-    width: 168,
+    width: "80%",
   },
   textStyle: {
     fontSize: fontSize(14),
@@ -50,14 +51,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface IConfirmModal {
-  onClose: () => void;
-  isVisible: boolean;
-  onConfirmCallback: () => void;
-  textShow: boolean;
+  onClose?: () => void;
+  isVisible?: boolean;
+  onConfirmCallback?: () => void;
 }
 
-export default function VIPModal(props: IConfirmModal) {
-  const { isVisible, onClose, onConfirmCallback, textShow } = props;
+export default function VIPConnectModal(props: IConfirmModal) {
+  const { isVisible, onClose, onConfirmCallback } = props;
   const { theme } = useTheme();
   const styles = useStyles();
   const navigation = useNavigation();
@@ -67,8 +67,6 @@ export default function VIPModal(props: IConfirmModal) {
 
   const handleConfirm = async () => {
     onClose();
-    onConfirmCallback();
-    // navigation.navigate('PurchaseVIPScreen');
   };
   return (
     <ReactNativeModal
@@ -78,33 +76,21 @@ export default function VIPModal(props: IConfirmModal) {
       isVisible={isVisible}>
       <View style={styles.container}>
         <View style={styles.cardContainer}>
-          <Image source={VIP} style={{ width: 160, height: 140 }} />
-          <Text
-            style={{
-              fontSize: fontSize(18),
-              fontWeight: '600',
-              color: '#fff',
-              textAlign: 'center',
-              marginVertical: 10,
-              fontFamily: 'roboto',
-            }}>
-            升級VIP
-          </Text>
-          <CaptionFour style={[styles.subTitleText, { marginBottom: 27 }]}>
-            {textShow ? '升級VIP即可【XX功能】\n文字' : "加入VIP將享受到{'\n'}更快速的配對體驗"}
-          </CaptionFour>
+          <Image source={InforIcon} style={{ width: 150, height: 115,marginTop:20 }} />
+          <BodyOne style={[styles.subTitleText, { marginVertical:30 }]}>
+          加入 VIP 即可無限次反悔
+          </BodyOne>
           <ButtonTypeTwo
-            containerStyle={[styles.buttonStyle, { marginBottom: 10, marginTop: 10 }]}
-            buttonStyle={{ height: 40 }}
+            containerStyle={[styles.buttonStyle, { marginBottom: 10,marginTop:10 }]}
+            buttonStyle={{height:40}}
             titleStyle={styles.textStyle}
             title="立刻加入"
             onPress={handleConfirm}
           />
           <UnChosenButton
             titleStyle={styles.textStyle}
-            buttonStyle={{ height: 40, backgroundColor: 'transparent' }}
+            buttonStyle={{height:40}}
             containerStyle={[styles.buttonStyle, { backgroundColor: 'transparent' }]}
-            // buttonStyle={[styles.buttonStyle, { backgroundColor: 'transparent' }]}
             title="之後再說"
             onPress={handleClose}
           />

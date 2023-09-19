@@ -5,7 +5,7 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import { SubTitleTwo } from './Text';
 import { ButtonTypeTwo, UnChosenButton } from './Button';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -21,7 +21,6 @@ const useStyles = makeStyles(theme => ({
   },
   titleText: {
     color: theme.colors?.black1,
-    paddingVertical: 15,
     textAlign: 'center',
   },
   buttonStyle: {
@@ -35,8 +34,12 @@ interface ICommonModal {
   isVisible: boolean;
   modalText?: string;
   showCancel?: boolean;
-  buttonOneTitle?: string,
-  buttonTwoTitle?: string,
+  buttonOneTitle?: string;
+  buttonTwoTitle?: string;
+  unChosenBtnStyle?: any;
+  headerShowText?: any;
+  headerShow?: any;
+  chosenBtnStyle?: any;
 }
 export default function CommonModalComponent(props: ICommonModal) {
   const {
@@ -45,8 +48,12 @@ export default function CommonModalComponent(props: ICommonModal) {
     onConfirm,
     modalText = '要將 John 加入收藏嗎?',
     showCancel = true,
-    buttonOneTitle="確定",
-    buttonTwoTitle="取消",
+    buttonOneTitle = '確定',
+    buttonTwoTitle = '取消',
+    unChosenBtnStyle,
+    headerShowText,
+    headerShow,
+    chosenBtnStyle
   } = props;
   const styles = useStyles();
 
@@ -66,11 +73,23 @@ export default function CommonModalComponent(props: ICommonModal) {
       isVisible={isVisible}>
       <View style={styles.container}>
         <View style={styles.cardContainer}>
-          <SubTitleTwo style={styles.titleText}>{modalText}</SubTitleTwo>
-
-          <ButtonTypeTwo style={styles.buttonStyle} title={buttonOneTitle} onPress={handleConfirmModal} />
+         {headerShow && <SubTitleTwo style={[styles.titleText,{fontWeight:'500'}]}>{headerShowText}</SubTitleTwo>}
+          <SubTitleTwo style={[styles.titleText,{    paddingVertical: 15,}]}>{modalText}</SubTitleTwo>
+          <ButtonTypeTwo
+            style={styles.buttonStyle}
+            title={buttonOneTitle}
+            onPress={handleConfirmModal}
+            buttonStyle={{ height: 48,  }}
+            containerStyle={chosenBtnStyle}
+          />
           {showCancel && (
-            <UnChosenButton style={styles.buttonStyle} title={buttonTwoTitle} onPress={handleCloseModal} />
+            <UnChosenButton
+              containerStyle={unChosenBtnStyle}
+              style={[styles.buttonStyle]}
+              title={buttonTwoTitle}
+              onPress={handleCloseModal}
+              buttonStyle={{ height: 48,  }}
+            />
           )}
         </View>
       </View>

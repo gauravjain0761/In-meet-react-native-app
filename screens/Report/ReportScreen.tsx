@@ -14,13 +14,18 @@ import { useAppDispatch } from '~/store';
 import { reportForumPost } from '~/store/forumSlice';
 import { selectUserId } from '~/store/userSlice';
 import CommonModalComponent from '~/components/common/CommonModalComponent';
+import { TouchableOpacity } from 'react-native';
+import { mapIcon } from '~/constants/IconsMapping';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
   },
   headerTitle: {
     color: theme.colors?.white,
+  },
+  unChosenBtnStyle: {
+    marginTop: 10,
   },
 }));
 
@@ -35,17 +40,21 @@ export default function ReportScreen(props: RootStackScreenProps<'ReportScreen'>
   const [modalText, setModalText] = useState('已檢舉用戶');
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTransparent: true,
       headerShown: true,
       headerShadowVisible: false,
       headerStyle: styles.headerStyle,
       headerTintColor: theme.colors.white,
       headerBackTitleVisible: false,
       headerTitleAlign: 'center',
-      headerTitle: props => {
-        return <BodyTwo style={styles.headerTitle}>檢舉</BodyTwo>;
-      },
+      headerLeft: (props) => (
+        <TouchableOpacity onPress={navigation.goBack} style={{}}>
+          {mapIcon.backIcon({ size: 28 })}
+        </TouchableOpacity>
+      ),
+      headerTitle: '檢舉',
     });
-  });
+  }, []);
 
   const reportTypes = [
     { title: '假冒的個人資料', value: 'FAKE_INFO' },
@@ -60,7 +69,7 @@ export default function ReportScreen(props: RootStackScreenProps<'ReportScreen'>
     navigation.goBack();
   };
 
-  const handlePressReport = async item => {
+  const handlePressReport = async (item) => {
     const resourceId = get(route, 'params.id', '');
     const blockReportType = get(route, 'params.blockReportType', '');
     const { value: blockReason, title } = item;
@@ -72,7 +81,7 @@ export default function ReportScreen(props: RootStackScreenProps<'ReportScreen'>
           blockReportType,
           blockReason,
           reportUserId: userId,
-        }),
+        })
       ).unwrap();
       setModalText(`已檢舉用戶\n「${title}」`);
       if (res?.success) {
@@ -87,17 +96,22 @@ export default function ReportScreen(props: RootStackScreenProps<'ReportScreen'>
       contentContainerStyle={{ paddingBottom: bottom }}
       style={{ backgroundColor: theme.colors.black1, paddingBottom: 10 }}>
       <CommonModalComponent
-        modalText={modalText}
+        modalText={"請放心，檢舉內容將匿名提交。"}
+        headerShow={true}
         isVisible={collectionModal}
         onConfirm={handleGoBack}
-        showCancel={false}
+        showCancel={true}
+        headerShowText={"檢舉對方假冒的個人資料"}
+        unChosenBtnStyle={styles.unChosenBtnStyle}
+        chosenBtnStyle={styles.unChosenBtnStyle}
+        onClose={()=>{ setCollectionModal(false)}}
       />
-      {reportTypes.map(item => (
+      {reportTypes.map((item) => (
         <ProfileRowItem
           key={item.value}
           title={item.title}
           titleStyle={{ color: theme.colors?.white, flex: 1 }}
-          onPress={() => handlePressReport(item)}
+          onPress={() => setCollectionModal(true)}
         />
       ))}
     </KeyboardAwareScrollView>

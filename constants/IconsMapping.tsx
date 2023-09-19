@@ -39,6 +39,18 @@ import backIcon from '../assets/images/icons/icon-back.png';
 import illus3zIcon from '../assets/images/firstLogin/illus3.png';
 import closeIcon from '../assets/images/icons/close.png';
 import dammyImage from '../assets/images/firstLogin/bg.png';
+import logoIcon from '../assets/images/logo/logo.png';
+import pagesIcon from '../assets/images/icons/pages.png';
+import gobackIcon from '../assets/images/icons/go-back.png';
+import upIcon from '../assets/images/icons/up.png';
+
+import vectorIcon from '../assets/images/icons/Vector.png';
+import userClockIcon from '../assets/images/icons/user-clock-solid.png';
+import tabViewBgIcon from '../assets/images/icons/tabViewBg.png';
+import starIcon1 from '../assets/images/icons/star.png';
+import locationIcon1 from '../assets/images/icons/location1.png';
+import favoriteIcon from '../assets/images/icons/favorite.png';
+import commentIcon from '../assets/images/icons/comment.png';
 
 type IIcon = {
   color?: string;
@@ -75,6 +87,27 @@ export const mapIcon = {
   ),
   locationIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={locationIcon} />
+  ),
+  vectorIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={vectorIcon} />
+  ),
+  userClockIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={userClockIcon} />
+  ),
+  starIcon1: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={starIcon1} />
+  ),
+  tabViewBgIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={tabViewBgIcon} />
+  ),
+  locationIcon1: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={locationIcon1} />
+  ),
+  commentIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={commentIcon} />
+  ),
+  favoriteIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={favoriteIcon} />
   ),
   shareIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={shareIcon} />
@@ -144,6 +177,18 @@ export const mapIcon = {
   ),
   dammyImage: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }}  source={dammyImage} />
+  ),
+  logoIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size,resizeMode:'contain' }} source={logoIcon} />
+  ),
+  pagesIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={pagesIcon} />
+  ),
+  gobackIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={gobackIcon} />
+  ),
+  upIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={upIcon} />
   ),
   illus3zIcon:illus3zIcon
 };

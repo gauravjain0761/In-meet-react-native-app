@@ -27,54 +27,30 @@ interface IAboutME {
   userInfoData?: User;
 }
 
-const useStyles = makeStyles(theme => ({
-  text: {
+const useStyles = makeStyles((theme) => ({
+  labelText: {
     color: theme.colors?.white,
-    paddingHorizontal: 16,
   },
-  rowContainer: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  rowTitle: { color: theme.colors?.white, width: 60 },
-  aboutMeDivider: {
-    paddingTop: 10,
-  },
-  personalTitle: {
-    color: theme.colors?.black4,
-    paddingTop: 20,
-    paddingBottom: 6,
-    paddingHorizontal: 16,
-  },
-  personalDivider: { paddingTop: 6 },
-  interestChipContainer: {
-    flexWrap: 'wrap',
-    flexDirection: 'row',
-    paddingTop: 10,
-  },
-  interestButtonContainer: {
-    paddingBottom: 10,
-    paddingHorizontal: 16,
-  },
-  interestButton: { height: 24, padding: 0 },
-  interestButtonTitle: {
-    color: theme.colors?.pink,
-  },
-  unfilledText: {
-    color: theme.colors.black4,
-    paddingHorizontal: 16,
-  },
-  container: {
-    paddingTop: 20,
-  },
-  contactContainer: {
-    paddingTop: 20,
-  },
-  contactWrapper: {
-    paddingHorizontal: 16,
+  inputStyle: {
+    backgroundColor: theme.colors.black2,
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  inputSubStyle: {
+    backgroundColor: theme.colors.black2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 8,
+    marginBottom: 12,
+    width: 170,
   },
   contactBody: { flex: 1, flexDirection: 'row', alignItems: 'center' },
   contactTitle: { paddingLeft: 8, color: theme.colors?.white, width: 80 },
@@ -140,71 +116,174 @@ export default function AboutMe(props: IAboutME) {
     Clipboard.setString(contactInfo);
     Toast.show(`已複製${contactInfo}`);
   };
-  return (
-    <ScrollView>
-      <BodyThree style={[styles.text, { paddingTop: 20 }]}>關於我</BodyThree>
-      <BodyThree
-        style={[
-          about === UN_FILLED ? styles.unfilledText : styles.text,
-          styles.text,
-          { paddingTop: 5 },
-        ]}>
-        {about}
-      </BodyThree>
-      <Divider color={theme.colors.black2} style={styles.aboutMeDivider} />
-      <CaptionFour style={styles.personalTitle}>個人資料</CaptionFour>
-      {columns.map(column => (
-        <View key={column.title}>
-          <View style={styles.rowContainer}>
-            <BodyThree style={styles.rowTitle}>{column.title}</BodyThree>
-            <BodyThree style={column.value === UN_FILLED ? styles.unfilledText : styles.text}>
-              {column.value}
-            </BodyThree>
-          </View>
-          <Divider color={theme.colors.black2} style={styles.personalDivider} />
+
+  const Input = ({ label, icon, title, iconShow }: any) => {
+    return (
+      <>
+        <BodyThree style={styles.labelText}>{label}</BodyThree>
+        <View style={styles.inputStyle}>
+          {iconShow && icon}
+          <BodyThree style={[styles.labelText, { marginLeft: 5 }]}>{title}</BodyThree>
         </View>
-      ))}
+      </>
+    );
+  };
+  const InputSub = ({ label, icon, title, iconShow }: any) => {
+    return (
+      <View>
+        <BodyThree style={styles.labelText}>{label}</BodyThree>
+        <View style={styles.inputSubStyle}>
+          {iconShow && icon}
+          <BodyThree style={[styles.labelText, { marginLeft: 5 }]}>{title}</BodyThree>
+        </View>
+      </View>
+    );
+  };
 
-      <View style={styles.rowContainer}>
-        <BodyThree style={styles.rowTitle}>興趣</BodyThree>
+  return (
+    <ScrollView style={{ flex: 1, marginHorizontal: 16, marginTop: 16 ,zIndex:-1}}>
+      <Input label="居住地區" iconShow={true} icon={mapIcon.locationIcon1({})} title="新北市" />
+      <Input label="星座" iconShow={true} icon={mapIcon.starIcon1({})} title="巨蟹座" />
+      <Input label="年齡" iconShow={false} title="18 歲" />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <InputSub label="身高" iconShow={false} title="159 cm" />
+        <InputSub label="體重" iconShow={false} title="48 kg" />
       </View>
-      <View style={styles.interestChipContainer}>
-        {userInfoData?.hobbies?.map(hobby => (
-          <ChosenButton
-            key={hobby.id}
-            style={styles.interestButtonContainer}
-            buttonStyle={styles.interestButton}
-            title={<CaptionFour style={styles.interestButtonTitle}>{hobby.hobbyName}</CaptionFour>}
-          />
-        ))}
-        {(userInfoData?.hobbies || []).length === 0 && (
-          <BodyThree style={styles.unfilledText}>{UN_FILLED}</BodyThree>
-        )}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <InputSub label="血型" iconShow={false} title="O 型" />
+        <InputSub label="血型" iconShow={false} title="O 型" />
       </View>
-
-      <View style={styles.container}>
-        {contacts.map(contact => (
-          <View key={contact.title} style={styles.contactContainer}>
-            <View style={styles.contactWrapper}>
-              <View style={styles.contactBody}>
-                {contact.icon}
-                <BodyThree numberOfLines={1} style={styles.contactTitle}>
-                  {contact.title}
-                </BodyThree>
-                <BodyThree
-                  style={
-                    contact.contactInfo === UN_FILLED ? styles.unfilledText : styles.contactInfo
-                  }>
-                  {contact.contactInfo}
-                </BodyThree>
-              </View>
-              <TouchableOpacity onPress={() => onClickCopy(contact.contactInfo)}>
-                {mapIcon.copyIcon({ size: 15 })}
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <InputSub label="抽菸習慣" iconShow={false} title="偶爾抽" />
+        <InputSub label="職業" iconShow={false} title="學生" />
       </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <InputSub label="抽菸習慣" iconShow={false} title="學生" />
+        <InputSub label="年齡" iconShow={false} title="學生" />
+      </View>
+      <View style={{height:90}}/>
     </ScrollView>
   );
+}
+
+// const useStyles = makeStyles(theme => ({
+//   text: {
+//     color: theme.colors?.white,
+//     paddingHorizontal: 16,
+//   },
+//   rowContainer: {
+//     flexDirection: 'row',
+//     paddingVertical: 10,
+//     paddingHorizontal: 16,
+//   },
+//   rowTitle: { color: theme.colors?.white, width: 60 },
+//   aboutMeDivider: {
+//     paddingTop: 10,
+//   },
+//   personalTitle: {
+//     color: theme.colors?.black4,
+//     paddingTop: 20,
+//     paddingBottom: 6,
+//     paddingHorizontal: 16,
+//   },
+//   personalDivider: { paddingTop: 6 },
+//   interestChipContainer: {
+//     flexWrap: 'wrap',
+//     flexDirection: 'row',
+//     paddingTop: 10,
+//   },
+//   interestButtonContainer: {
+//     paddingBottom: 10,
+//     paddingHorizontal: 16,
+//   },
+//   interestButton: { height: 24, padding: 0 },
+//   interestButtonTitle: {
+//     color: theme.colors?.pink,
+//   },
+//   unfilledText: {
+//     color: theme.colors.black4,
+//     paddingHorizontal: 16,
+//   },
+//   container: {
+//     paddingTop: 20,
+//   },
+//   contactContainer: {
+//     paddingTop: 20,
+//   },
+//   contactWrapper: {
+//     paddingHorizontal: 16,
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+//   contactBody: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+//   contactTitle: { paddingLeft: 8, color: theme.colors?.white, width: 80 },
+//   contactInfo: { paddingLeft: 8, color: theme.colors?.white },
+// }));
+
+{
+  /* <ScrollView>
+<BodyThree style={[styles.text, { paddingTop: 20 }]}>關於我</BodyThree>
+<BodyThree
+  style={[
+    about === UN_FILLED ? styles.unfilledText : styles.text,
+    styles.text,
+    { paddingTop: 5 },
+  ]}>
+  {about}
+</BodyThree>
+<Divider color={theme.colors.black2} style={styles.aboutMeDivider} />
+<CaptionFour style={styles.personalTitle}>個人資料</CaptionFour>
+{columns.map(column => (
+  <View key={column.title}>
+    <View style={styles.rowContainer}>
+      <BodyThree style={styles.rowTitle}>{column.title}</BodyThree>
+      <BodyThree style={column.value === UN_FILLED ? styles.unfilledText : styles.text}>
+        {column.value}
+      </BodyThree>
+    </View>
+    <Divider color={theme.colors.black2} style={styles.personalDivider} />
+  </View>
+))}
+
+<View style={styles.rowContainer}>
+  <BodyThree style={styles.rowTitle}>興趣</BodyThree>
+</View>
+<View style={styles.interestChipContainer}>
+  {userInfoData?.hobbies?.map(hobby => (
+    <ChosenButton
+      key={hobby.id}
+      style={styles.interestButtonContainer}
+      buttonStyle={styles.interestButton}
+      title={<CaptionFour style={styles.interestButtonTitle}>{hobby.hobbyName}</CaptionFour>}
+    />
+  ))}
+  {(userInfoData?.hobbies || []).length === 0 && (
+    <BodyThree style={styles.unfilledText}>{UN_FILLED}</BodyThree>
+  )}
+</View>
+
+<View style={styles.container}>
+  {contacts.map(contact => (
+    <View key={contact.title} style={styles.contactContainer}>
+      <View style={styles.contactWrapper}>
+        <View style={styles.contactBody}>
+          {contact.icon}
+          <BodyThree numberOfLines={1} style={styles.contactTitle}>
+            {contact.title}
+          </BodyThree>
+          <BodyThree
+            style={
+              contact.contactInfo === UN_FILLED ? styles.unfilledText : styles.contactInfo
+            }>
+            {contact.contactInfo}
+          </BodyThree>
+        </View>
+        <TouchableOpacity onPress={() => onClickCopy(contact.contactInfo)}>
+          {mapIcon.copyIcon({ size: 15 })}
+        </TouchableOpacity>
+      </View>
+    </View>
+  ))}
+</View>
+</ScrollView> */
 }

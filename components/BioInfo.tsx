@@ -2,15 +2,15 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { get } from 'lodash';
-import { CaptionFour, SubTitleOne, TitleOne } from './common/Text';
+import { BodyThree, CaptionFour, SubTitleOne, TitleOne } from './common/Text';
 import { mapIcon } from '../constants/IconsMapping';
 import { UN_KNOWN, UN_RECOGNIZED } from '~/constants/defaultValue';
 import { calculateAge } from '~/helpers/convertDate';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   bioTitleContainer: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
   },
   bioName: {
     color: theme.colors?.white,
@@ -40,6 +40,26 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors?.white,
     paddingHorizontal: 16,
     paddingTop: 13,
+  },
+  introTextHeader: {
+    color: theme.colors?.white,
+    backgroundColor: '#0ACFC3',
+    width: 70,
+    textAlign: 'center',
+    padding: 6,
+    borderRadius: 18,
+    marginBottom: 10,
+    marginTop: 25,
+    marginLeft: 16,
+  },
+  cardBioContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bioText: {
+    maxWidth: '90%',
+    color: theme.colors?.white,
+    marginLeft:16
   },
 }));
 
@@ -77,7 +97,8 @@ export default function BioInfo(props: { userInfoData?: User & { distance: numbe
 
   return (
     <>
-      <View style={[styles.bioTitleContainer,{marginTop:0}]}>
+      <BodyThree style={styles.introTextHeader}>{'新用戶'} </BodyThree>
+      <View style={[styles.bioTitleContainer, { marginTop: 0 }]}>
         <TitleOne style={styles.bioName}>{userInfoData?.name}</TitleOne>
         <SubTitleOne style={styles.bioAge}>{calculateAge(userInfoData?.birthday)}</SubTitleOne>
         <SubTitleOne style={styles.bioAddress}>{city}</SubTitleOne>
@@ -89,14 +110,18 @@ export default function BioInfo(props: { userInfoData?: User & { distance: numbe
         <CaptionFour style={styles.bioLocation}>
           {userInfoData?.distance ? `${userInfoData?.distance}km` : UN_RECOGNIZED}
         </CaptionFour> */}
-        <View style={styles.iconContainer}>
+        {/* <View style={styles.iconContainer}>
           {mapIcon.starIcon({ color: theme.colors.white, size: 13 })}
-        </View>
-        <CaptionFour style={styles.bioLocation}>
+        </View> */}
+        {/* <CaptionFour style={styles.bioLocation}>
           {userInfoData?.starAmount || 0} 人收藏他
-        </CaptionFour>
-      </View>
-      <CaptionFour style={styles.bioDetail}>{userInfoData?.signature || UN_KNOWN}</CaptionFour>
+        </CaptionFour> */}
+      
+          <BodyThree numberOfLines={2} style={styles.bioText}>
+            {"哈囉我是 Sarah！喜歡爬山，運動，愛狗，來認識一下吧！"}
+          </BodyThree>
+        </View>
+      {/* <CaptionFour style={styles.bioDetail}>{userInfoData?.signature || UN_KNOWN}</CaptionFour> */}
     </>
   );
 }

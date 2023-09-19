@@ -305,6 +305,7 @@ function RootNavigator() {
             <Stack.Screen
               options={{
                 headerTransparent: true,
+                headerShown:false
               }}
               name="MatchingDetailScreen"
               component={MatchingDetailScreen}

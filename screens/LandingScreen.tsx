@@ -15,6 +15,7 @@ import {
   TextInput,
   InteractionManager,
   AsyncStorage,
+  FlatList,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -85,17 +86,26 @@ import { calculateDays } from '~/helpers/convertDate';
 import locationIcon from '../assets/images/icons/locationIcon.png';
 import useRequestLocation from '~/hooks/useRequestLocation';
 import FirstLoginModal from '~/components/common/FirstLoginModal';
+import MatchCard from '~/components/common/Card/MatchCard';
+import SwiperFlatList from 'react-native-swiper-flatlist';
+import VIPModal from '~/components/common/VIPModal';
+import VIPConnectModal from '~/components/common/VIPConnectModal';
+import { fontSize } from '../helpers/Fonts';
+import emptyImg from '../assets/images/icons/emptyImg.png';
+import VerifiedModel from '~/components/common/VerifiedModel';
+import MatchModal from '~/components/common/MatchModal';
 
 const { height, width } = Dimensions.get('window');
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: theme.colors?.black1,
-    minHeight: height,
+    // minHeight: height,
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingBottom: 10,
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -184,6 +194,20 @@ const useStyles = makeStyles(theme => ({
   unchosenButtonText: {
     color: theme.colors?.black4,
   },
+  cardView: {
+    width: width * 0.93,
+    height: height * 0.86,
+    backgroundColor: theme.colors.black1,
+    borderRadius: 20,
+    overflow: 'hidden',
+    alignSelf: 'center',
+  },
+  emptyWrapper: {
+    backgroundColor: theme.colors?.black1,
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
 }));
 
 const pickerSelectStyles = StyleSheet.create({
@@ -232,7 +256,7 @@ export default function LandingScreen(props: LandingScreenProps) {
   const [notificationModal, setNotificationModal] = useState(false);
   const [locationModal, setLocationModal] = useState(false);
   const [avatarModal, setAvatarModal] = useState(false);
-  const [currentUserData, setCurrentUserData] = useState<UserProfileResponse>();
+  const [currentUserData, setCurrentUserData] = useState<any>();
   const dispatch = useAppDispatch();
   const token = useSelector(selectToken);
   const user = useSelector((state: RootState) => state.user);
@@ -248,6 +272,9 @@ export default function LandingScreen(props: LandingScreenProps) {
   const [firstLoginOpen, setFirstLoginOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [vipConnectModal, setVipConnectModal] = useState(false);
+  const [showVerifiedModal, setShowVerifiedModal] = useState(false);
+  const [showMatchModal, setShowMatchModal] = useState(false);
   const modalSeenRef = useRef({
     notificationSeen: 0,
     avatarSeen: 0,
@@ -256,6 +283,8 @@ export default function LandingScreen(props: LandingScreenProps) {
   });
   const { requestUserPermission } = useFirebaseMessages();
   const [openLocationAsync] = useRequestLocation();
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
 
   const {
     isLoading,
@@ -267,10 +296,10 @@ export default function LandingScreen(props: LandingScreenProps) {
     data,
   } = useInfiniteQuery(
     ['searchUserInLandingScreen', distance, interested, endAge, startAge, hobbyIds],
-    pageObject =>
+    (pageObject) =>
       userApi.fetchUser({ token, gender: interested, hobbyId: hobbyIds, distance }, pageObject),
     {
-      getNextPageParam: lastPage => {
+      getNextPageParam: (lastPage) => {
         if (lastPage.page.totalPage !== lastPage.page.currentPage) {
           return lastPage.page.currentPage + 1;
         }
@@ -278,21 +307,21 @@ export default function LandingScreen(props: LandingScreenProps) {
       },
       retry: 2,
       retryDelay: 3000,
-    },
+    }
   );
   const { data: interestList } = useQuery(
     'fetchUserByInterest',
     () => interestApi.fetchAllInterest({ token, hobbyName: '', limit: 100 }, {}),
     {
       refetchOnMount: true,
-    },
+    }
   );
 
   const { data: favoriteList } = useQuery('getFavoriteUser', () =>
-    userApi.getFavoriteUser({ token }),
+    userApi.getFavoriteUser({ token })
   );
 
-  const users = data?.pages.map(page => page.records).flat();
+  const users = data?.pages.map((page) => page.records).flat();
   const handlePressStory = (id: number) => {
     if (id) {
       navigation.push('MatchingDetailScreen');
@@ -307,13 +336,27 @@ export default function LandingScreen(props: LandingScreenProps) {
   const handlePressFilter = () => {
     navigation.navigate('FilterSearchScreen');
   };
+  const handleDicoverScreen = () => {
+    navigation.navigate('DicoverScreen');
+  };
 
-  const renderRow = ({ item }) => <SmallCard user={item} favoriteList={favoriteList?.records} />;
+  const renderRow = ({ item }) => (
+    <MatchCard
+      user={item}
+      favoriteList={favoriteList?.records}
+      onPress={() => {
+        setVipConnectModal(true);
+      }}
+      onfavoritBtn={() => setShowVerifiedModal(true)}
+      onArrowPress={()=>setShowMatchModal(true)}
+    />
+  );
 
   const renderListHeaderComponent = () => {
     return (
       <>
         <View style={styles.header}>
+          <View />
           <BodyThree style={styles.topBarNavText}>推薦給您</BodyThree>
           <Pressable onPress={handlePressFilter}>{mapIcon.filterIcon()}</Pressable>
         </View>
@@ -338,6 +381,34 @@ export default function LandingScreen(props: LandingScreenProps) {
           <ConstellationCard onPress={handlePressConstellationCard} />
         </View>
       </>
+    );
+  };
+
+  const renderListEmptyComponent = () => {
+    return (
+      <View style={styles.emptyWrapper}>
+        <Text
+          style={{
+            color: theme.colors.black4,
+            textAlign: 'center',
+            fontSize: fontSize(16),
+            lineHeight: 25,
+            fontFamily: 'roboto',
+          }}>
+          附近沒有更多的人了
+        </Text>
+        <Image style={{ width: 180, height: 180, marginVertical: 24 }} source={emptyImg} />
+        <Text
+          style={{
+            color: theme.colors.black4,
+            textAlign: 'center',
+            fontSize: fontSize(14),
+            lineHeight: 25,
+            fontFamily: 'roboto',
+          }}>
+          {'增加搜索城市即可獲得更多配對機會'}
+        </Text>
+      </View>
     );
   };
 
@@ -379,8 +450,8 @@ export default function LandingScreen(props: LandingScreenProps) {
   };
 
   useEffect(() => {
-    currentIndex == 0 && setFirstLoginOpen(true);
-   
+    // currentIndex == 0 && setFirstLoginOpen(true);
+
     const fromRegistered = async () => {
       const isFromRegistered = await getUserIsFromRegistered();
       if (isFromRegistered === 'isFromRegistered') {
@@ -403,7 +474,7 @@ export default function LandingScreen(props: LandingScreenProps) {
       }
       setLocationModal(false);
       const res = await dispatch(
-        getUserLocation({ token, lat: latitude, lng: longitude }),
+        getUserLocation({ token, lat: latitude, lng: longitude })
       ).unwrap();
 
       setCurrentUserData(res);
@@ -440,9 +511,9 @@ export default function LandingScreen(props: LandingScreenProps) {
     };
     if (currentStep === 0) {
       fromRegistered().then(() =>
-        locationCheck().then(deviceToken =>
-          notificationCheck(deviceToken).then(() => setCurrentStep(currentStep + 1)),
-        ),
+        locationCheck().then((deviceToken) =>
+          notificationCheck(deviceToken).then(() => setCurrentStep(currentStep + 1))
+        )
       );
     } else if (currentStep === 1) {
       checkLogin().then(() => checkAvatar().then(() => setCurrentStep(currentStep + 1)));
@@ -460,22 +531,33 @@ export default function LandingScreen(props: LandingScreenProps) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAwareFlatList
-        contentContainerStyle={{ paddingBottom: bottom }}
-        numColumns={2}
-        onEndReached={() => {
-          if (hasNextPage && !isRefetchError) {
-            fetchNextPage();
-          }
-        }}
-        onEndReachedThreshold={0.1}
-        data={users?.slice(4)}
-        columnWrapperStyle={styles.cardWrapper}
-        keyExtractor={(item, index) => item.id.toString()}
-        renderItem={renderRow}
-        ListHeaderComponent={renderListHeaderComponent()}
-        ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
-      />
+      <View style={styles.header}>
+        <View style={{ marginRight: 20 }} />
+        {mapIcon.logoIcon({ size: 36 })}
+        <Pressable onPress={handleDicoverScreen}>{mapIcon.pagesIcon({ size: 24 })}</Pressable>
+      </View>
+      <View style={styles.cardView}>
+        <SwiperFlatList
+          contentContainerStyle={{ flex: users?.length == 0 ? 1 : 0 }}
+          // numColumns={1}
+          // style={{ flex: 1 }}
+          // horizontal¯
+          vertical={true}
+          onEndReached={() => {
+            if (hasNextPage && !isRefetchError) {
+              fetchNextPage();
+            }
+          }}
+          onEndReachedThreshold={0.1}
+          data={users?.slice(4)}
+          // columnWrapperStyle={styles.cardWrapper}
+          keyExtractor={(item, index) => item.id.toString()}
+          renderItem={renderRow}
+          // ListHeaderComponent={renderListHeaderComponent()}
+          ListEmptyComponent={renderListEmptyComponent()}
+          // ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
+        />
+      </View>
       <BannerModal
         animationType="slide"
         transparent
@@ -500,7 +582,7 @@ export default function LandingScreen(props: LandingScreenProps) {
         transparent
         onCloseModal={() => {
           setFirstLoginOpen(false);
-          setCurrentIndex(1)
+          setCurrentIndex(1);
         }}
         modalVisible={firstLoginOpen}
       />
@@ -554,6 +636,9 @@ export default function LandingScreen(props: LandingScreenProps) {
         {mapIcon.likeIcon({ color: theme.colors.pink, size: 60 })}
         <TitleOne style={styles.likeCount}>x3</TitleOne>
       </ModalComponent>
+      <VIPConnectModal isVisible={vipConnectModal} onClose={() => setVipConnectModal(false)} />
+      <VerifiedModel isVisible={showVerifiedModal} onClose={() => setShowVerifiedModal(false)} />
+      <MatchModal isVisible={showMatchModal} onClose={() => setShowMatchModal(false)} />
     </SafeAreaView>
   );
 }
