@@ -2,22 +2,26 @@ import { View, Image, Dimensions, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { Badge } from '@rneui/base';
-import { Swipeable } from 'react-native-gesture-handler';
+import Swipeable  from 'react-native-gesture-handler/Swipeable';
 import { useNavigation } from '@react-navigation/native';
 import { isNumber } from 'lodash';
 import { isSameDay, parse, toDate } from 'date-fns';
-import { CaptionFive, CaptionFour, SubTitleTwo } from '../Text';
+import { BodyTwo, CaptionFive, CaptionFour, SubTitleTwo } from '../Text';
 import { convertTime } from '~/helpers/convertDate';
 import logo from '~/assets/images/logo/logo.png';
+import { fontSize } from '~/helpers/Fonts';
 
 const { width } = Dimensions.get('window');
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   roomContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     alignItems: 'center',
     paddingVertical: 10,
-    maxWidth: '100%',
+    // maxWidth: '100%',
+    marginHorizontal: 16,
+    borderRadius: 12,
+    marginTop:8
   },
   roomLeftContainer: {},
   roomBodyContainer: {
@@ -27,10 +31,10 @@ const useStyles = makeStyles(theme => ({
   },
   roomRightContainer: {},
   roomAvatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 60,
-    backgroundColor: theme.colors?.black2,
+    width: 48,
+    height: 48,
+    borderRadius: 48,
+    backgroundColor: theme.colors?.black1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -38,17 +42,21 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors?.white,
   },
   roomPreviewText: {
-    color: theme.colors?.black3,
+    color: theme.colors?.white,
     paddingTop: 6,
   },
   roomCountBadge: {
     backgroundColor: theme.colors?.pink,
+    width:19,
+    height:19,
   },
   badgeContainer: {
     paddingTop: 6,
+   
   },
   msgTime: {
-    color: theme.colors?.white,
+    color: '#ADAFBB',
+    fontFamily:"roboto"
   },
 }));
 
@@ -85,7 +93,7 @@ export default function HelperRoomCard({ roomData }: IHelperRoomCard) {
   const isToday = isSameDay(parse(createTime, 'yyyy-MM-dd HH:mm:ss', new Date()), new Date());
   const isYesterDay = isSameDay(
     parse(createTime, 'yyyy-MM-dd HH:mm:ss', new Date()),
-    new Date(new Date().getDate() - 1),
+    new Date(new Date().getDate() - 1)
   );
   const renderTimeString = () => {
     return <CaptionFive style={styles.msgTime}>{convertTime(createTime)}</CaptionFive>;
@@ -94,28 +102,40 @@ export default function HelperRoomCard({ roomData }: IHelperRoomCard) {
     <Swipeable useNativeAnimations friction={1} overshootRight>
       <TouchableOpacity
         onPress={handleRoomCardPress}
-        style={[styles.roomContainer, { backgroundColor: theme.colors.black1 }]}>
+        style={[styles.roomContainer, { backgroundColor: theme.colors.black2 }]}>
         <View style={styles.roomLeftContainer}>
           <View style={styles.roomAvatar}>
             <Image style={{ width: '50%', height: '50%' }} source={logo} />
           </View>
         </View>
         <View style={styles.roomBodyContainer}>
-          <SubTitleTwo style={styles.roomName}>InMeet小幫手</SubTitleTwo>
-          <CaptionFour numberOfLines={1} style={styles.roomPreviewText}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <BodyTwo style={[styles.roomName, { flex: 1 }]}>InMeet小幫手</BodyTwo>
+            {renderTimeString()}
+          </View>
+          <View  style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <CaptionFour numberOfLines={1} style={[styles.roomPreviewText,{flex:1}]}>
             {type !== 'TEXT' ? '傳送一則檔案 ' : content}
           </CaptionFour>
-        </View>
-        <View style={styles.roomRightContainer}>
-          {renderTimeString()}
           {notReadCount !== 0 && isNumber(notReadCount) && (
+            <Badge
+              value={notReadCount}
+              containerStyle={styles.badgeContainer}
+              badgeStyle={styles.roomCountBadge}
+              textStyle={{fontSize:fontSize(12), fontFamily:"roboto"}}
+            />
+          )}
+          </View>
+        </View>
+        {/* <View style={styles.roomRightContainer}>
+          {notReadCount == 0 && isNumber(notReadCount) && (
             <Badge
               value={notReadCount}
               containerStyle={styles.badgeContainer}
               badgeStyle={styles.roomCountBadge}
             />
           )}
-        </View>
+        </View> */}
       </TouchableOpacity>
     </Swipeable>
   );

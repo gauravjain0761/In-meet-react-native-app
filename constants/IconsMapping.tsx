@@ -19,11 +19,13 @@ import searchIcon from '../assets/images/icons/searchIcon.png';
 import sendIcon from '../assets/images/icons/sendIcon.png';
 import deleteIcon from '../assets/images/icons/deleteIcon.png';
 import photoIcon from '../assets/images/icons/photoIcon.png';
+import photoIcon1 from '../assets/images/icons/photoIcon1.png';
 import ContactIcon from '../assets/svg_icon/icon/contacticon.svg';
 import inquiryIcon from '../assets/images/icons/inquiryIcon.png';
 import settingIcon from '../assets/images/icons/settingIcon.png';
 import personalIcon from '../assets/images/icons/personalIcon.png';
 import diamondIcon from '../assets/images/icons/vip.png';
+import vipdiamondIcon from '../assets/images/icons/diamond.png';
 import copyIcon from '../assets/images/icons/copyIcon.png';
 import nextStepIcon from '../assets/images/icons/nextStepIcon.png';
 import blockIcon from '../assets/images/icons/block.png';
@@ -51,6 +53,12 @@ import starIcon1 from '../assets/images/icons/star.png';
 import locationIcon1 from '../assets/images/icons/location1.png';
 import favoriteIcon from '../assets/images/icons/favorite.png';
 import commentIcon from '../assets/images/icons/comment.png';
+import unlikeIcon from '../assets/images/icons/unlike.png';
+import emailIcon from '../assets/images/icons/mailIcon.png';
+import inEyeIcon from '../assets/images/icons/inEye.png';
+import opneEmailIcon from '../assets/images/icons/opneEmail.png';
+import unCheckIcon from '../assets/images/icons/unCheck.png';
+import checkIcon from '../assets/images/icons/check.png';
 
 type IIcon = {
   color?: string;
@@ -85,6 +93,9 @@ export const mapIcon = {
   confirmIcon: ({ color, size }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={confirmIcon} />
   ),
+  unlikeIcon: ({ color, size }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={unlikeIcon} />
+  ),
   locationIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={locationIcon} />
   ),
@@ -99,6 +110,9 @@ export const mapIcon = {
   ),
   tabViewBgIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={tabViewBgIcon} />
+  ),
+  emailIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: 160, height: size }} source={emailIcon} />
   ),
   locationIcon1: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={locationIcon1} />
@@ -121,8 +135,23 @@ export const mapIcon = {
   deleteIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={deleteIcon} />
   ),
+  inEyeIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={inEyeIcon} />
+  ),
+  unCheckIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={unCheckIcon} />
+  ),
+  checkIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={checkIcon} />
+  ),
+  inEyeIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={inEyeIcon} />
+  ),
   photoIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={photoIcon} />
+  ),
+  photoIcon1: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={photoIcon1} />
   ),
   contactIcon: ({ color = '#A8ABBD', size = 24 }: IIcon = {}) => (
     <ContactIcon fill={color} width={size} height={size} />
@@ -138,6 +167,9 @@ export const mapIcon = {
   ),
   diamondIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={diamondIcon} />
+  ),
+  vipdiamondIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={vipdiamondIcon} />
   ),
   copyIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={copyIcon} />
@@ -174,6 +206,9 @@ export const mapIcon = {
   ),
   closeIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }}  source={closeIcon} />
+  ),
+  opneEmailIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={opneEmailIcon} />
   ),
   dammyImage: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }}  source={dammyImage} />

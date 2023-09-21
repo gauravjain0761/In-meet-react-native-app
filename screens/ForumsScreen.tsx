@@ -24,7 +24,13 @@ import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/nativ
 import { get, map } from 'lodash';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
 import Toast from 'react-native-root-toast';
-import { BodyTwo,BodyThree, CaptionFive, CaptionFour, SubTitleTwo } from '../components/common/Text';
+import {
+  BodyTwo,
+  BodyThree,
+  CaptionFive,
+  CaptionFour,
+  SubTitleTwo,
+} from '../components/common/Text';
 import { mapIcon } from '../constants/IconsMapping';
 import { RootTabScreenProps } from '../types';
 import { RootState, useAppDispatch } from '~/store';
@@ -44,12 +50,16 @@ import { CollectorUser, forumsApi, userApi } from '~/api/UserAPI';
 import defaultAvatar from '~/assets/images/icons/profile.png';
 import { BLOCK_REPORT_TYPE } from '~/constants/mappingValue';
 import CommonModalComponent from '~/components/common/CommonModalComponent';
-import {  useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FlatList } from 'react-native-gesture-handler';
 import Empty from '../assets/images/like-empty.png';
-
+import { fontSize } from '~/helpers/Fonts';
+import backIcon from '../assets/images/icons/icon-back.png';
+import SelectBottomModal from '~/components/common/SelectBottomModal';
+import moment from 'moment';
+import { updateCurrentMatchingId } from '~/store/interestSlice';
 const { width } = Dimensions.get('window');
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
   },
@@ -69,7 +79,7 @@ const useStyles = makeStyles(theme => ({
     resizeMode: 'cover',
     width: 40,
     height: 40,
-    borderRadius: 40,
+    borderRadius: 40 / 2,
   },
   avatarDisplayName: {
     color: theme.colors?.white,
@@ -80,6 +90,15 @@ const useStyles = makeStyles(theme => ({
   body: {
     color: theme.colors?.white,
   },
+  moreStyle: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.black3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   image: {
     aspectRatio: 1,
     borderRadius: 5,
@@ -89,6 +108,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingRight: 20,
+    alignItems: 'center',
   },
   avatarContainer: {
     flexDirection: 'row',
@@ -99,11 +119,11 @@ const useStyles = makeStyles(theme => ({
   },
   bodyContainer: {
     flexDirection: 'column',
-    paddingTop: 5,
-    paddingLeft: 16,
-    paddingRight: 20,
+    paddingTop: 8,
+    // paddingLeft: 16,
+    // paddingRight: 20,
     // height: 80,
-    overflow: 'hidden',
+    // overflow: 'hidden',
   },
   bodyLeftContainer: {
     paddingTop: 8,
@@ -111,9 +131,10 @@ const useStyles = makeStyles(theme => ({
     // maxWidth: '80%',
     // paddingRight: 12,
     justifyContent: 'space-between',
+    paddingHorizontal: 16,
   },
   iconContainer: {
-    paddingTop: 16,
+    paddingVertical: 10,
     paddingLeft: 16,
     paddingRight: 20,
     flexDirection: 'row',
@@ -123,14 +144,14 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors?.white,
     paddingLeft: 6,
     paddingRight: 10,
-    paddingTop: 5,
-    fontSize: 14,
+    // paddingTop: 5,
+    fontSize: fontSize(14),
   },
   chatCount: {
     color: theme.colors?.white,
     paddingLeft: 6,
-    paddingTop: 5,
-    fontSize: 14,
+    // paddingTop: 5,
+    fontSize: fontSize(14),
   },
   grayText: {
     color: theme.colors?.black4,
@@ -142,22 +163,22 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 20,
   },
   listContainer: {
-    position:'absolute',
-    bottom: 30, 
-    right: 30, 
-    zIndex: 200, 
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    zIndex: 200,
   },
-  fabContainer:{
+  fabContainer: {
     backgroundColor: '#FF4E84',
   },
   emptyWrapper: {
     backgroundColor: theme.colors?.black1,
     height: '100%',
     paddingHorizontal: 90,
-    paddingTop: 160,
+    paddingTop: width * 0.56,
     display: 'flex',
     alignItems: 'center',
-  }
+  },
 }));
 
 enum LEVEL {
@@ -187,16 +208,17 @@ function ForumCardComponent({
   const [replyText, setReplyText] = useState('');
   const [isReplyLoading, setIsReplyLoading] = useState(false);
   const [joinVIPModal, setJoinVIPModal] = React.useState(false);
+  const [selectModalShow, setSelectModalShow] = React.useState(false);
   const level = useSelector((state: RootState) => state.user.level);
   const queryClient = useQueryClient();
   const { data: blockList } = useQuery(['fetchUserBlockInfoList'], () =>
-    userApi.fetchUserBlockInfoList({ token }),
+    userApi.fetchUserBlockInfoList({ token })
   );
 
   const { mutate: blockUserInfo, isLoading: isBlockUserInfoLoading } = useMutation(
     userApi.blockInfo,
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         const message = 'success';
         queryClient.invalidateQueries('fetchUserBlockInfoList');
       },
@@ -204,12 +226,12 @@ function ForumCardComponent({
         alert('there was an error');
       },
       onSettled: () => {},
-    },
+    }
   );
   const { mutate: removeBlockInfo, isLoading: isRemoveLoading } = useMutation(
     userApi.removeBlockInfo,
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         const message = 'success';
       },
       onError: () => {
@@ -218,7 +240,7 @@ function ForumCardComponent({
       onSettled: () => {
         queryClient.invalidateQueries('fetchUserBlockInfoList');
       },
-    },
+    }
   );
   const dispatch = useAppDispatch();
   const openMenu = () => {
@@ -227,10 +249,10 @@ function ForumCardComponent({
   const closeMenu = () => {
     setVisible(false);
   };
-  const isCollected = favoriteList?.map(record => record.favoriteUser.id).includes(user.id);
-  const isBlocked = blockList?.records.map(record => record.blockUser.id).includes(user.id);
+  const isCollected = favoriteList?.map((record) => record.favoriteUser.id).includes(user.id);
+  const isBlocked = blockList?.records.map((record) => record.blockUser.id).includes(user.id);
   const isBlockedId = isBlocked
-    ? blockList?.records.filter(record => record.blockUser.id === user.id)[0].id
+    ? blockList?.records.filter((record) => record.blockUser.id === user.id)[0].id
     : 0;
   const handleBlock = async () => {
     if (isBlockUserInfoLoading) return;
@@ -243,7 +265,7 @@ function ForumCardComponent({
     Toast.show('用戶已解除封鎖');
   };
   const { mutate: mutateCollect, isLoading: isCollectLoading } = useMutation(userApi.collectUser, {
-    onSuccess: data => {
+    onSuccess: (data) => {
       const message = 'success';
     },
     onError: () => {
@@ -256,7 +278,7 @@ function ForumCardComponent({
   const { mutate: removeMutate, isLoading: removeLoading } = useMutation(
     userApi.removeCollectUser,
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         const message = 'success';
       },
       onError: () => {
@@ -265,11 +287,11 @@ function ForumCardComponent({
       onSettled: () => {
         queryClient.invalidateQueries('getFavoriteUser');
       },
-    },
+    }
   );
 
   const { mutate: likeForum, isLoading: isLikeLoading } = useMutation(forumsApi.likeForum, {
-    onSuccess: data => {
+    onSuccess: (data) => {
       const message = 'success';
     },
     onError: () => {
@@ -281,7 +303,7 @@ function ForumCardComponent({
   });
 
   const { mutate: unLikeForum, isLoading: isUnLikeLoading } = useMutation(forumsApi.unLikeForum, {
-    onSuccess: data => {
+    onSuccess: (data) => {
       const message = 'success';
     },
     onError: () => {
@@ -297,7 +319,7 @@ function ForumCardComponent({
       return;
     }
     if (isCollected) {
-      const dataRecordIndex = favoriteList?.findIndex(item => item.favoriteUser.id === user.id);
+      const dataRecordIndex = favoriteList?.findIndex((item) => item.favoriteUser.id === user.id);
       const dataRecordId = get(favoriteList, `${dataRecordIndex}.id`, '');
       if (dataRecordId) {
         removeMutate({ token, dataRecordId });
@@ -373,25 +395,33 @@ function ForumCardComponent({
     <Loader isLoading={isLikeLoading || isReplyLoading || isUnLikeLoading}>
       <View style={styles.headerContainer}>
         <View style={styles.avatarContainer}>
-          <TouchableOpacity activeOpacity={1} style={styles.imageContainer}>
+          <TouchableOpacity onPress={()=>{
+            //  if (id) {
+            //   navigation.navigate('MatchingDetailScreen');
+            //   dispatch(updateCurrentMatchingId(id));
+            // }
+          }}  activeOpacity={1} style={styles.imageContainer}>
             <Image
               style={styles.avatar}
               source={user.avatar ? { uri: user.avatar } : defaultAvatar}
             />
           </TouchableOpacity>
           <View style={styles.postDetailContainer}>
-            <SubTitleTwo style={styles.avatarDisplayName}>{user.name}</SubTitleTwo>
-            <CaptionFive style={styles.postTime}>{convertDate(createTime)}</CaptionFive>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <BodyTwo style={styles.avatarDisplayName}>{user.name}</BodyTwo>
+              <TouchableOpacity onPress={handleLike} style={{ paddingLeft: 5 }}>
+                {mapIcon.vipdiamondIcon({
+                  size: 18,
+                  // color: isCollected ? theme.colors.yellow : theme.colors.black4,
+                  color: theme.colors.yellow,
+                })}
+              </TouchableOpacity>
+            </View>
+            <CaptionFive style={styles.postTime}>{moment(createTime).format('MMM D, hh:mm a')}</CaptionFive>
           </View>
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity onPress={handleLike} style={{ paddingRight: 5 }}>
-            {mapIcon.starIcon({
-              size: 20,
-              color: isCollected ? theme.colors.yellow : theme.colors.black4,
-            })}
-          </TouchableOpacity>
-          <Menu
+          {/* <Menu
             contentStyle={{
               backgroundColor: theme.colors.black2,
               borderRadius: 20,
@@ -443,7 +473,14 @@ function ForumCardComponent({
                 </CaptionFour>
               }
             />
-          </Menu>
+          </Menu> */}
+          <TouchableOpacity
+            onPress={() => {
+              setSelectModalShow(true);
+            }}
+            style={styles.moreStyle}>
+            {mapIcon.more({ size: 20, color: theme.colors.black4 })}
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -461,27 +498,56 @@ function ForumCardComponent({
             />
           )}
           <View style={styles.bodyLeftContainer}>
-            <ReadMore
-              numberOfLines={2}
+            <BodyThree style={styles.body}>
+              {/* {item}{' '} */}
+              {content.substring(0, 30)}
+            </BodyThree>
+            {content.length > 30 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                <BodyThree style={styles.grayText}>更多</BodyThree>
+                <Image
+                  source={backIcon}
+                  style={{
+                    tintColor: theme.colors.black4,
+                    width: 15,
+                    height: 15,
+                    transform: [{ rotate: '180deg' }],
+                  }}
+                />
+              </View>
+            )}
+            {/* <ReadMore
+              numberOfLines={1}
               renderTruncatedFooter={props => (
-                <BodyThree style={styles.grayText}>...更多</BodyThree>
+                  <BodyThree style={styles.grayText}>更多</BodyThree>
               )}>
               {content.split('\\n').map((item, i) => (
                 <BodyThree key={i} style={styles.body}>
                   {item}{' '}
                 </BodyThree>
               ))}
-            </ReadMore>
+            </ReadMore> */}
           </View>
         </View>
       </TouchableOpacity>
       <View style={styles.iconContainer}>
-        {mapIcon.likeIcon({
-          size: 24,
-          color: isLikeBefore ? theme.colors.pink : theme.colors.black4,
-        })}
+        {/* <View style={{flexDirection:'row',alignItems:'center'}}> */}
+
+        <TouchableOpacity onPress={handlePressLike}>
+          {isLikeBefore
+            ? mapIcon.likeIcon({
+                size: 20,
+                color: theme.colors.pink,
+              })
+            : mapIcon.unlikeIcon({
+                size: 20,
+                color: theme.colors.black4,
+              })}
+        </TouchableOpacity>
+
         <CaptionFour style={styles.likeCount}>{amount || 0}</CaptionFour>
-        {mapIcon.chatIcon({ size: 26, color: theme.colors.black4 })}
+        {/* </View> */}
+        {mapIcon.commentIcon({ size: 20, color: theme.colors.black4 })}
         <CaptionFour style={styles.chatCount}>{replyAmount || 0}</CaptionFour>
       </View>
       {/* <View style={{ paddingTop: 10 }}>
@@ -500,15 +566,15 @@ function ForumCardComponent({
         </View>
         <TextInput
           keyboardAppearance="dark"
-          placeholder="留言..."
+          placeholder="回覆留言..."
           placeholderTextColor={theme.colors.black4}
           style={{
             flex: 1,
             borderRadius: 30,
-            paddingHorizontal: 14,
+            paddingLeft: 8,
             paddingRight: 30,
             color: theme.colors.white,
-            fontSize: 14,
+            fontSize: fontSize(14),
             fontWeight: '300',
           }}
           value={replyText}
@@ -534,6 +600,20 @@ function ForumCardComponent({
         }}
         onClose={() => setJoinVIPModal(false)}
       />
+      <SelectBottomModal
+        isVisible={selectModalShow}
+        onDeletePress={() => {
+          setSelectModalShow(false);
+          // @ts-ignore
+          navigation.navigate('ReportScreen', {
+            id: user?.id,
+            blockReportType: BLOCK_REPORT_TYPE.USER,
+          });
+        }}
+        onClose={() => {
+          setSelectModalShow(false);
+        }}
+      />
     </Loader>
   );
 }
@@ -549,38 +629,37 @@ export default function ForumsScreen(props: RootTabScreenProps<'Forums'>) {
   const [refreshing, setRefreshing] = React.useState(false);
   const [listindex, setListIndex] = React.useState(0);
   const [offset, setOffset] = React.useState(0);
-  const scrollHandler = e => {
-    if(e.nativeEvent.contentOffset.y-offset > 0 && listindex < forums.length-1){
-      setListIndex(listindex+1);
+  const scrollHandler = (e) => {
+    if (e.nativeEvent.contentOffset.y - offset > 0 && listindex < forums.length - 1) {
+      setListIndex(listindex + 1);
       setOffset(e.nativeEvent.contentOffset.y);
-    }else if(
-      e.nativeEvent.contentOffset.y-offset < 0 && listindex > 0){
-      setListIndex(listindex-1);
+    } else if (e.nativeEvent.contentOffset.y - offset < 0 && listindex > 0) {
+      setListIndex(listindex - 1);
       setOffset(e.nativeEvent.contentOffset.y);
-      }
+    }
   };
   const { isLoading, isFetchingNextPage, refetch, fetchNextPage, hasNextPage, data } =
     useInfiniteQuery(
       ['searchForums'],
-      pageObject => forumsApi.fetchAllForums({ token }, pageObject),
+      (pageObject) => forumsApi.fetchAllForums({ token }, pageObject),
       {
-        getNextPageParam: lastPage => {
+        getNextPageParam: (lastPage) => {
           if (lastPage.page.totalPage !== lastPage.page.currentPage) {
             return lastPage.page.currentPage + 1;
           }
           return undefined;
         },
         refetchOnMount: true,
-      },
+      }
     );
 
   const { data: favoriteList } = useQuery('getFavoriteUser', () =>
-    userApi.getFavoriteUser({ token }),
+    userApi.getFavoriteUser({ token })
   );
   const forums = data?.pages
-    .map(page => page.records)
+    .map((page) => page.records)
     .flat()
-    .filter(item => !item.isHidden);
+    .filter((item) => !item.isHidden);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -601,52 +680,44 @@ export default function ForumsScreen(props: RootTabScreenProps<'Forums'>) {
     });
   });
   useEffect(() => {
-    ref.current?.scrollToIndex({ index: listindex, animated: true, viewPosition: 0.5});
+    ref.current?.scrollToIndex({ index: listindex, animated: true, viewPosition: 0.5 });
   }, [listindex]);
 
   const handlePressOnForumCard = (blogId: number) => {
     dispatch(updateCurrentId(blogId));
     navigation.push('ForumDetailScreen');
   };
-  const renderRow = ({ item, index }: { item: Blog ,index }) => {
+  const renderRow = ({ item, index }: { item: Blog; index }) => {
     return (
       <View
-      style={{
-        backgroundColor: theme.colors.black1}}
-      >
-        
+        style={{
+          backgroundColor: theme.colors.black1,
+        }}>
         <ForumCardComponent
-        favoriteList={favoriteList?.records}
-        data={item}
-        onPress={() => handlePressOnForumCard(item.id)}
-        key={item.id}
-      />
+          favoriteList={favoriteList?.records}
+          data={item}
+          onPress={() => handlePressOnForumCard(item.id)}
+          key={item.id}
+        />
       </View>
-      
     );
   };
 
   const renderEmpty = () => {
     return (
       <View style={styles.emptyWrapper}>
-        <Image style={{ width: 180, height: 136, marginBottom: 4 }} source={Empty} />
+        {/* <Image style={{ width: 180, height: 136, marginBottom: 4 }} source={Empty} /> */}
+        {mapIcon.tabViewBgIcon({ size: 140 })}
         <Text
           style={{
-            color: theme.colors.black4,
+            color: theme.colors.white,
             textAlign: 'center',
-            fontSize: 16,
+            fontSize: fontSize(16),
             lineHeight: 25,
-            marginBottom: 4,
+            marginTop: 20,
+            fontFamily: 'roboto',
           }}>
           尚未發布任何動態
-        </Text>
-        <Text
-          style={{
-            color: theme.colors.black4,
-            textAlign: 'center',
-            fontSize: 14,
-            lineHeight: 25,
-          }}>
         </Text>
       </View>
     );
@@ -655,37 +726,37 @@ export default function ForumsScreen(props: RootTabScreenProps<'Forums'>) {
   return (
     <Loader isLoading={false}>
       <View style={styles.listContainer}>
-        <FAB icon="plus"
-          color='#FFFFFF'
+        <FAB
+          icon="plus"
+          color="#FFFFFF"
           style={styles.fabContainer}
-          onPress={handlePressAddIcon}
-        ></FAB>
+          onPress={handlePressAddIcon}></FAB>
       </View>
-      {forums && forums.length > 0 ? (<KeyboardAvoidingView
-        style={[styles.container, { flex: 1, backgroundColor: theme.colors.black1 }]}>
-        <FlatList
-          renderItem={(index) => renderRow(index)}
-          data={forums}
-          initialScrollIndex={listindex}
-          ref={ref}
-          onEndReached={() => {
-            if (hasNextPage) {
-              fetchNextPage();
-            }
-          }}
-          onScrollBeginDrag={e => setOffset(e.nativeEvent.contentOffset.y)}
-          onScrollEndDrag={scrollHandler}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          onEndReachedThreshold={0.1}
-          keyExtractor={(item, index) => item.id.toString()}
-          ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
-        />
-      </KeyboardAvoidingView>
+      {forums && forums.length > 0 ? (
+        <KeyboardAvoidingView
+          style={[styles.container, { flex: 1, backgroundColor: theme.colors.black1 }]}>
+          <FlatList
+            renderItem={(index) => renderRow(index)}
+            data={forums}
+            initialScrollIndex={listindex}
+            ref={ref}
+            onEndReached={() => {
+              if (hasNextPage) {
+                fetchNextPage();
+              }
+            }}
+            onScrollBeginDrag={e => setOffset(e.nativeEvent.contentOffset.y)}
+            onScrollEndDrag={scrollHandler}
+            showsVerticalScrollIndicator={false}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            onEndReachedThreshold={0.1}
+            keyExtractor={(item, index) => item.id.toString()}
+            ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
+          />
+        </KeyboardAvoidingView>
       ) : (
         renderEmpty()
-      )
-      }
+      )}
     </Loader>
   );
 }

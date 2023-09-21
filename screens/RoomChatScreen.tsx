@@ -21,7 +21,7 @@ import {
   KeyboardAwareFlatList,
   KeyboardAwareScrollView,
 } from 'react-native-keyboard-aware-scroll-view';
-import { Icon } from '@rneui/base';
+import { Button, Icon } from '@rneui/base';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { get, isEmpty, set, uniqueId } from 'lodash';
 import { Client, Message, StompConfig } from '@stomp/stompjs';
@@ -46,14 +46,24 @@ import defaultAvatar from '~/assets/images/icons/profile.png';
 import HttpClient from '~/axios/axios';
 import CommonModalComponent from '~/components/common/CommonModalComponent';
 import { updateCurrentMatchingId } from '~/store/interestSlice';
+import { fontSize } from '~/helpers/Fonts';
+import moment from 'moment';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
   },
   headerTitle: {
     color: theme.colors?.white,
     paddingLeft: 10,
+    fontSize: fontSize(18),
+  },
+  dotStyle: {
+    width: 8,
+    height: 8,
+    borderRadius: 8 / 2,
+    backgroundColor: theme.colors.green,
+    marginLeft: 10,
   },
   selectedImagesContainer: {
     backgroundColor: theme.colors?.black1,
@@ -85,8 +95,82 @@ const useStyles = makeStyles(theme => ({
   timeText: {
     color: theme.colors.white,
     textAlign: 'center',
+    // paddingBottom: 20,
+    paddingHorizontal: 10,
+  },
+  lineDateStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
     paddingBottom: 20,
   },
+  divLineStyle: {
+    width: 100,
+    height: 1,
+    borderWidth: 0.5,
+    borderColor: theme.colors.black2,
+  },
+  moreStyle: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.black3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerStyle: {
+    paddingLeft: 16,
+    paddingRight: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.black1,
+    borderTopWidth: 1,
+    paddingTop: 14,
+    paddingBottom: 20,
+    borderColor: theme.colors.black2,
+  },
+  inputStyle: {
+    color: theme.colors.white,
+    fontSize: fontSize(14),
+    fontWeight: '300',
+    fontFamily: 'roboto',
+    maxHeight: 100,
+    minHeight: 20,
+  },
+  inputContainer: {
+    flex: 1,
+    borderRadius: 30,
+    backgroundColor: theme.colors.black2,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingRight: 30,
+  },
+  sendBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 40,
+    backgroundColor: theme.colors.pink,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    alignSelf: 'flex-end',
+  },
+  sendBtnStyle: {
+    width: 20,
+    height: 20,
+    backgroundColor: 'transparent',
+  },
+  headerTextStyle:{
+    color: theme.colors?.white,
+    fontSize: fontSize(12),
+    textAlign:'center'
+  },
+  headerViewStyle:{
+    backgroundColor:theme.colors.black2,
+    paddingVertical:4,
+    marginTop:8
+  }
 }));
 
 function ChatBubble(props) {
@@ -104,21 +188,21 @@ function ChatBubble(props) {
                 flexDirection: 'row',
               },
             ]}>
-            <View style={{ alignSelf: 'flex-end', paddingRight: 6 }}>
+            {/* <View style={{ alignSelf: 'flex-end', paddingRight: 6 }}>
               <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
-            </View>
+            </View> */}
             <View
               style={{
                 backgroundColor: theme.colors.pink,
-                maxWidth: 200,
+                maxWidth: 150,
                 borderRadius: 10,
-                padding: 7,
+                // padding: 7,
               }}>
               <Row>
-                {msg.split(',').map(item => (
+                {msg.split(',').map((item) => (
                   <Col key={item} xs={12} sm={12} md={12} lg={12}>
                     <Image
-                      style={{ width: '100%', aspectRatio: 1, marginVertical: 5 }}
+                      style={{ width: '100%', aspectRatio: 1, borderRadius: 10  }}
                       source={{ uri: item }}
                     />
                   </Col>
@@ -133,7 +217,9 @@ function ChatBubble(props) {
     return (
       <View style={styles.messageBubbleContainer}>
         {!isPrevSame && (
-          <Image style={{ width: 40, height: 40, borderRadius: 40 }} source={{ uri: image }} />
+          <Image style={{  width: 36,
+            height: 36,
+            borderRadius: 36,}} source={{ uri: image }} />
         )}
         <View
           style={[
@@ -144,25 +230,25 @@ function ChatBubble(props) {
           <View
             style={{
               backgroundColor: 'white',
-              maxWidth: 200,
+              maxWidth: 140,
               marginLeft: !isPrevSame ? 10 : 50,
               borderRadius: 10,
-              padding: 7,
+              // padding: 7,
             }}>
             <Row>
-              {msg.split(',').map(item => (
+              {msg.split(',').map((item) => (
                 <Col key={item} xs={12} sm={12} md={12} lg={12}>
                   <Image
-                    style={{ width: '100%', aspectRatio: 1, marginVertical: 5 }}
+                    style={{ width: '100%', aspectRatio: 1, borderRadius: 10  }}
                     source={{ uri: item }}
                   />
                 </Col>
               ))}
             </Row>
           </View>
-          <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
+          {/* <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
             <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
-          </View>
+          </View> */}
         </View>
       </View>
     );
@@ -176,17 +262,20 @@ function ChatBubble(props) {
               flexDirection: 'row',
             },
           ]}>
-          <View style={{ alignSelf: 'flex-end', paddingRight: 6 }}>
+          {/* <View style={{ alignSelf: 'flex-end', paddingRight: 6 }}>
             <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
-          </View>
+          </View> */}
           <View
             style={{
               backgroundColor: theme.colors.pink,
-              maxWidth: 200,
-              borderRadius: 14,
-              padding: 7,
+              maxWidth: 260,
+              borderRadius: 18,
+              borderBottomRightRadius: 0,
+              padding: 12,
             }}>
-            <BodyThree style={[{ color: theme.colors.white }]} selectable={true}>{msg}</BodyThree>
+            <BodyThree style={[{ color: theme.colors.white }]} selectable={true}>
+              {msg}
+            </BodyThree>
           </View>
         </View>
       </View>
@@ -197,7 +286,9 @@ function ChatBubble(props) {
     <View style={styles.messageBubbleContainer}>
       {!isPrevSame && (
         <Image
-          style={{ width: 40, height: 40, borderRadius: 40 }}
+          style={{ width: 36,
+            height: 36,
+            borderRadius: 36, }}
           source={image ? { uri: image } : defaultAvatar}
         />
       )}
@@ -209,17 +300,19 @@ function ChatBubble(props) {
         ]}>
         <View
           style={{
-            backgroundColor: 'white',
-            maxWidth: 200,
+            backgroundColor: theme.colors.black2,
+            maxWidth: 260,
             marginLeft: !isPrevSame ? 10 : 50,
-            borderRadius: 14,
-            padding: 7,
+            borderRadius: 18,
+            borderTopLeftRadius: 0,
+            justifyContent: 'center',
+            padding: 12,
           }}>
           <BodyThree selectable={true}>{msg}</BodyThree>
         </View>
-        <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
+        {/* <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
           <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
-        </View>
+        </View> */}
       </View>
     </View>
   );
@@ -306,7 +399,7 @@ const useStompClient = () => {
               refetchPage: (lastPage, index) => index === 0,
             });
             queryClient.invalidateQueries(['getRoomList']);
-          },
+          }
         );
         sub2 = stompClientRef.current!.subscribe(
           `/user/${recipientId}/queue/messages`,
@@ -317,7 +410,7 @@ const useStompClient = () => {
               refetchPage: (lastPage, index) => index === 0,
             });
             queryClient.invalidateQueries(['getRoomList']);
-          },
+          }
         );
       },
       onDisconnect(frame) {
@@ -380,21 +473,21 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const token = useSelector(selectToken);
   const dispatch = useAppDispatch();
   const { data: recipientUserInfo } = useQuery(['fetchProfilePhotos', recipientId], () =>
-    userApi.fetchUserInfoById({ token, id: recipientId }),
+    userApi.fetchUserInfoById({ token, id: recipientId })
   );
 
   const { data: blockList } = useQuery(['fetchUserBlockInfoList'], () =>
-    userApi.fetchUserBlockInfoList({ token }),
+    userApi.fetchUserBlockInfoList({ token })
   );
-  const isBlocked = blockList?.records.map(record => record.blockUser.id).includes(recipientId);
+  const isBlocked = blockList?.records.map((record) => record.blockUser.id).includes(recipientId);
   const isBlockedId = isBlocked
-    ? blockList?.records.filter(record => record.blockUser.id === recipientId)[0].id
+    ? blockList?.records.filter((record) => record.blockUser.id === recipientId)[0].id
     : 0;
 
   const { mutate: blockUserInfo, isLoading: isBlockUserInfoLoading } = useMutation(
     userApi.blockInfo,
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         const message = 'success';
         queryClient.invalidateQueries('fetchUserBlockInfoList');
       },
@@ -402,12 +495,12 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         alert('there was an error');
       },
       onSettled: () => {},
-    },
+    }
   );
   const { mutate: removeBlockInfo, isLoading: isRemoveLoading } = useMutation(
     userApi.removeBlockInfo,
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         const message = 'success';
       },
       onError: () => {
@@ -416,22 +509,23 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
       onSettled: () => {
         queryClient.invalidateQueries('fetchUserBlockInfoList');
       },
-    },
+    }
   );
   const { isLoading, isFetchingNextPage, refetch, fetchNextPage, hasNextPage, data } =
     useInfiniteQuery(
       [`fetchMessagesList`, chatId],
-      pageObject => userApi.fetchMessagesList({ token, recipientId, senderId: userId }, pageObject),
+      (pageObject) =>
+        userApi.fetchMessagesList({ token, recipientId, senderId: userId }, pageObject),
       {
-        getNextPageParam: lastPage => {
+        getNextPageParam: (lastPage) => {
           if (lastPage.page.totalPage !== lastPage.page.currentPage) {
             return lastPage.page.currentPage + 1;
           }
           return undefined;
         },
-      },
+      }
     );
-  const convertFunction = dataModel => {
+  const convertFunction = (dataModel) => {
     const result = {};
     const isMine = get(dataModel, 'senderId', '') === userId;
     set(result, 'type', get(dataModel, 'type', 'TEXT'));
@@ -443,14 +537,14 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
     set(
       result,
       'image',
-      isMine ? get(dataModel, 'recipientAvatar', '') : get(dataModel, 'senderAvatar', ''),
+      isMine ? get(dataModel, 'recipientAvatar', '') : get(dataModel, 'senderAvatar', '')
     );
     set(result, 'time', get(dataModel, 'createTime', ''));
     return result;
   };
 
   const messages = data?.pages
-    .map(page => page.records)
+    .map((page) => page.records)
     .flat()
     .map(convertFunction);
 
@@ -476,7 +570,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const handleJoinVip = () => {
     navigation.push('PurchaseVIPScreen');
   };
-  
+
   useFocusEffect(() => {
     const routePhotos = get(route, 'params.photos', []);
     if (!isEmpty(routePhotos)) {
@@ -487,41 +581,46 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
     }
   });
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: true,
-      headerShadowVisible: false,
-      headerStyle: styles.headerStyle,
-      headerTintColor: theme.colors.white,
-      headerBackTitleVisible: false,
-      headerTitleAlign: 'center',
-      headerTitle: props => {
-        return (
-          <>
-            <Image
-              style={{ width: 20, height: 20, borderRadius: 20 }}
-              source={
-                recipientUserInfo?.avatar ? { uri: recipientUserInfo?.avatar } : defaultAvatar
-              }
-            />
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTransparent: true,
+  //     headerShown: true,
+  //     headerShadowVisible: false,
+  //     headerStyle: styles.headerStyle,
+  //     headerTintColor: theme.colors.white,
+  //     headerBackTitleVisible: true,
 
-            <BodyTwo style={styles.headerTitle}>{recipientUserInfo?.name || UN_KNOWN}</BodyTwo>
-          </>
-        );
-      },
-      headerLeft: props =>
-        Platform.OS === 'android' ? null : (
-          <HeaderBackButton {...props} onPress={navigation.goBack} />
-        ),
-      headerRight: props => {
-        return (
-          <TouchableOpacity style={{ paddingRight: 16 }} onPress={openMenu}>
-            {mapIcon.more({})}
-          </TouchableOpacity>
-        );
-      },
-    });
-  });
+  //     headerTitleAlign: 'center',
+  //     headerTitle: (props) => {
+  //       return (
+  //         <>
+  //           <Image
+  //             style={{ width: 20, height: 20, borderRadius: 20 }}
+  //             source={
+  //               recipientUserInfo?.avatar ? { uri: recipientUserInfo?.avatar } : defaultAvatar
+  //             }
+  //           />
+
+  //           <BodyTwo style={styles.headerTitle}>{recipientUserInfo?.name || UN_KNOWN}</BodyTwo>
+  //         </>
+  //       );
+  //     },
+  //     headerLeft: (props) => {
+  //       return (
+  //         <TouchableOpacity onPress={navigation.goBack} style={{}}>
+  //           {mapIcon.backIcon({ size: 28 })}
+  //         </TouchableOpacity>
+  //       );
+  //     },
+  //     headerRight: (props) => {
+  //       return (
+  //         <TouchableOpacity style={{ paddingRight: 16 }} onPress={openMenu}>
+  //           {mapIcon.more({})}
+  //         </TouchableOpacity>
+  //       );
+  //     },
+  //   });
+  // },[]);
 
   const renderMenuComponent = () => {
     return (
@@ -552,7 +651,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
             </CaptionFour>
           }
         />
-        {(
+        {
           <Menu.Item
             style={{
               height: 32,
@@ -561,22 +660,20 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
               borderTopStartRadius: 20,
             }}
             onPress={() => {
-              if(isVIP){
+              if (isVIP) {
                 setCollectionModal(true);
-              }else{
+              } else {
                 setVIPhideModel(true);
               }
-            }
-              
-            }
+            }}
             title={
               <CaptionFour style={{ color: theme.colors.white, textAlign: 'center' }}>
                 隱藏對話
               </CaptionFour>
             }
           />
-        )}
-        { (
+        }
+        {
           <Menu.Item
             style={{
               height: 32,
@@ -585,7 +682,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
               borderBottomStartRadius: 20,
             }}
             onPress={() => {
-              if(isVIP){
+              if (isVIP) {
                 if (isBlocked) {
                   if (isRemoveLoading) return;
                   if (!isBlockedId) return;
@@ -594,10 +691,9 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
                   if (isBlockUserInfoLoading) return;
                   blockUserInfo({ token, userId, blockUserId: recipientId });
                 }
-              }else{
+              } else {
                 setVIPblockModel(true);
               }
-              
 
               closeMenu();
             }}
@@ -607,7 +703,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
               </CaptionFour>
             }
           />
-        )}
+        }
       </Menu>
     );
   };
@@ -619,8 +715,8 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
     });
   };
 
-  const handlePressDeleteSelectImage = item => {
-    setPhotos(prev => prev.filter(i => i.name !== item.name));
+  const handlePressDeleteSelectImage = (item) => {
+    setPhotos((prev) => prev.filter((i) => i.name !== item.name));
   };
   const handleSendMessage = () => {
     if (!inputValue) return;
@@ -632,12 +728,51 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const isBeBlocked = false;
 
   return (
-    <View style={{ flex: 1, paddingBottom: bottom, backgroundColor: theme.colors.black1 }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        paddingTop: top,
+        paddingBottom: bottom,
+        backgroundColor: theme.colors.black1,
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginHorizontal: 16,
+        }}>
+        <TouchableOpacity onPress={navigation.goBack} style={{}}>
+          {mapIcon.backIcon({ size: 28 })}
+        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {/* <Image
+            style={{ width: 20, height: 20, borderRadius: 20 }}
+            source={recipientUserInfo?.avatar ? { uri: recipientUserInfo?.avatar } : defaultAvatar}
+          /> */}
+
+          <BodyTwo style={styles.headerTitle}>{recipientUserInfo?.name || UN_KNOWN}</BodyTwo>
+          <View style={styles.dotStyle} />
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            // setSelectModalShow(true);
+          }}
+          style={styles.moreStyle}>
+          {mapIcon.more({ size: 20, color: theme.colors.black4 })}
+        </TouchableOpacity>
+      </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'android' ? undefined : 'padding'}
         keyboardVerticalOffset={headerHeight}
         style={{ flex: 1, marginTop: -keyboardHeight }}>
-        {renderMenuComponent()}
+        {/* {renderMenuComponent()} */}
+        <View style={styles.headerViewStyle}>
+          <Text style={styles.headerTextStyle}>
+            限時
+            <Text style={[styles.headerTextStyle,{color:theme.colors.pink}]}>{" 14 "}</Text>小時，抓緊時間開始聊天吧！
+          </Text>
+        </View>
         <View style={{ flex: 1 }}>
           <KeyboardAwareFlatList
             // data={test}
@@ -649,28 +784,36 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
             }}
             onEndReachedThreshold={0.3}
             keyExtractor={(item, index) => `${index}`}
-            renderItem={item => {
+            renderItem={(item) => {
               const { index, item: targetItem } = item;
               const isNextSameDay = isSameDay(
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
-                parse(messages[index + 1]?.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
+                parse(messages[index + 1]?.time, 'yyyy-MM-dd HH:mm:ss', new Date())
               );
               const isToday = isSameDay(
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
-                new Date(),
+                new Date()
               );
               const isYesterDay = isSameDay(
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
-                new Date(new Date().getDate() - 1),
+                new Date(new Date().getDate() - 1)
               );
               const isPrevSame = messages[index + 1]?.isMine === targetItem.isMine;
               if (!isNextSameDay) {
                 return (
                   <>
                     <ChatBubble isPrevSame={isPrevSame} data={item} />
-                    <CaptionFive style={styles.timeText}>
-                      {isToday ? '今日' : isYesterDay ? '昨日' : convertToMMDD(targetItem.time)}
-                    </CaptionFive>
+                    <View style={styles.lineDateStyle}>
+                      <View style={styles.divLineStyle} />
+                      <CaptionFive style={styles.timeText}>
+                        {isToday
+                          ? '今日'
+                          : isYesterDay
+                          ? '昨日'
+                          : moment(targetItem.time).format('ddd, MMM D, hh:mm A')}
+                      </CaptionFive>
+                      <View style={styles.divLineStyle} />
+                    </View>
                   </>
                 );
               }
@@ -683,7 +826,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
             {/* imageContainer */}
             <View style={styles.selectedImagesContainer}>
               {!isEmpty(photos) &&
-                photos.map(item => (
+                photos.map((item) => (
                   <View style={styles.selectedImageContainer} key={item.name}>
                     <Image style={styles.selectedImage} source={{ uri: item.uri }} />
                     <Icon
@@ -695,7 +838,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
                   </View>
                 ))}
             </View>
-            <View style={{ paddingLeft: 16, paddingRight: 16 }}>
+            {/* <View style={{ paddingLeft: 16, paddingRight: 16 }}>
               {isBeBlocked ? (
                 <View style={{ position: 'relative' }}>
                   <TextInput
@@ -757,8 +900,8 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
                   </View>
                 </View>
               )}
-            </View>
-            <View
+            </View> */}
+            {/* <View
               onLayout={e => {
                 setBottomHeight(e.nativeEvent.layout.height);
               }}
@@ -766,6 +909,29 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
               <TouchableOpacity disabled={isBeBlocked} onPress={handlePressAddImage}>
                 {mapIcon.photoIcon({ color: theme.colors.black3 })}
               </TouchableOpacity>
+            </View> */}
+            <View style={styles.footerStyle}>
+              <TouchableOpacity onPress={handlePressAddImage} style={{ marginRight: 12 }}>
+                {mapIcon.photoIcon1({ color: theme.colors.black3 })}
+              </TouchableOpacity>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  keyboardAppearance="dark"
+                  placeholder="輸入聊天內容"
+                  placeholderTextColor={theme.colors.black4}
+                  style={styles.inputStyle}
+                  returnKeyType="send"
+                  value={inputValue}
+                  onChangeText={setInputValue}
+                  multiline
+                />
+              </View>
+
+              <View style={styles.sendBtn}>
+                <Button buttonStyle={styles.sendBtnStyle} onPress={handleSendMessage}>
+                  {mapIcon.sendIcon({ color: theme.colors.white, size: 16 })}
+                </Button>
+              </View>
             </View>
           </View>
         </View>
@@ -796,6 +962,6 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         buttonOneTitle="成為VIP"
         onClose={() => setVIPblockModel(false)}
       />
-    </View>
+    </SafeAreaView>
   );
 }

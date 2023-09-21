@@ -26,12 +26,17 @@ const { width } = Dimensions.get('window');
 const useStyles = makeStyles((theme) => ({
   roomContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 24,
+    paddingRight: 24,
     alignItems: 'center',
     paddingVertical: 10,
     // maxWidth: '100%',
+    paddingLeft:15
   },
-  roomLeftContainer: {},
+  roomLeftContainer: {
+    borderWidth:1,
+    borderRadius:48/2,
+    borderColor:theme.colors.black2
+  },
   roomBodyContainer: {
     paddingLeft: 16,
     flexGrow: 1,
@@ -90,7 +95,7 @@ interface IRoomCard {
   roomData: MessageRecord;
 }
 
-export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomData }: IRoomCard) {
+export default function ReportCard({ onDelete = () => {}, onRoomCardPress, roomData }: IRoomCard) {
   const { theme } = useTheme();
   const {
     content,
@@ -214,9 +219,6 @@ export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomDat
   };
 
   return (
-    <GestureHandlerRootView>
-
-    
     <Swipeable
       // useNativeAnimations
       // friction={1}
@@ -307,6 +309,5 @@ export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomDat
           }}
         />
     </Swipeable>
-    </GestureHandlerRootView>
   );
 }

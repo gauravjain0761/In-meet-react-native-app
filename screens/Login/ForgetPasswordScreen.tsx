@@ -104,9 +104,9 @@ export default function ForgetPasswordScreen(props: ForgetPasswordScreenProps) {
         </KeyboardAwareScrollView>
 
         <ButtonTypeTwo
-          // disabled={disabledValue}
-          // disabledStyle={{ backgroundColor: theme?.colors?.pink1 }}
-          // disabledTitleStyle={{ color: theme?.colors?.white }}
+          disabled={disabledValue}
+          disabledStyle={{ backgroundColor: theme?.colors?.pink1 }}
+          disabledTitleStyle={{ color: theme?.colors?.white }}
           containerStyle={{ marginHorizontal: 40, marginBottom: 30 }}
           loading={isLoading}
           title="送出"

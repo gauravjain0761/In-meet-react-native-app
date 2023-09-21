@@ -285,14 +285,14 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
         <ChatButton
           buttonStyle={styles.floatButton}
           onPress={() => {
-            if (!userInfoData?.isChatUnLockBefore && level !== LEVEL.VIP) {
-              setChatModal(true);
-            } else {
+            // if (!userInfoData?.isChatUnLockBefore && level !== LEVEL.VIP) {
+            //   setChatModal(true);
+            // } else {
               dispatch(updateCurrentChatId(currentUserId));
               navigation.navigate('RoomChatScreen', {
                 recipientId: currentUserId,
               });
-            }
+            // }
           }}
           icon={mapIcon.chatIcon({
             size: 30,
@@ -538,7 +538,7 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
           inactiveDotScale={1}
           inactiveDotColor="#C4C4C4"
         /> */}
-          {/* {renderFloatButtonContainer()} */}
+          {renderFloatButtonContainer()}
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', top: -15 }}>
             {Array.from(Array(4)).map((_e, i) => (
               <View

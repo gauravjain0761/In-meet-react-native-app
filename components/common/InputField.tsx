@@ -27,6 +27,7 @@ interface IInputField extends TextInputProps {
   description?: string;
   required?: boolean;
   containerStyle?:any
+  rightStyle?:any
 }
 
 const useStyles = makeStyles(theme => ({
@@ -77,6 +78,7 @@ export default forwardRef<Handle, IInputField>(function InputField(props, ref) {
     description,
     required,
     containerStyle,
+    rightStyle,
     ...rest
   } = props;
   const inputRef = useRef<TextInput>(null);
@@ -137,6 +139,7 @@ export default forwardRef<Handle, IInputField>(function InputField(props, ref) {
               <View
                 style={[
                   classes.iconContainer,
+                  rightStyle,
                   { transform: [{ translateX: -12.5 }, { translateY: -12.5 }] },
                 ]}>
                 <TouchableOpacity onPress={onRightPress}>{right}</TouchableOpacity>

@@ -14,8 +14,10 @@ import { useAppDispatch } from '~/store';
 import { reportForumPost } from '~/store/forumSlice';
 import { selectUserId } from '~/store/userSlice';
 import CommonModalComponent from '~/components/common/CommonModalComponent';
-import { TouchableOpacity } from 'react-native';
+import { SafeAreaView, TouchableOpacity } from 'react-native';
 import { mapIcon } from '~/constants/IconsMapping';
+import ReportModal from '~/components/common/ReportModal';
+import Toast from 'react-native-root-toast';
 
 const useStyles = makeStyles((theme) => ({
   headerStyle: {
@@ -25,7 +27,9 @@ const useStyles = makeStyles((theme) => ({
     color: theme.colors?.white,
   },
   unChosenBtnStyle: {
-    marginTop: 10,
+    marginTop: 15,
+    width: 185,
+    alignSelf:'center'
   },
 }));
 
@@ -37,6 +41,7 @@ export default function ReportScreen(props: RootStackScreenProps<'ReportScreen'>
   const dispatch = useAppDispatch();
   const userId = useSelector(selectUserId);
   const [collectionModal, setCollectionModal] = useState(false);
+  const [reportModal, setReportModal] = useState(false);
   const [modalText, setModalText] = useState('已檢舉用戶');
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -57,11 +62,11 @@ export default function ReportScreen(props: RootStackScreenProps<'ReportScreen'>
   }, []);
 
   const reportTypes = [
-    { title: '假冒的個人資料', value: 'FAKE_INFO' },
     { title: '辱罵或威脅其他等騷擾行為', value: 'HARASS' },
-    { title: '從事詐騙或援交', value: 'FRAUD' },
-    { title: '不當的個人照片', value: 'INAPPROPRIATE_PHOTOS' },
-    { title: '未成年使用者', value: 'NONAGE' },
+    { title: '惡意騷擾/褻瀆行為', value: 'FAKE_INFO' },
+    { title: '疑似詐騙/釣魚', value: 'FRAUD' },
+    { title: '廣告/銷售', value: 'INAPPROPRIATE_PHOTOS' },
+    { title: '包含非法/色情內容', value: 'NONAGE' },
     { title: '其他', value: 'OTHER' },
   ];
 
@@ -93,8 +98,8 @@ export default function ReportScreen(props: RootStackScreenProps<'ReportScreen'>
   };
   return (
     <KeyboardAwareScrollView
-      contentContainerStyle={{ paddingBottom: bottom }}
-      style={{ backgroundColor: theme.colors.black1, paddingBottom: 10 }}>
+      contentContainerStyle={{ marginTop: 70 }}
+      style={{ backgroundColor: theme.colors.black1, flex: 1 }}>
       <CommonModalComponent
         modalText={"請放心，檢舉內容將匿名提交。"}
         headerShow={true}
@@ -106,12 +111,31 @@ export default function ReportScreen(props: RootStackScreenProps<'ReportScreen'>
         chosenBtnStyle={styles.unChosenBtnStyle}
         onClose={()=>{ setCollectionModal(false)}}
       />
-      {reportTypes.map((item) => (
+      <ReportModal
+        modalText={'請放心，檢舉內容將匿名提交。'}
+        buttonOneTitle = '確定檢舉'
+        buttonTwoTitle = '取消'
+        headerShow={true}
+        isVisible={reportModal}
+        onConfirm={handleGoBack}
+        showCancel={true}
+        headerShowText={'假冒的個人資料'}
+        unChosenBtnStyle={styles.unChosenBtnStyle}
+        chosenBtnStyle={styles.unChosenBtnStyle}
+        onClose={() => {
+          setReportModal(false);
+          Toast.show('已成功檢舉此動態');
+        }}
+      />
+      {reportTypes.map((item,index) => (
         <ProfileRowItem
           key={item.value}
           title={item.title}
           titleStyle={{ color: theme.colors?.white, flex: 1 }}
-          onPress={() => setCollectionModal(true)}
+          onPress={() => {
+            index == 0 ? setReportModal(true) :
+            setCollectionModal(true)
+          }}
         />
       ))}
     </KeyboardAwareScrollView>

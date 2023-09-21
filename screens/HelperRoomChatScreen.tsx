@@ -13,7 +13,7 @@ import { makeStyles, useTheme } from '@rneui/themed';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
-import { Icon } from '@rneui/base';
+import { Button, Icon } from '@rneui/base';
 import { useFocusEffect } from '@react-navigation/native';
 import { get, isEmpty, set, uniqueId } from 'lodash';
 import { Client, StompConfig } from '@stomp/stompjs';
@@ -31,14 +31,17 @@ import useKeyboardHeight from '~/hooks/useKeyboardHeight';
 import { convertTime, convertToMMDD } from '~/helpers/convertDate';
 import useUploadFile from '~/hooks/useUploadFile';
 import logo from '~/assets/images/logo/logo.png';
+import { fontSize } from '~/helpers/Fonts';
+import moment from 'moment';
+import SafeAreaView from 'react-native-safe-area-view';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
   },
   headerTitle: {
     color: theme.colors?.white,
-    paddingLeft: 10,
+    marginRight: 15,
   },
   selectedImagesContainer: {
     backgroundColor: theme.colors?.black1,
@@ -68,16 +71,72 @@ const useStyles = makeStyles(theme => ({
     right: 0,
   },
   chatButtonText: {
-    fontSize: 14,
+    fontSize: fontSize(14),
+    color: theme.colors.white,
   },
   timeText: {
     color: theme.colors.white,
     textAlign: 'center',
+    // paddingBottom: 20,
+    paddingHorizontal: 10,
+  },
+  lineDateStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
     paddingBottom: 20,
+  },
+  divLineStyle: {
+    width: 100,
+    height: 1,
+    borderWidth: 0.5,
+    borderColor: theme.colors.black2,
+  },
+  footerStyle: {
+    paddingLeft: 16,
+    paddingRight: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.black1,
+    borderTopWidth: 1,
+    paddingTop: 14,
+    paddingBottom: 20,
+    borderColor: theme.colors.black2,
+  },
+  inputStyle: {
+    color: theme.colors.white,
+    fontSize: fontSize(14),
+    fontWeight: '300',
+    fontFamily: 'roboto',
+    maxHeight: 100,
+    minHeight: 20,
+  },
+  inputContainer: {
+    flex: 1,
+    borderRadius: 30,
+    backgroundColor: theme.colors.black2,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingRight: 30,
+  },
+  sendBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 40,
+    backgroundColor: theme.colors.pink,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    alignSelf: 'flex-end',
+  },
+  sendBtnStyle: {
+    width: 20,
+    height: 20,
+    backgroundColor: 'transparent',
   },
 }));
 
-function ChatBubble(props) {
+function ChatBubble(props: any) {
   const { isMine, image, id, msg, time, isPrevSameDay, type } = props.data.item;
 
   const { isPrevSame } = props;
@@ -88,9 +147,9 @@ function ChatBubble(props) {
       <View
         style={{
           backgroundColor: '#4A4D5A',
-          width: 40,
-          height: 40,
-          borderRadius: 40,
+          width: 36,
+          height: 36,
+          borderRadius: 36,
           shadowColor: theme.colors?.black,
           shadowOpacity: 0.5,
           shadowRadius: 20,
@@ -111,21 +170,19 @@ function ChatBubble(props) {
                 flexDirection: 'row',
               },
             ]}>
-            <View style={{ alignSelf: 'flex-end', paddingRight: 6 }}>
-              <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
-            </View>
+            {/* z */}
             <View
               style={{
                 backgroundColor: theme.colors.pink,
-                maxWidth: 200,
+                maxWidth: 150,
                 borderRadius: 10,
-                padding: 7,
+                // padding: 7,
               }}>
               <Row>
-                {msg?.split(',').map(item => (
+                {msg?.split(',').map((item: any) => (
                   <Col key={item} xs={12} sm={12} md={12} lg={12}>
                     <Image
-                      style={{ width: '100%', aspectRatio: 1, marginVertical: 5 }}
+                      style={{ width: '100%', aspectRatio: 1, borderRadius: 10 }}
                       source={{ uri: item }}
                     />
                   </Col>
@@ -149,25 +206,25 @@ function ChatBubble(props) {
           <View
             style={{
               backgroundColor: 'white',
-              maxWidth: 200,
+              maxWidth: 140,
               marginLeft: !isPrevSame ? 10 : 50,
               borderRadius: 10,
-              padding: 7,
+              // padding: 7,
             }}>
             <Row>
-              {msg?.split(',').map(item => (
+              {msg?.split(',').map((item: any) => (
                 <Col key={item} xs={12} sm={12} md={12} lg={12}>
                   <Image
-                    style={{ width: '100%', aspectRatio: 1, marginVertical: 5 }}
+                    style={{ width: '100%', aspectRatio: 1, borderRadius: 10 }}
                     source={{ uri: item }}
                   />
                 </Col>
               ))}
             </Row>
           </View>
-          <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
+          {/* <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
             <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
-          </View>
+          </View> */}
         </View>
       </View>
     );
@@ -181,15 +238,16 @@ function ChatBubble(props) {
               flexDirection: 'row',
             },
           ]}>
-          <View style={{ alignSelf: 'flex-end', paddingRight: 6 }}>
+          {/* <View style={{ alignSelf: 'flex-end', paddingRight: 6 }}>
             <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
-          </View>
+          </View> */}
           <View
             style={{
               backgroundColor: theme.colors.pink,
-              maxWidth: 200,
-              borderRadius: 10,
-              padding: 7,
+              maxWidth: 260,
+              borderRadius: 18,
+              borderBottomRightRadius: 0,
+              padding: 12,
             }}>
             <CaptionFive style={[{ color: theme.colors.white }, styles.chatButtonText]}>
               {msg}
@@ -211,18 +269,19 @@ function ChatBubble(props) {
         ]}>
         <View
           style={{
-            backgroundColor: 'white',
-            maxWidth: 200,
+            backgroundColor: theme.colors.black2,
+            maxWidth: 260,
             marginLeft: !isPrevSame ? 10 : 50,
-            borderRadius: 10,
+            borderRadius: 18,
+            borderTopLeftRadius: 0,
             justifyContent: 'center',
-            padding: 7,
+            padding: 12,
           }}>
           <CaptionFive style={styles.chatButtonText}>{msg}</CaptionFive>
         </View>
-        <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
+        {/* <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
           <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
-        </View>
+        </View> */}
       </View>
     </View>
   );
@@ -242,7 +301,7 @@ const enum MessageType {
   'FILE' = 2,
 }
 
-const useStompClient = ({ recipientId }) => {
+const useStompClient = ({ recipientId }: any) => {
   const userId = useSelector(selectUserId);
   const { uploadPhoto } = useUploadFile();
   const stompClientRef = useRef<Client>();
@@ -307,7 +366,7 @@ const useStompClient = ({ recipientId }) => {
               refetchPage: (lastPage, index) => index === 0,
             });
             queryClient.invalidateQueries(['getRoomList']);
-          },
+          }
         );
         sub2 = stompClientRef.current!.subscribe(
           `/user/${recipientId}/queue/client/messages`,
@@ -316,7 +375,7 @@ const useStompClient = ({ recipientId }) => {
               refetchPage: (lastPage, index) => index === 0,
             });
             queryClient.invalidateQueries(['getRoomList']);
-          },
+          }
         );
       },
       onDisconnect(frame) {
@@ -374,17 +433,18 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
   const { isLoading, isFetchingNextPage, refetch, fetchNextPage, hasNextPage, data } =
     useInfiniteQuery(
       ['fetchMessageClientList', chatId],
-      pageObject => userApi.fetchMessagesList({ token, recipientId, senderId: userId }, pageObject),
+      (pageObject) =>
+        userApi.fetchMessagesList({ token, recipientId, senderId: userId }, pageObject),
       {
-        getNextPageParam: lastPage => {
+        getNextPageParam: (lastPage) => {
           if (lastPage.page.totalPage !== lastPage.page.currentPage) {
             return lastPage.page.currentPage + 1;
           }
           return undefined;
         },
-      },
+      }
     );
-  const convertFunction = dataModel => {
+  const convertFunction = (dataModel) => {
     const result = {};
 
     set(result, 'type', get(dataModel, 'type', 'TEXT'));
@@ -396,14 +456,14 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
     set(
       result,
       'image',
-      get(dataModel, 'senderAvatar', '') || 'https://picsum.photos/id/231/200/300',
+      get(dataModel, 'senderAvatar', '') || 'https://picsum.photos/id/231/200/300'
     );
     set(result, 'time', get(dataModel, 'createTime', ''));
     return result;
   };
 
   const messages = data?.pages
-    .map(page => page.records)
+    .map((page) => page.records)
     .flat()
     .map(convertFunction);
 
@@ -421,35 +481,41 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
     }
   });
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: true,
-      headerShadowVisible: false,
-      headerStyle: styles.headerStyle,
-      headerTintColor: theme.colors.white,
-      headerBackTitleVisible: false,
-      headerTitleAlign: 'center',
-      headerTitle: props => {
-        return (
-          <>
-            <Image
-              style={{
-                width: 20,
-                height: 20,
-                borderRadius: 20,
-                shadowColor: theme.colors?.black,
-                shadowOpacity: 0.5,
-                shadowRadius: 20,
-              }}
-              source={logo}
-            />
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTransparent: true,
+  //     headerShown: true,
+  //     headerShadowVisible: false,
+  //     headerStyle: styles.headerStyle,
+  //     headerTintColor: theme.colors.white,
+  //     headerBackTitleVisible: false,
+  //     headerTitleAlign: 'center',
+  //     headerLeft: (props) => (
+  //       <TouchableOpacity onPress={navigation.goBack} style={{}}>
+  //         {mapIcon.backIcon({ size: 28 })}
+  //       </TouchableOpacity>
+  //     ),
+  //     headerTitle: props => {
+  //       return (
+  //         <>
+  //           <Image
+  //             style={{
+  //               width: 20,
+  //               height: 20,
+  //               borderRadius: 20,
+  //               shadowColor: theme.colors?.black,
+  //               shadowOpacity: 0.5,
+  //               shadowRadius: 20,
+  //             }}
+  //             source={logo}
+  //           />
 
-            <BodyTwo style={styles.headerTitle}>InMeet 小幫手</BodyTwo>
-          </>
-        );
-      },
-    });
-  });
+  //           <BodyTwo style={styles.headerTitle}>InMeet 小幫手</BodyTwo>
+  //         </>
+  //       );
+  //     }
+  //   });
+  // }, []);
 
   const handlePressAddImage = () => {
     navigation.navigate('ImageBrowser', {
@@ -458,8 +524,8 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
     });
   };
 
-  const handlePressDeleteSelectImage = item => {
-    setPhotos(prev => prev.filter(i => i.name !== item.name));
+  const handlePressDeleteSelectImage = (item) => {
+    setPhotos((prev) => prev.filter((i) => i.name !== item.name));
   };
   const handleSendMessage = () => {
     if (!inputValue) return;
@@ -469,7 +535,40 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
   };
 
   return (
-    <View style={{ flex: 1, paddingBottom: bottom, backgroundColor: theme.colors.black1 }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        paddingTop: top + 5,
+        paddingBottom: bottom,
+        backgroundColor: theme.colors.black1,
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginHorizontal: 16,
+        }}>
+        <TouchableOpacity onPress={navigation.goBack} style={{}}>
+          {mapIcon.backIcon({ size: 28 })}
+        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {/* <Image
+            style={{
+              width: 20,
+              height: 20,
+              borderRadius: 20,
+              shadowColor: theme.colors?.black,
+              shadowOpacity: 0.5,
+              shadowRadius: 20,
+            }}
+            source={logo}
+          /> */}
+
+          <BodyTwo style={styles.headerTitle}>InMeet 小幫手</BodyTwo>
+        </View>
+        <View />
+      </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'android' ? undefined : 'padding'}
         keyboardVerticalOffset={headerHeight}
@@ -486,28 +585,36 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
             }}
             onEndReachedThreshold={0.3}
             keyExtractor={(item, index) => `${index}`}
-            renderItem={item => {
+            renderItem={(item) => {
               const { index, item: targetItem } = item;
               const isNextSameDay = isSameDay(
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
-                parse(messages[index + 1]?.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
+                parse(messages[index + 1]?.time, 'yyyy-MM-dd HH:mm:ss', new Date())
               );
               const isToday = isSameDay(
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
-                new Date(),
+                new Date()
               );
               const isYesterDay = isSameDay(
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
-                new Date(new Date().getDate() - 1),
+                new Date(new Date().getDate() - 1)
               );
               const isPrevSame = messages[index + 1]?.isMine === targetItem.isMine;
               if (!isNextSameDay) {
                 return (
                   <>
                     <ChatBubble isPrevSame={isPrevSame} data={item} />
-                    <CaptionFive style={styles.timeText}>
-                      {isToday ? '今日' : isYesterDay ? '昨日' : convertToMMDD(targetItem.time)}
-                    </CaptionFive>
+                    <View style={styles.lineDateStyle}>
+                      <View style={styles.divLineStyle} />
+                      <CaptionFive style={styles.timeText}>
+                        {isToday
+                          ? '今日'
+                          : isYesterDay
+                          ? '昨日'
+                          : moment(targetItem.time).format('ddd, MMM D, hh:mm A')}
+                      </CaptionFive>
+                      <View style={styles.divLineStyle} />
+                    </View>
                   </>
                 );
               }
@@ -520,7 +627,7 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
             {/* imageContainer */}
             <View style={styles.selectedImagesContainer}>
               {!isEmpty(photos) &&
-                photos.map(item => (
+                photos.map((item) => (
                   <View style={styles.selectedImageContainer} key={item.name}>
                     <Image style={styles.selectedImage} source={{ uri: item.uri }} />
                     <Icon
@@ -532,8 +639,17 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
                   </View>
                 ))}
             </View>
-            <View style={{ paddingLeft: 16, paddingRight: 16 }}>
-              <View style={{ position: 'relative' }}>
+            {/* <View style={{ paddingLeft: 16, paddingRight: 16 }}>
+              <View style={{  }}>
+                <View
+                  onLayout={(e) => {
+                    setBottomHeight(e.nativeEvent.layout.height);
+                  }}
+                  style={{ paddingLeft: 16, paddingTop: 16, flexDirection: 'row' }}>
+                  <TouchableOpacity onPress={handlePressAddImage}>
+                    {mapIcon.photoIcon({ color: theme.colors.black3 })}
+                  </TouchableOpacity>
+                </View>
                 <TextInput
                   value={inputValue}
                   keyboardAppearance="dark"
@@ -563,19 +679,33 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
-            <View
-              onLayout={e => {
-                setBottomHeight(e.nativeEvent.layout.height);
-              }}
-              style={{ paddingLeft: 16, paddingTop: 16, flexDirection: 'row' }}>
-              <TouchableOpacity onPress={handlePressAddImage}>
-                {mapIcon.photoIcon({ color: theme.colors.black3 })}
+            </View> */}
+            <View style={styles.footerStyle}>
+              <TouchableOpacity onPress={handlePressAddImage} style={{ marginRight: 12 }}>
+                {mapIcon.photoIcon1({ color: theme.colors.black3 })}
               </TouchableOpacity>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  keyboardAppearance="dark"
+                  placeholder="輸入聊天內容"
+                  placeholderTextColor={theme.colors.black4}
+                  style={styles.inputStyle}
+                  returnKeyType="send"
+                  value={inputValue}
+                  onChangeText={setInputValue}
+                  multiline
+                />
+              </View>
+
+              <View style={styles.sendBtn}>
+                <Button buttonStyle={styles.sendBtnStyle} onPress={handleSendMessage}>
+                  {mapIcon.sendIcon({ color: theme.colors.white, size: 16 })}
+                </Button>
+              </View>
             </View>
           </View>
         </View>
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
   );
 }

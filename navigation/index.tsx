@@ -86,6 +86,7 @@ import AddPhotoScreen from '~/screens/Profile/AddPhotoScreen';
 import LocationPermissionScreen from '~/screens/LocationPermissionScreen';
 import PhoneLoginScreen from '~/screens/Login/PhoneLoginScreen';
 import RegisterVerifyCodeScreen from '~/screens/Login/RegisterVerifyCodeScreen';
+import ChatScreenList from '~/screens/ChatScreenList';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -322,16 +323,17 @@ function RootNavigator() {
               name="EditProfile"
               component={EditProfileNavigator}
             />
-            <Stack.Screen options={{}} name="ForumDetailScreen" component={ForumDetailScreen} />
+            <Stack.Screen options={{headerShown:false}} name="ForumDetailScreen" component={ForumDetailScreen} />
             <Stack.Screen options={{}} name="AddPostScreen" component={AddPostScreen} />
             <Stack.Screen options={{}} name="AddPhotoScreen" component={AddPhotoScreen} />
-            <Stack.Screen options={{}} name="RoomChatScreen" component={RoomChatScreen} />
+            <Stack.Screen options={{headerShown:false}} name="RoomChatScreen" component={RoomChatScreen} />
             <Stack.Screen
-              options={{}}
+              options={{headerShown:false}}
               name="HelperRoomChatScreen"
               component={HelperRoomChatScreen}
             />
             <Stack.Screen options={{}} name="ReportScreen" component={ReportScreen} />
+            <Stack.Screen options={{}} name="ChatScreenList" component={ChatScreenList} />
             <Stack.Screen options={{}} name="ImageGalleryScreen" component={ImageGalleryScreen} />
             <Stack.Screen options={{}} name="PurchaseHeart" component={PurchaseHeart} />
             <Stack.Screen options={{}} name="PurchaseVIPScreen" component={PurchaseVIPScreen} />

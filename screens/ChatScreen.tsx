@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   TextInput,
   StyleSheet,
+  Dimensions,
 } from 'react-native';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -22,7 +23,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import ReactNativeModal from 'react-native-modal';
 import { RootTabScreenProps } from '../types';
 import { mapIcon } from '../constants/IconsMapping';
-import { BodyTwo, CaptionFour, SubTitleTwo } from '../components/common/Text';
+import { BodyTwo, CaptionFour, SubTitleOne, SubTitleTwo } from '../components/common/Text';
 import RoomCard from '../components/common/Card/RoomCard';
 import CommonModalComponent from '../components/common/CommonModalComponent';
 import { RootState, useAppDispatch } from '~/store';
@@ -34,13 +35,17 @@ import LandingModal from '~/components/common/LandingModal';
 import InputField from '~/components/common/InputField';
 import { ButtonTypeTwo, UnChosenButton } from '~/components/common/Button';
 import Loader from '~/components/common/Loader';
+import { fontSize } from '~/helpers/Fonts';
+import ChatBottomModal from '~/components/common/ChatBottomModal';
+const { width } = Dimensions.get('window');
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
   },
   headerTitle: {
     color: theme.colors?.white,
+    marginLeft: 24,
   },
   buttonStyle: {
     paddingTop: 10,
@@ -64,6 +69,32 @@ const useStyles = makeStyles(theme => ({
     shadowOpacity: 0.25,
     shadowRadius: 10,
   },
+  moreStyle: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.black3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 24,
+  },
+  emptyWrapper: {
+    backgroundColor: theme.colors?.black1,
+    height: '100%',
+    paddingHorizontal: 90,
+    paddingTop: width * 0.56,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  emptyWrapperText: {
+    color: theme.colors.black4,
+    textAlign: 'center',
+    fontSize: fontSize(16),
+    lineHeight: 25,
+    marginTop: 5,
+    fontFamily: 'roboto',
+  },
 }));
 
 export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
@@ -71,7 +102,9 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
   const { theme } = useTheme();
   const styles = useStyles();
   const [visible, setVisible] = React.useState(false);
+  const [visibleModal, setVisibleModal] = React.useState(false);
   const [collectionModal, setCollectionModal] = React.useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [visiblePassword, setVisiblePassword] = useState(false);
   const methods = useForm({
     mode: 'onSubmit',
@@ -94,10 +127,10 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
   const level = useSelector((state: RootState) => state.user.level);
   const isVIP = level === 'VIP';
   const { data: clientList, refetch: refetchHelper } = useQuery('fetchHelperRoom', () =>
-    userApi.fetchMessageClientList({ token, userId }, {}),
+    userApi.fetchMessageClientList({ token, userId }, {})
   );
   const { mutate: readAllRoom, isLoading: isReadAllLoading } = useMutation(userApi.readAllRoom, {
-    onSuccess: data => {
+    onSuccess: (data) => {
       console.log(data);
       setLoading(false);
       const message = 'success';
@@ -114,15 +147,15 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
   const { isLoading, isFetchingNextPage, refetch, fetchNextPage, hasNextPage, data } =
     useInfiniteQuery(
       ['getRoomList'],
-      pageObject => userApi.fetchUserRoomList({ token, userId }, pageObject),
+      (pageObject) => userApi.fetchUserRoomList({ token, userId }, pageObject),
       {
-        getNextPageParam: lastPage => {
+        getNextPageParam: (lastPage) => {
           if (lastPage.page.totalPage !== lastPage.page.currentPage) {
             return lastPage.page.currentPage + 1;
           }
           return undefined;
         },
-      },
+      }
     );
   useFocusEffect(
     useCallback(() => {
@@ -133,18 +166,18 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
       return () => {
         clearInterval(time);
       };
-    }, [refetch, refetchHelper]),
+    }, [refetch, refetchHelper])
   );
   useEffect(() => {}, []);
 
   const helperRoom = clientList?.records || [];
   const rooms =
     data?.pages
-      .map(page => page.records)
+      .map((page) => page.records)
       .flat()
-      .filter(item => !item.isSecret) || [];
+      .filter((item) => !item.isSecret) || [];
 
-  const roomsWithHelper = [...helperRoom, ...rooms];
+  const roomsWithHelper = [...helperRoom,...helperRoom, ...rooms];
 
   const onSubmit = async (data: any) => {
     if (loading) return;
@@ -162,6 +195,8 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
     setValue('password', '');
     setLoading(false);
     setCollectionModal(false);
+    setVisibleModal(false);
+    setShowPassword(false);
   };
 
   const handleReadAll = async () => {
@@ -181,18 +216,38 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
       headerTintColor: theme.colors.white,
       headerBackTitleVisible: false,
       headerTitleAlign: 'center',
-      headerTitle: props => {
-        return <BodyTwo style={styles.headerTitle}>聊天</BodyTwo>;
+      headerTitle: '',
+      headerLeft: (props) => {
+        return <SubTitleOne style={styles.headerTitle}>聊天</SubTitleOne>;
       },
-      headerRight: props => {
+      headerRight: (props) => {
         return (
-          <TouchableOpacity style={{ paddingRight: 16 }} onPress={openMenu}>
-            {mapIcon.more()}
+          <TouchableOpacity
+            onPress={() => {
+              // setCollectionModal(true);
+              setVisibleModal(true);
+              setShowPassword(false);
+            }}
+            style={styles.moreStyle}>
+            {mapIcon.more({ size: 20, color: theme.colors.black4 })}
           </TouchableOpacity>
         );
       },
     });
   });
+
+  const renderEmpty = () => {
+    return (
+      <View style={styles.emptyWrapper}>
+        {/* <Image style={{ width: 180, height: 136, marginBottom: 4 }} source={Empty} /> */}
+        {mapIcon.emailIcon({ size: 140 })}
+        <Text style={styles.emptyWrapperText}>您尚未加好友</Text>
+        <Text style={[styles.emptyWrapperText, { fontSize: fontSize(14), marginTop: 8 }]}>
+          {'別擔心，快到MEET尋找志\n同道合的朋友吧！'}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <Loader isLoading={loading}>
@@ -206,7 +261,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
           </View>
         )}
 
-        <Menu
+        {/* <Menu
           contentStyle={{
             backgroundColor: theme.colors.black2,
             borderRadius: 20,
@@ -248,7 +303,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
               </CaptionFour>
             }
           />
-        </Menu>
+        </Menu> */}
         {/* RoomCard */}
         <FlatList
           onEndReached={() => {
@@ -260,6 +315,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
           onEndReachedThreshold={0.1}
           keyExtractor={(item, index) => item.id.toString()}
           data={roomsWithHelper}
+          ListEmptyComponent={renderEmpty}
           renderItem={({ index, item }: any) => {
             if (item.isFromClient) {
               return <HelperRoomCard key={item.chatId || uniqueId()} roomData={item} />;
@@ -303,6 +359,23 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
             </View>
           </FormProvider>
         </ReactNativeModal>
+        <ChatBottomModal
+          showPassword={showPassword}
+          opnePassword={() => {
+            setShowPassword(true);
+          }}
+          isVisible={visibleModal}
+          methods={methods}
+          onClose={() => {
+            setVisibleModal(false);
+            setShowPassword(false);
+          }}
+          onSubmitPress={handleSubmit(onSubmit)}
+          onSecondPress={() => {
+            setVisibleModal(false);
+            navigation.push('ChatScreenList');
+          }}
+        />
       </View>
     </Loader>
   );

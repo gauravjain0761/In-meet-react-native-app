@@ -75,6 +75,7 @@
     "expo-web-browser": "~10.1.0",
     "firebase": "^9.10.0",
     "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "patch-package": "^6.5.1",
     "postinstall-postinstall": "^2.1.0",
     "react": "17.0.1",

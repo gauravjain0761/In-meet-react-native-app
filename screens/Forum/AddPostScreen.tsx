@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ImageBackground,
   Platform,
+  ScrollView,
+  FlatList,
 } from 'react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -16,7 +18,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { useQueryClient } from 'react-query';
 import { ButtonTypeTwo } from '../../components/common/Button';
-import { BodyThree, CaptionFive, CaptionFour } from '../../components/common/Text';
+import { BodyOne, BodyThree, CaptionFive, CaptionFour } from '../../components/common/Text';
 import { RootStackScreenProps } from '../../types';
 import { useAppDispatch } from '~/store';
 import { addForumPost } from '~/store/forumSlice';
@@ -24,9 +26,10 @@ import { selectUserId } from '~/store/userSlice';
 import uploadFile from '~/store/fileSlice';
 import { mapIcon } from '~/constants/IconsMapping';
 import Loader from '~/components/common/Loader';
+import { fontSize } from '~/helpers/Fonts';
 
 const { width } = Dimensions.get('window');
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
   },
@@ -39,14 +42,15 @@ const useStyles = makeStyles(theme => ({
     borderWidth: 1,
     borderColor: theme.colors?.black3,
     borderRadius: 20,
-    height: 240,
+    height: 290,
     paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 18,
-    fontSize: 14,
+    fontSize: fontSize(14),
     color: theme.colors.white,
     fontWeight: '300',
     textAlignVertical: 'top',
+    maxHeight: 320,
   },
   textAreaContainer: {
     paddingHorizontal: 16,
@@ -66,16 +70,20 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 10,
   },
   imageContainer: {
-    width: '100%',
+    // width: '100%',
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    // flexWrap: 'wrap',
     paddingHorizontal: 16,
     flexGrow: 1,
   },
   uploadTitle: {
     color: theme.colors?.white,
-    paddingHorizontal: 16,
     paddingBottom: 10,
+  },
+  uploadSubTitle: {
+    color: theme.colors?.black3,
+    paddingBottom: 10,
+    marginLeft: 5,
   },
   addButtonContainer: {
     backgroundColor: theme.colors.black2,
@@ -96,7 +104,7 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
   const styles = useStyles();
   const { theme } = useTheme();
   const [bodyText, setBodyText] = useState('');
-  const [photos, setPhotos] = useState<IPhoto[]>([{}]);
+  const [photos, setPhotos] = useState<IPhoto[]>([{id:1},{},{},{}]);
   const { height } = useWindowDimensions();
   const { bottom, top } = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
@@ -107,31 +115,34 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
   useFocusEffect(() => {
     const routePhotos = get(route, 'params.photos', []);
     if (!isEmpty(routePhotos)) {
-      const newPhotos = routePhotos.map(p => ({
+      const newPhotos = routePhotos.map((p) => ({
         ...p,
         id: uniqueId(),
       }));
-      setPhotos(prev => [...prev, ...newPhotos]);
+      setPhotos((prev) => [...prev, ...newPhotos]);
       navigation.setParams({ photos: null });
     }
   });
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTransparent: true,
       headerShown: true,
       headerShadowVisible: false,
       headerStyle: styles.headerStyle,
       headerTintColor: theme.colors.white,
-      headerBackVisible: true,
       headerBackTitleVisible: false,
       headerTitleAlign: 'center',
-      headerTitle: props => {
-        return <BodyThree style={styles.headerTitle}>發表貼文</BodyThree>;
-      },
+      headerLeft: (props) => (
+        <TouchableOpacity onPress={navigation.goBack} style={{}}>
+          {mapIcon.backIcon({ size: 28 })}
+        </TouchableOpacity>
+      ),
+      headerTitle: '發表貼文',
     });
   }, []);
   const handleDeleteImage = (photoId: number) => {
-    setPhotos(prev => {
-      const newPhoto = prev.filter(photo => photo.id !== photoId);
+    setPhotos((prev) => {
+      const newPhoto = prev.filter((photo) => photo.id !== photoId);
 
       return newPhoto;
     });
@@ -142,24 +153,24 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
     setIsLoading(true);
     const [_, ...imgPhotos] = photos;
     try {
-      const dataPhotos = imgPhotos.map(photo => ({
+      const dataPhotos = imgPhotos.map((photo) => ({
         uri: Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
         name: photo.name,
         type: photo.type,
       }));
-      const uploadPhotoPromise = dataPhotos.map(photo =>
+      const uploadPhotoPromise = dataPhotos.map((photo) =>
         dispatch(
           uploadFile({
             fileData: photo,
             fileType: 'BLOG',
             userId,
-          }),
-        ).unwrap(),
+          })
+        ).unwrap()
       );
       const allPhotoPromise = await Promise.all(uploadPhotoPromise);
       const photosUrls = allPhotoPromise
-        .map(p => p.data?.url)
-        .filter(e => e)
+        .map((p) => p.data?.url)
+        .filter((e) => e)
         .join(',');
 
       const content = JSON.stringify(bodyText || '');
@@ -184,12 +195,12 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
   return (
     <Loader isLoading={isLoading}>
       <KeyboardAwareScrollView
-        contentContainerStyle={{ flex: 1, backgroundColor: theme.colors.black1 }}>
+        contentContainerStyle={{ flex: 1, backgroundColor: theme.colors.black1, marginTop: 80 }}>
         <View style={styles.textAreaContainer}>
           <TextInput
             onChangeText={setBodyText}
             value={bodyText}
-            placeholder="輸入內容"
+            placeholder="輸入內容..."
             multiline
             placeholderTextColor={theme.colors.black4}
             maxLength={300}
@@ -197,17 +208,62 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
           />
           <CaptionFive style={styles.hintText}>{bodyText.length}/300</CaptionFive>
         </View>
-        <CaptionFour style={styles.uploadTitle}>上傳照片</CaptionFour>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            marginTop: 10,
+          }}>
+          <BodyOne style={styles.uploadTitle}>上傳照片</BodyOne>
+          <BodyOne style={styles.uploadSubTitle}>上限9張</BodyOne>
+        </View>
 
         <View style={styles.imageContainer}>
-          {photos.map((photo: IPhoto, index) =>
+          <FlatList
+            data={photos}
+            horizontal
+            renderItem={({item, index}:any) => {
+              console.log('index',item);
+              return <>
+             {item?.uri !=="" ? <TouchableOpacity
+              key="addImage"
+              onPress={handleOnPressAddImage}
+              style={[styles.image, { marginRight: 10 }, styles.addButtonContainer]}>
+              {mapIcon.addIcon({ color: theme.colors.white, size: 60 })}
+            </TouchableOpacity>:  <ImageBackground
+                key={item?.id}
+                style={[styles.image, (index + 1) % 3 !== 0 ? { marginRight: 10 } : {}]}
+                imageStyle={{ borderRadius: 15 }}
+                source={{ uri: item?.uri }}>
+                <TouchableOpacity
+                  style={{
+                    right: 10,
+                    top:10,
+                    position: 'absolute',
+                    width: 25,
+                    height: 25,
+                    borderRadius: 25 / 2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: theme.colors.black1,
+                  }}
+                  onPress={() => handleDeleteImage(item?.id)}>
+                  {mapIcon.closeIcon({ color: theme.colors.white,size:18 })}
+                </TouchableOpacity>
+              </ImageBackground>}
+              </> 
+            }}
+          />
+
+          {/* {photos.map((photo: IPhoto, index) =>
             index === 0 ? (
               <TouchableOpacity
                 key="addImage"
                 onPress={handleOnPressAddImage}
                 style={[
                   styles.image,
-                  (index + 1) % 3 !== 0 ? { marginRight: 10 } : {},
+                   { marginRight: 10 } ,
                   styles.addButtonContainer,
                 ]}>
                 {mapIcon.addIcon({ color: theme.colors.white, size: 60 })}
@@ -219,17 +275,30 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
                 imageStyle={{ borderRadius: 15 }}
                 source={{ uri: photo.uri }}>
                 <TouchableOpacity
-                  style={{ right: 10, bottom: 10, position: 'absolute' }}
+                  style={{
+                    right: 10,
+                    top:10,
+                    position: 'absolute',
+                    width: 25,
+                    height: 25,
+                    borderRadius: 25 / 2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: theme.colors.black1,
+                  }}
                   onPress={() => handleDeleteImage(photo.id)}>
-                  {mapIcon.deleteIcon({ color: theme.colors.white })}
+                  {mapIcon.closeIcon({ color: theme.colors.white,size:18 })}
                 </TouchableOpacity>
               </ImageBackground>
-            ),
-          )}
+            )
+          )} */}
         </View>
         <ButtonTypeTwo
+          disabled={bodyText == '' ? true : false}
+          disabledStyle={{ backgroundColor: 'rgba(255, 78, 132, 0.5)' }}
+          disabledTitleStyle={{ color: 'rgba(255, 255, 255, 0.7)' }}
           onPress={handlePressPost}
-          containerStyle={{ paddingHorizontal: 40  ,paddingVertical:20}}
+          containerStyle={{ paddingHorizontal: 40, paddingVertical: 20 }}
           title="發表"
         />
       </KeyboardAwareScrollView>

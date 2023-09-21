@@ -68,6 +68,7 @@ export type RootStackParamList = {
   PurchaseHeart:undefined
   PurchaseVIPScreen:undefined
   EditSignatureScreen:undefined
+  ChatScreenLis:any
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
