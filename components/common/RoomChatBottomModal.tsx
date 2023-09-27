@@ -59,13 +59,16 @@ const useStyles = makeStyles((theme) => ({
 
 interface ICommonModal {
   onClose?: () => void;
-  onConfirm: (value: any) => void;
-  isVisible: boolean;
+  onUserPress?: () => void;
+  onBloackPress?: () => void;
+  onPasswordPress?: () => void;
+  onConfirm?: (value: any) => void;
+  isVisible?: boolean;
   modalText?: string;
   buttonOneTitle?: string;
   data?: any;
 }
-export default function ChatBottomModal(props: ICommonModal) {
+export default function RoomChatBottomModal(props: ICommonModal) {
   //用CommonModalComponent out時如果會卡住就用這個
   const {
     onClose,
@@ -74,6 +77,9 @@ export default function ChatBottomModal(props: ICommonModal) {
     modalText = '選擇居住地區',
     buttonOneTitle = '確定',
     data,
+    onUserPress,
+    onBloackPress,
+    onPasswordPress,
   } = props;
   const styles = useStyles();
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(4);
@@ -84,13 +90,6 @@ export default function ChatBottomModal(props: ICommonModal) {
     if (onClose) {
       onClose();
     }
-  };
-  const handleConfirmModal = () => {
-    const vlaue = data.filter((item: any, index: number) => {
-      return index === selectedItemIndex;
-    });
-
-    onConfirm(vlaue[0]);
   };
 
   return (
@@ -108,14 +107,18 @@ export default function ChatBottomModal(props: ICommonModal) {
         </TouchableOpacity>
         <View style={styles.cardContainer}>
           <View style={styles.diviedStyle}/>
-          <View style={[styles.headerStyle,{marginTop:20}]}>
+          <TouchableOpacity onPress={onUserPress} style={[styles.headerStyle,{marginTop:20}]}>
+            {mapIcon.userIcon({size:20})}
+            <SubTitleTwo style={styles.titleText}>{"查看個人檔案"}</SubTitleTwo>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onPasswordPress} style={styles.headerStyle}>
             {mapIcon.inEyeIcon({size:20})}
-            <SubTitleTwo style={styles.titleText}>{"隱藏對話（升級VIP可使用此功能）"}</SubTitleTwo>
-          </View>
-          <View style={styles.headerStyle}>
-            {mapIcon.opneEmailIcon({size:20})}
-            <SubTitleTwo style={styles.titleText}>{"全部標為已讀"}</SubTitleTwo>
-          </View>
+            <SubTitleTwo style={styles.titleText}>{"隱藏對話讀"}</SubTitleTwo>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onBloackPress} style={styles.headerStyle}>
+            {mapIcon.blockIcon1({size:24})}
+            <SubTitleTwo style={styles.titleText}>{"封鎖用戶"}</SubTitleTwo>
+          </TouchableOpacity>
         </View>
       </View>
     </ReactNativeModal>

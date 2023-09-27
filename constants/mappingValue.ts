@@ -7,6 +7,13 @@ export const EducationValue = {
   MASTER: '碩士',
   PHD: '博士',
 };
+export const EducationList = {
+  不透露: '不透露',
+  高中職: '高中/職',
+  五專: '五專',
+  學士: '學士',
+  碩士或以上: '碩士或以上',
+};
 
 export const ReligionValue = {
   UNKNOWN: '不透露',
@@ -68,6 +75,49 @@ export const enum CITYEnum {
   PEH = '澎湖縣',
   KMN = '金門縣',
   LNN = '連江縣',
+}
+
+export const mapCity = {
+  KLU: '基隆市',
+  TPE: '台北市',
+  TPH: '新北市',
+  TYC: '桃園市',
+  HSC: '新竹市',
+  HSH: '新竹縣',
+  MAL: '苗栗縣',
+  TXG: '台中市',
+  CWH: '彰化縣',
+  NTO: '南投縣',
+  YLH: '雲林縣',
+  CYI: '嘉義市',
+  CHI: '嘉義縣',
+  TNN: '台南市',
+  KHH: '高雄市',
+  IUH: '屏東縣',
+  TTT: '台東縣',
+  HWC: '花蓮市',
+  ILN: '宜蘭縣',
+  PEH: '澎湖縣',
+  KMN: '金門縣',
+  LNN: '連江縣',
+};
+
+export const bloodList={
+  A : 'A',
+  O : 'O',
+  AB : 'AB',
+  B : 'B',
+}
+export const drinkingHabits={
+  滴酒不沾 : '滴酒不沾',
+  限社交酒 : '限社交酒',
+  偶爾喝 : '偶爾喝',
+  常喝 : '常喝',
+}
+export const smokingHabits={
+  不抽 : '不抽',
+  偶爾抽 : '偶爾抽',
+  經常抽 : '經常抽',
 }
 
 export enum GENDEREnum {

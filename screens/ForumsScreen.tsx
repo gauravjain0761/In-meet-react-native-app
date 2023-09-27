@@ -686,6 +686,7 @@ export default function ForumsScreen(props: RootTabScreenProps<'Forums'>) {
   const handlePressOnForumCard = (blogId: number) => {
     dispatch(updateCurrentId(blogId));
     navigation.push('ForumDetailScreen');
+   
   };
   const renderRow = ({ item, index }: { item: Blog; index }) => {
     return (

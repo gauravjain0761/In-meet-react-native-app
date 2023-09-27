@@ -31,7 +31,11 @@ const useStyles = makeStyles((theme) => ({
     paddingVertical: 10,
     // maxWidth: '100%',
   },
-  roomLeftContainer: {},
+  roomLeftContainer: {
+    borderWidth:1,
+    borderRadius: 48,
+    borderColor:theme.colors.black2
+  },
   roomBodyContainer: {
     paddingLeft: 16,
     flexGrow: 1,
@@ -43,8 +47,6 @@ const useStyles = makeStyles((theme) => ({
     aspectRatio: 1,
     height: 48,
     borderRadius: 48,
-    borderWidth: 1,
-    borderColor: 'red',
   },
   roomName: {
     color: theme.colors?.white,
@@ -298,6 +300,7 @@ export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomDat
       <VIPModal
           isVisible={openVIP}
           textShow={true}
+          titleText="升級VIP即可【封鎖用戶】"
           onClose={() => setOpenVIP(false)}
           onConfirmCallback={()=>{
             setTimeout(() => {

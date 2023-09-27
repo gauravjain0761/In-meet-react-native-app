@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     marginHorizontal: 30,
     // width: '100%',
     borderRadius: 20,
-    paddingHorizontal: 35,
+    paddingHorizontal: 24,
     paddingVertical: 20,
   },
   titleText: {

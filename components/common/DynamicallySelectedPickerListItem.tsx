@@ -25,6 +25,8 @@ export default function DynamicallySelectedPickerListItem({
           fontSize: colorSize,
           color: colorStyle,
           fontFamily: fontFamily,
+          textAlign:'center',
+          width:200,
         }}
       >
         {label}

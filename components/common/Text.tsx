@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
   subTitleTwo: {
     color: theme.colors?.black1,
-    fontWeight: '500',
+    fontWeight: '400',
     fontSize: fontSize(16),
     fontFamily:"roboto"
   },

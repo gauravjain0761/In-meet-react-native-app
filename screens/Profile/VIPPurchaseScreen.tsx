@@ -31,7 +31,7 @@ import { differenceInMonths } from 'date-fns';
 import * as WebBrowser from 'expo-web-browser';
 import { ProfileStackScreenProps } from '../../navigation/ProfileNavigator';
 import useCustomHeader from '../../hooks/useCustomHeader';
-import { BodyThree, BodyTwo, SubTitleOne } from '../../components/common/Text';
+import { BodyThree, BodyTwo, SubTitleOne, SubTitleTwo } from '../../components/common/Text';
 import { mapIcon } from '../../constants/IconsMapping';
 import {
   ButtonTypeFourChosen,
@@ -42,15 +42,20 @@ import Loader from '~/components/common/Loader';
 import { useAppDispatch } from '~/store';
 import { getUserInfo, selectToken } from '~/store/userSlice';
 import { paymentApi } from '~/api/UserAPI';
+import { fontSize } from '~/helpers/Fonts';
+import SafeAreaView from 'react-native-safe-area-view';
+import Illus4 from '../../assets/images/firstLogin/Illus4.png';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   carouselImage: {
-    width: '100%',
-    aspectRatio: 3,
+    // width: '100%',
+    // aspectRatio: 3,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 20,
+    // paddingBottom: 20,
+    marginTop: 30,
   },
   buttonContainer: {
     paddingBottom: 20,
@@ -58,6 +63,11 @@ const useStyles = makeStyles(theme => ({
   buttonStyle: { height: 50, borderRadius: 15, backgroundColor: 'white' },
   headerStyle: {
     backgroundColor: theme.colors?.black1,
+  },
+  headerTitleStyle: {
+    color: theme.colors?.white,
+    fontSize: fontSize(18),
+    fontWeight: '500',
   },
   headerTitle: {
     color: theme.colors?.white,
@@ -74,6 +84,71 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors?.pink,
     textDecorationLine: 'underline',
   },
+  avatarDisplayName: {
+    color: theme.colors?.white,
+    fontSize: fontSize(18),
+    marginRight:40
+  },
+  vipText: {
+    color: theme.colors?.white,
+  },
+  vipSubText: {
+    color: theme.colors?.black4,
+  },
+  headerText: {
+    color: theme.colors.white,
+  },
+  vipCard: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingLeft: 16,
+    marginTop: 10,
+  },
+  vipCardRight: {
+    width: 60,
+    alignSelf: 'flex-end',
+    position: 'absolute',
+  },
+  vipCardRightText: {
+    fontSize: fontSize(12),
+    lineHeight: 12,
+    backgroundColor: '#FBBC05',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderTopRightRadius: 12,
+    borderBottomLeftRadius: 12,
+  },
+  vipContent: {
+    flexDirection: 'row',
+    height: 25,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  vipDiviStyle: {
+    width: 1,
+    borderWidth: 0.5,
+    marginLeft: 10,
+    marginRight: 6,
+    borderColor: theme.colors.black2,
+    height: 18,
+  },
+  vipShowValue: {
+    backgroundColor: theme.colors.pink,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+  vipFooterContent:{
+    paddingHorizontal: 24,
+    paddingVertical: 30,
+    backgroundColor: '#292C33',
+    top: 80,
+    borderRadius: 30,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    flex: 1,
+  }
 }));
 
 const subSkus = Platform.select({
@@ -107,9 +182,11 @@ enum VIP_TYPE {
 }
 const iapSkus = subSkus;
 
-function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) {
+function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) {
   const { navigation } = props;
   const { theme } = useTheme();
+  const { bottom, top } = useSafeAreaInsets();
+
   const [activeSlide, setActiveSlide] = React.useState(0);
   const [selectedCase, setSelectedCase] = React.useState('com.inmeet.inmeet.vip.three.moth');
   const { width } = useWindowDimensions();
@@ -118,20 +195,28 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
   const [subscribedProductId, setSubscribedProdutId] = React.useState<string>();
   const data = [
     {
-      bannerIcon: mapIcon.likeIcon({ color: theme.colors.pink, size: 50 }),
-      description: '無限量愛心, 盡情喜歡',
+      bannerIcon: mapIcon.vip1,
+      description: '查看誰喜歡我誰看過我',
     },
     {
-      bannerIcon: mapIcon.chatIcon({ color: theme.colors.green, size: 50 }),
-      description: '隱藏聊天記錄, 保護隱私',
+      bannerIcon: mapIcon.vip2,
+      description: '隱藏聊天紀錄，保護隱私',
     },
     {
-      bannerIcon: mapIcon.blockIcon({ color: theme.colors.purple, size: 50 }),
-      description: '可封鎖用戶, 不再被打擾',
+      bannerIcon: mapIcon.vip3,
+      description: '可封鎖用戶，不再被打擾',
     },
     {
-      bannerIcon: mapIcon.profileIcon({ color: theme.colors.pink, size: 50 }),
-      description: '可索取用戶聯絡資訊, 取得更多聯繫',
+      bannerIcon: mapIcon.vip4,
+      description: '按錯隨時反悔',
+    },
+    {
+      bannerIcon: mapIcon.vip5,
+      description: '查看訪問足跡，不錯過任何對象',
+    },
+    {
+      bannerIcon: mapIcon.vip6,
+      description: '查看訪問足跡，不錯過任何對象',
     },
   ];
   const {
@@ -150,7 +235,7 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
     try {
       setLoading(true);
       dispatch(getUserInfo({}));
-    } catch (error) { }
+    } catch (error) {}
     setLoading(false);
   };
   const { mutate: addVIP, isLoading: isAddVIPLoading } = useMutation(paymentApi.addVIP, {
@@ -176,7 +261,7 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
       onSettled: () => {
         updateUserInfo();
       },
-    },
+    }
   );
 
   const getSubcribedProuduct = useCallback(async (): Promise<void> => {
@@ -203,7 +288,7 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
   const fetchProducts = useCallback(async (): Promise<void> => {
     try {
       await flushFailedPurchasesCachedAsPendingAndroid();
-    } catch (err) { }
+    } catch (err) {}
 
     getSubscriptions(iapSkus);
   }, [getSubscriptions]);
@@ -219,7 +304,7 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
       const availablePurchases = await RNIap.getAvailablePurchases();
 
       const sortedAvailablePurchases = availablePurchases.sort(
-        (a, b) => b.transactionDate - a.transactionDate,
+        (a, b) => b.transactionDate - a.transactionDate
       );
 
       const latestAvailableReceipt = sortedAvailablePurchases?.[0]?.transactionReceipt;
@@ -231,7 +316,7 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
           'receipt-data': latestAvailableReceipt,
           password: '90398a960b8b489ba96f5beb56b58e0d',
         },
-        isTestEnvironment,
+        isTestEnvironment
       );
 
       if (decodedReceipt) {
@@ -240,15 +325,16 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
 
         const expirationInMilliseconds = Number(
           // @ts-ignore
-          latestReceiptInfo[0]?.expires_date_ms,
+          latestReceiptInfo[0]?.expires_date_ms
         );
         const nowInMilliseconds = Date.now();
 
         if (expirationInMilliseconds > nowInMilliseconds) {
           Alert.alert(
             '恢復購買',
-            `你已恢復購買，目前會員狀態是${sortedAvailablePurchases?.[0].productId ? 'VIP' : '普通會員'
-            }`,
+            `你已恢復購買，目前會員狀態是${
+              sortedAvailablePurchases?.[0].productId ? 'VIP' : '普通會員'
+            }`
           );
           return sortedAvailablePurchases?.[0].productId;
         }
@@ -318,60 +404,58 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
     setLoading(true);
     try {
       await getSubcribedProuduct();
-    } catch (error) { }
+    } catch (error) {}
     setLoading(false);
   }
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerShown: true,
+      headerShown: false,
       headerShadowVisible: false,
       headerStyle: styles.headerStyle,
       headerTintColor: theme.colors.white,
       headerBackTitleVisible: false,
       headerTitleAlign: 'center',
-      headerLeft: () =>
-        Platform.OS === 'android' ? null : (
-          <HeaderBackButton {...props} onPress={navigation.goBack} />
-        ),
-      headerTitle: () => {
-        return <BodyTwo style={styles.headerTitle}>升級VIP會員</BodyTwo>;
-      },
-      headerRight: () => {
-        return (
-          Platform.OS === 'ios' && (
-            <Button
-              onPress={() => isSubscriptionActive()}
-              buttonStyle={{ backgroundColor: theme.colors?.black1 }}
-              titleStyle={{ color: 'white', fontWeight: '400', fontSize: 14 }}
-              title="恢復購買"
-            />
-          )
-        );
-      },
     });
   });
 
   const renderItem = ({ item }) => {
     return (
       <View style={styles.carouselImage}>
-        {item.bannerIcon}
-        <BodyThree style={{ color: theme.colors.white, paddingTop: 20 }}>
-          {item.description}
-        </BodyThree>
+        <Image source={item.bannerIcon} resizeMode="contain" style={{ width: 170, height: 130 }} />
+        <BodyThree style={{ color: theme.colors.white }}>{item.description}</BodyThree>
       </View>
     );
   };
 
+  const HeaderView = () => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginHorizontal: 16,
+          top: top + 10,
+        }}>
+        <TouchableOpacity onPress={navigation.goBack} style={{}}>
+          {mapIcon.backIcon({ size: 28 })}
+        </TouchableOpacity>
+        <SubTitleTwo style={styles.avatarDisplayName}>{'升級VIP'}</SubTitleTwo>
+        <View />
+      </View>
+    );
+  };
   const purchaseCases = subscriptions
-    .map(prd => ({
+    .map((prd) => ({
       id: prd.productId,
       caseMonths:
         Platform.OS === 'ios'
-          ? `${subscribedProductId === prd.productId
-            ? `現在方案${title[prd.productId]}`
-            : title[prd.productId]
-          }`
+          ? `${
+              subscribedProductId === prd.productId
+                ? `現在方案${title[prd.productId]}`
+                : title[prd.productId]
+            }`
           : prd.title.replace('(InMeet)', ''),
       dollars: prd.localizedPrice,
       price: prd.price,
@@ -384,47 +468,115 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
     WebBrowser.openBrowserAsync('https://inmeet.vip/terms-of-use');
   }
 
-  if (!connected)
-    return <Spinner visible textContent="Loading..." textStyle={{ color: 'white' }} />;
+  // if (!connected)
+  //   return <Spinner visible textContent="Loading..." textStyle={{ color: 'white' }} />;
+
+  const vipData = [
+    {
+      id: 1,
+      title1: '一年制',
+      title2: '$290/月',
+      showValue: '49折',
+      vipCard: true,
+      NTText: 'NT$348, 一次付清',
+    },
+    {
+      id: 2,
+      title1: '3個月',
+      title2: '$390/月',
+      showValue: '49折',
+      vipCard: false,
+      NTText: 'NT$348, 一次付清',
+    },
+    {
+      id: 3,
+      title1: '1個月',
+      title2: '$590/月',
+      vipCard: false,
+      NTText: 'NT$348, 一次付清',
+    },
+  ];
+
+  const VipCardSelect = ({ data }: any) => {
+    return (
+      <View style={[styles.vipCard, { borderColor: data.id ==1 ?'#FBBC05' : "#6F7387" }]}>
+        {data?.vipCard && (
+          <View style={styles.vipCardRight}>
+            <SubTitleTwo style={[styles.vipText, styles.vipCardRightText]}>{'最優惠'}</SubTitleTwo>
+          </View>
+        )}
+        <View style={styles.vipContent}>
+          <SubTitleTwo style={styles.vipText}>{data?.title1}</SubTitleTwo>
+          <View style={styles.vipDiviStyle} />
+          <SubTitleTwo style={styles.vipText}>{data?.title2}</SubTitleTwo>
+          {data?.showValue && (
+            <View style={styles.vipShowValue}>
+              <SubTitleTwo style={[styles.vipText, { fontSize: fontSize(12), lineHeight: 12 }]}>
+                {data?.showValue}
+              </SubTitleTwo>
+            </View>
+          )}
+        </View>
+        <View style={{ flexDirection: 'row', paddingBottom: 20 }}>
+          <BodyTwo style={styles.vipSubText}>{data?.NTText}</BodyTwo>
+          {/* <BodyTwo style={styles.vipSubText}>{'升級VIP'}</BodyTwo> */}
+        </View>
+      </View>
+    );
+  };
 
   return (
     // <Loader
     //   isLoading={
     //     loading || isAddVIPLoading || isAddAndroidVIPLoading || subscriptions.length === 0
     //   }>
-      <View style={{ flex: 1, backgroundColor: theme.colors.black1 }}>
-        <View style={{ position: 'relative' }}>
-          <Carousel
-            onSnapToItem={setActiveSlide}
-            data={data}
-            renderItem={renderItem}
-            sliderWidth={width}
-            itemWidth={width}
-          />
-          <Pagination
-            dotsLength={data.length}
-            activeDotIndex={activeSlide}
-            containerStyle={{
-              position: 'absolute',
-              width: '100%',
-              bottom: 0,
-              paddingBottom: 0,
-            }}
-            dotContainerStyle={{
-              marginHorizontal: 2,
-            }}
-            dotStyle={{
-              width: 8,
-              height: 8,
-              borderRadius: 4,
-            }}
-            dotColor={theme.colors.white}
-            inactiveDotScale={1}
-            inactiveDotColor="#C4C4C4"
-          />
-        </View>
-        <View style={{ paddingHorizontal: 50, paddingVertical: 30 }}>
-          {purchaseCases.map(purchaseCase =>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.black1 }}>
+      <Image
+        source={Illus4}
+        style={{
+          width: 400,
+          height: 200,
+          position: 'absolute',
+          // top: 8.5,
+          // left: 88.4,
+        }}
+      />
+      <HeaderView />
+
+      <View style={{ marginTop: 30 }}>
+        <Carousel
+          onSnapToItem={setActiveSlide}
+          data={data}
+          renderItem={renderItem}
+          sliderWidth={width}
+          itemWidth={width}
+        />
+        <Pagination
+          dotsLength={data.length}
+          activeDotIndex={activeSlide}
+          containerStyle={{
+            position: 'absolute',
+            width: '100%',
+            bottom: -30,
+            paddingBottom: 0,
+          }}
+          dotContainerStyle={{
+            marginHorizontal: 2,
+          }}
+          dotStyle={{
+            width: 18,
+            height: 8,
+            borderRadius: 8,
+          }}
+          dotColor={theme.colors.white}
+          inactiveDotScale={1}
+          inactiveDotStyle={{ width: 8, height: 8, borderRadius: 4 }}
+          inactiveDotColor="#C4C4C4"
+        />
+      </View>
+      <View
+        style={styles.vipFooterContent}>
+        {/* {purchaseCases.map(purchaseCase =>
             purchaseCase.id === selectedCase ? (
               <ButtonTypeFourChosen
                 onPress={() => { }}
@@ -446,27 +598,22 @@ function PurchaseVIPScreen(props: ProfileStackScreenProps<'PurchaseVIPScreen'>) 
                 dollars={purchaseCase.dollars}
               />
             ),
-          )}
-
-          <ButtonTypeTwo
-            onPress={purchase}
-            containerStyle={{ paddingTop: 10 }}
-            title={<SubTitleOne style={{ color: theme.colors.white }}>立即升級</SubTitleOne>}
-          />
-          <View style={styles.helpContainer}>
-            <BodyThree style={styles.helpLink}>
-              點選「立即升級」後，系統將向你的App
-              Store付款方式收費，且你的訂閱將依相同的價格及方案使用期限自動續訂，直到你隨時透過App
-              Store 的設定取消訂閱為止，而你也同意我們的
-              <BodyThree onPress={() => handleHelpPress()} style={styles.helpLinkText}>
-                服務條款
-              </BodyThree>
-            </BodyThree>
-          </View>
-        </View>
+          )} */}
+        <BodyTwo style={styles.headerText}>收費方式</BodyTwo>
+        {vipData.map((item) => {
+          return <VipCardSelect data={item} />;
+        })}
+     
       </View>
+         <ButtonTypeTwo
+          title={<SubTitleOne style={{ color: theme.colors.white }}>立即升級</SubTitleOne>}
+            onPress={purchase}
+            buttonStyle={{height:55}}
+            containerStyle={{marginHorizontal:40,bottom:bottom+30,}}
+          />
+    </SafeAreaView>
     // </Loader>
   );
 }
 
-export default withIAPContext(PurchaseVIPScreen);
+export default withIAPContext(VIPPurchaseScreen);

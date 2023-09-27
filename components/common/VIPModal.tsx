@@ -47,6 +47,14 @@ const useStyles = makeStyles((theme) => ({
   textStyle: {
     fontSize: fontSize(14),
   },
+  titleTextStyle:{
+    fontSize: fontSize(18),
+    fontWeight: '600',
+    color: '#fff',
+    textAlign: 'center',
+    marginVertical: 10,
+    fontFamily: 'roboto',
+  }
 }));
 
 interface IConfirmModal {
@@ -54,10 +62,11 @@ interface IConfirmModal {
   isVisible: boolean;
   onConfirmCallback: () => void;
   textShow: boolean;
+  titleText:string
 }
 
 export default function VIPModal(props: IConfirmModal) {
-  const { isVisible, onClose, onConfirmCallback, textShow } = props;
+  const { isVisible, onClose, onConfirmCallback, textShow, titleText="升級VIP即可【封鎖用戶】" } = props;
   const { theme } = useTheme();
   const styles = useStyles();
   const navigation = useNavigation();
@@ -80,18 +89,11 @@ export default function VIPModal(props: IConfirmModal) {
         <View style={styles.cardContainer}>
           <Image source={VIP} style={{ width: 160, height: 140 }} />
           <Text
-            style={{
-              fontSize: fontSize(18),
-              fontWeight: '600',
-              color: '#fff',
-              textAlign: 'center',
-              marginVertical: 10,
-              fontFamily: 'roboto',
-            }}>
+            style={styles.titleTextStyle}>
             升級VIP
           </Text>
           <CaptionFour style={[styles.subTitleText, { marginBottom: 27 }]}>
-            {textShow ? '升級VIP即可【XX功能】\n文字' : "加入VIP將享受到{'\n'}更快速的配對體驗"}
+            {textShow ? titleText : "加入VIP將享受到{'\n'}更快速的配對體驗"}
           </CaptionFour>
           <ButtonTypeTwo
             containerStyle={[styles.buttonStyle, { marginBottom: 10, marginTop: 10 }]}

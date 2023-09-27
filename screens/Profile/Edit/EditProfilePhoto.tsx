@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Platform,
+  FlatList,
 } from 'react-native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -19,7 +20,7 @@ import { useSelector } from 'react-redux';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { Row, Col } from 'react-native-responsive-grid-system';
 import { useQuery } from 'react-query';
-import { useAppDispatch } from '~/store';
+import { RootState, useAppDispatch } from '~/store';
 import { addForumPost } from '~/store/forumSlice';
 import { selectToken, selectUserId } from '~/store/userSlice';
 import uploadFile from '~/store/fileSlice';
@@ -28,9 +29,10 @@ import useCustomHeader from '~/hooks/useCustomHeader';
 import { BodyThree, CaptionFive, CaptionFour, TitleTwo } from '~/components/common/Text';
 import { ButtonTypeTwo } from '~/components/common/Button';
 import { userApi } from '~/api/UserAPI';
+import { fontSize } from '~/helpers/Fonts';
 
 const { width } = Dimensions.get('window');
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
   },
@@ -59,9 +61,10 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'right',
   },
   image: {
-    width: '100%',
-    aspectRatio: 1,
-    position: 'relative',
+    width: 170,
+    height: 170,
+    // aspectRatio: 1,
+    // position: 'relative',
     resizeMode: 'cover',
     borderRadius: 10,
   },
@@ -75,8 +78,9 @@ const useStyles = makeStyles(theme => ({
   uploadTitle: {
     color: theme.colors?.white,
     paddingHorizontal: 16,
-    paddingBottom: 10,
-    textAlign: 'center',
+    paddingVertical: 10,
+    fontSize: fontSize(14),
+    // textAlign: 'center',
   },
   addButtonContainer: {
     backgroundColor: theme.colors.black2,
@@ -102,6 +106,7 @@ export default function EditProfilePhoto(props) {
   const { height } = useWindowDimensions();
   const { bottom, top } = useSafeAreaInsets();
   const [activeSlide, setActiveSlide] = React.useState(0);
+  const avatar = useSelector((state: RootState) => state.user.avatar);
 
   const userId = useSelector(selectUserId) as number;
   const dispatch = useAppDispatch();
@@ -110,11 +115,11 @@ export default function EditProfilePhoto(props) {
   useFocusEffect(() => {
     const routePhotos = get(route, 'params.photos', []);
     if (!isEmpty(routePhotos)) {
-      const newPhotos = routePhotos.map(p => ({
+      const newPhotos = routePhotos.map((p) => ({
         ...p,
         id: uniqueId(),
       }));
-      setPhotos(prev => [...prev, ...newPhotos]);
+      setPhotos((prev) => [...prev, ...newPhotos]);
       navigation.setParams({ photos: null });
     }
   });
@@ -122,7 +127,7 @@ export default function EditProfilePhoto(props) {
   useEffect(() => {
     const getAvatars = async () => {
       const res = await userApi.fetchUserAvatars({ token, id: userId });
-      const p = res.records.map(record => ({
+      const p = res.records.map((record) => ({
         isFromRemote: true,
         uri: record.fileInfoResponse.url,
         id: record.id,
@@ -136,48 +141,66 @@ export default function EditProfilePhoto(props) {
 
   const handleDeleteImage = (photoId: number, isFromRemote: boolean) => {
     if (isFromRemote) {
-      setRemovedPhotosIds(prev => [...prev, photoId]);
+      setRemovedPhotosIds((prev) => [...prev, photoId]);
     }
-    setPhotos(prev => {
-      const newPhoto = prev.filter(photo => photo.id !== photoId);
+    setPhotos((prev) => {
+      const newPhoto = prev.filter((photo) => photo.id !== photoId);
 
       return newPhoto;
     });
   };
-  useCustomHeader({ title: '照片編輯', navigation });
+  // useCustomHeader({ title: '照片編輯', navigation });
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      headerShadowVisible: false,
+      headerStyle: styles.headerStyle,
+      headerTintColor: theme.colors.white,
+      headerBackTitleVisible: false,
+      headerTitleAlign: 'center',
+      headerTitle: '編輯生活照',
+      headerLeft: (props) => {
+        return (
+          <TouchableOpacity onPress={navigation.goBack} style={{}}>
+            {mapIcon.backIcon({ size: 28 })}
+          </TouchableOpacity>
+        );
+      },
+    });
+  });
 
   const handlePressPost = async () => {
     // navigation.goBack();
     try {
       const dataPhotos = photos
-        .filter(i => !i.isFromRemote)
-        .map(photo => ({
+        .filter((i) => !i.isFromRemote)
+        .map((photo) => ({
           uri: Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
           name: photo.name,
           type: photo.type,
         }));
       if (removedPhotosIds.length !== 0) {
-        const removePromise = removedPhotosIds.map(ids =>
-          userApi.deleteUserAvatars({ token, id: ids }),
+        const removePromise = removedPhotosIds.map((ids) =>
+          userApi.deleteUserAvatars({ token, id: ids })
         );
 
         await Promise.all(removePromise);
         navigation.goBack();
       }
       if (dataPhotos.length === 0) return;
-      const uploadPhotoPromise = dataPhotos.map(photo =>
+      const uploadPhotoPromise = dataPhotos.map((photo) =>
         dispatch(
           uploadFile({
             fileData: photo,
             fileType: 'AVATAR',
             userId,
-          }),
-        ).unwrap(),
+          })
+        ).unwrap()
       );
       const allPhotoPromise = await Promise.all(uploadPhotoPromise);
       const photosUrls = allPhotoPromise
-        .map(p => p.data?.url)
-        .filter(e => e)
+        .map((p) => p.data?.url)
+        .filter((e) => e)
         .join(',');
 
       const content = JSON.stringify(bodyText);
@@ -197,20 +220,20 @@ export default function EditProfilePhoto(props) {
     });
   };
 
-  const data = photos.filter(e => e).map(item => item.uri);
+  const data = photos.filter((e) => e).map((item) => item.uri);
 
   const renderItem = ({ item }) => {
     return (
       <Image
-        style={{ width: '100%', aspectRatio: 1.5, resizeMode: 'cover' }}
+        style={{ width: '100%', aspectRatio: 1.1, resizeMode: 'cover' }}
         source={{ uri: item }}
       />
     );
   };
 
   const renderPhotos =
-    photos.length < 6
-      ? [...photos, ...Array.from({ length: 6 - photos.length }, (v, i) => v)]
+    photos.length < 5
+      ? [...photos, ...Array.from({ length: 5 - photos.length }, (v, i) => v)]
       : photos;
   return (
     <View style={{ backgroundColor: theme.colors.black1, flex: 1 }}>
@@ -244,11 +267,11 @@ export default function EditProfilePhoto(props) {
           inactiveDotColor="#C4C4C4"
         />
       </View>
-      <TitleTwo style={styles.uploadTitle}>上傳照片</TitleTwo>
-      <View style={{ flex: 1 }}>
+      <TitleTwo style={styles.uploadTitle}>上傳生活照</TitleTwo>
+      {/* <View style={{ flex: 1 }}>
         <Row>
           {renderPhotos.map((photo: IPhoto, index) => (
-            <Col colStyles={{ marginBottom: 5 }} key={index} xs={4} sm={4} md={4} lg={4}>
+            <Col colStyles={{ marginBottom: 5 }} key={index} xs={2} sm={2} md={2} lg={2}>
               {!photo ? (
                 <TouchableOpacity
                   key={index}
@@ -272,11 +295,58 @@ export default function EditProfilePhoto(props) {
             </Col>
           ))}
         </Row>
+      </View> */}
+      <View style={{ flexDirection: 'row', marginHorizontal: 24, flex: 1 }}>
+        <ImageBackground
+          style={[styles.image]}
+          imageStyle={{ borderRadius: 15 }}
+          source={{ uri: avatar }}>
+          <TouchableOpacity
+            style={{
+              right: 10,
+              top: 10,
+              position: 'absolute',
+              backgroundColor: "#383A44",
+              borderRadius: 18,
+              width:20,
+              height:20,
+              justifyContent:'center',
+              alignItems:'center'
+            }}
+            onPress={() => {}}>
+            {mapIcon.closeIcon({ color: theme.colors.white, size: 18 })}
+          </TouchableOpacity>
+        </ImageBackground>
+        <View style={{ marginLeft: 10 }}>
+          <FlatList
+            data={[0, 1, 2, 3]}
+            numColumns={2}
+            renderItem={() => {
+              return (
+                <TouchableOpacity
+                  // key={index}
+                  onPress={handleOnPressAddImage}
+                  style={{
+                    width: 82,
+                    height: 82,
+                    backgroundColor: theme.colors.black2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 12,
+                    marginRight: 14,
+                    marginBottom: 6,
+                  }}>
+                  {mapIcon.addIcon({ color: theme.colors.white, size: 34 })}
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
       </View>
 
       <ButtonTypeTwo
         onPress={handlePressPost}
-        containerStyle={{ paddingHorizontal: 40 }}
+        containerStyle={{ paddingHorizontal: 40,bottom:bottom+20 }}
         title="發表"
       />
     </View>

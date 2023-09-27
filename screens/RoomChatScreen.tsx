@@ -32,7 +32,7 @@ import Toast from 'react-native-root-toast';
 import { isSameDay, parse } from 'date-fns';
 import { RootStackScreenProps } from '../types';
 import { mapIcon } from '../constants/IconsMapping';
-import { BodyThree, BodyTwo, CaptionFive, CaptionFour } from '../components/common/Text';
+import { BodyOne, BodyThree, BodyTwo, CaptionFive, CaptionFour } from '../components/common/Text';
 import { RootState, useAppDispatch } from '~/store';
 import { getRoomMessage, selectRecipientId } from '~/store/roomSlice';
 import { selectToken, selectUserId } from '~/store/userSlice';
@@ -48,6 +48,9 @@ import CommonModalComponent from '~/components/common/CommonModalComponent';
 import { updateCurrentMatchingId } from '~/store/interestSlice';
 import { fontSize } from '~/helpers/Fonts';
 import moment from 'moment';
+import RoomChatBottomModal from '~/components/common/RoomChatBottomModal';
+import ReportModal from '~/components/common/ReportModal';
+import VIPModal from '~/components/common/VIPModal';
 
 const useStyles = makeStyles((theme) => ({
   headerStyle: {
@@ -63,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
     height: 8,
     borderRadius: 8 / 2,
     backgroundColor: theme.colors.green,
-    marginLeft: 10,
+    marginLeft: 5,
+    marginTop: 4,
   },
   selectedImagesContainer: {
     backgroundColor: theme.colors?.black1,
@@ -161,15 +165,40 @@ const useStyles = makeStyles((theme) => ({
     height: 20,
     backgroundColor: 'transparent',
   },
-  headerTextStyle:{
+  headerTextStyle: {
     color: theme.colors?.white,
     fontSize: fontSize(12),
-    textAlign:'center'
+    textAlign: 'center',
   },
-  headerViewStyle:{
-    backgroundColor:theme.colors.black2,
-    paddingVertical:4,
-    marginTop:8
+  headerViewStyle: {
+    backgroundColor: theme.colors.black2,
+    paddingVertical: 4,
+    marginTop: 8,
+  },
+  chatButtonText: {
+    fontSize: fontSize(14),
+    color: theme.colors.white,
+  },
+  unChosenBtnStyle: {
+    marginTop: 15,
+    width: 185,
+    alignSelf: 'center',
+  },
+  footerText: {
+    color: theme.colors.white,
+  },
+  vipText: {
+    color: theme.colors.white,
+    fontSize:fontSize(14),
+    fontFamily:"roboto"
+  },
+  vipBtnStyle:{
+    width:70,
+    height:40,
+    backgroundColor:theme.colors.pink,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:20
   }
 }));
 
@@ -202,7 +231,7 @@ function ChatBubble(props) {
                 {msg.split(',').map((item) => (
                   <Col key={item} xs={12} sm={12} md={12} lg={12}>
                     <Image
-                      style={{ width: '100%', aspectRatio: 1, borderRadius: 10  }}
+                      style={{ width: '100%', aspectRatio: 1, borderRadius: 10 }}
                       source={{ uri: item }}
                     />
                   </Col>
@@ -217,9 +246,7 @@ function ChatBubble(props) {
     return (
       <View style={styles.messageBubbleContainer}>
         {!isPrevSame && (
-          <Image style={{  width: 36,
-            height: 36,
-            borderRadius: 36,}} source={{ uri: image }} />
+          <Image style={{ width: 36, height: 36, borderRadius: 36 }} source={{ uri: image }} />
         )}
         <View
           style={[
@@ -239,7 +266,7 @@ function ChatBubble(props) {
               {msg.split(',').map((item) => (
                 <Col key={item} xs={12} sm={12} md={12} lg={12}>
                   <Image
-                    style={{ width: '100%', aspectRatio: 1, borderRadius: 10  }}
+                    style={{ width: '100%', aspectRatio: 1, borderRadius: 10 }}
                     source={{ uri: item }}
                   />
                 </Col>
@@ -249,6 +276,70 @@ function ChatBubble(props) {
           {/* <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
             <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
           </View> */}
+        </View>
+      </View>
+    );
+  }
+  if (type == 'BOTH') {
+    return (
+      <View style={[styles.messageBubbleContainer, {}]}>
+        <View
+          style={[
+            {
+              backgroundColor: theme.colors.black2,
+              maxWidth: 150,
+              borderRadius: 10,
+            },
+          ]}>
+          <View
+            style={{
+              backgroundColor: theme.colors.pink,
+              maxWidth: 150,
+              borderRadius: 10,
+              // padding: 7,
+            }}>
+            <Row>
+              {msg.split(',').map((item) => (
+                <Col key={item} xs={12} sm={12} md={12} lg={12}>
+                  <Image
+                    style={{ width: '100%', aspectRatio: 1, borderRadius: 10 }}
+                    source={{ uri: item }}
+                  />
+                </Col>
+              ))}
+            </Row>
+          </View>
+          <BodyThree
+            selectable={true}
+            style={[
+              styles.chatButtonText,
+              {
+                fontSize: fontSize(12),
+                textAlign: 'center',
+                marginVertical: 8,
+                marginHorizontal: 8,
+              },
+            ]}>
+            {'路跑美乞條追，斤升支杯語帶左蛋戶包呀送'}
+          </BodyThree>
+          <View
+            style={{
+              alignSelf: 'flex-end',
+              marginHorizontal: 15,
+              marginVertical: 10,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            {mapIcon.unlikeIcon({ size: 20 })}
+            <BodyThree
+              selectable={true}
+              style={[
+                styles.chatButtonText,
+                { fontSize: fontSize(12), textAlign: 'center', marginLeft: 5 },
+              ]}>
+              {'20'}
+            </BodyThree>
+          </View>
         </View>
       </View>
     );
@@ -286,9 +377,7 @@ function ChatBubble(props) {
     <View style={styles.messageBubbleContainer}>
       {!isPrevSame && (
         <Image
-          style={{ width: 36,
-            height: 36,
-            borderRadius: 36, }}
+          style={{ width: 36, height: 36, borderRadius: 36 }}
           source={image ? { uri: image } : defaultAvatar}
         />
       )}
@@ -308,7 +397,9 @@ function ChatBubble(props) {
             justifyContent: 'center',
             padding: 12,
           }}>
-          <BodyThree selectable={true}>{msg}</BodyThree>
+          <BodyThree selectable={true} style={styles.chatButtonText}>
+            {msg}
+          </BodyThree>
         </View>
         {/* <View style={{ alignSelf: 'flex-end', paddingLeft: 6 }}>
           <CaptionFive style={{ color: theme.colors.black4 }}>{convertTime(time)}</CaptionFive>
@@ -454,6 +545,8 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const { width, height } = useWindowDimensions();
   const { top, bottom } = useSafeAreaInsets();
   const [bottomHeight, setBottomHeight] = useState(0);
+  const [visibleModal, setVisibleModal] = React.useState(false);
+  const [blockChat, setBlockChat] = React.useState(false);
 
   const { handleSendWebSocket } = useStompClient();
   const openMenu = () => setVisible(true);
@@ -461,6 +554,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const level = useSelector((state: RootState) => state.user.level);
   const isVIP = level === 'VIP';
   const routeRecipientId = get(route, 'params.recipientId', '');
+  const routeVip = true;
   const queryClient = useQueryClient();
 
   const storeRecipientId = useSelector(selectRecipientId);
@@ -548,12 +642,67 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
     .flat()
     .map(convertFunction);
 
+  const updateMessage = [
+    {
+      id: 708,
+      image: null,
+      isMine: true,
+      msg: '哈囉   你好阿',
+      time: '2023-05-31 22:38:38',
+      type: 'TEXT',
+    },
+    {
+      id: 708,
+      image: null,
+      msg: 'https://picsum.photos/id/231/200/300',
+      isMine: true,
+      time: '2023-05-03 22:38:38',
+      type: 'BOTH',
+    },
+    {
+      id: 708,
+      image: null,
+      isMine: false,
+      msg: '哈囉   你好阿',
+      time: '2023-05-09 22:38:38',
+      type: 'TEXT',
+    },
+    {
+      id: 708,
+      image: null,
+      isMine: true,
+      msg: '哈囉   你好阿',
+      time: '2023-05-22 22:38:38',
+      type: 'TEXT',
+    },
+    {
+      id: 708,
+      image: null,
+      isMine: false,
+      msg: '哈囉   你好阿',
+      time: '2023-05-30 22:38:38',
+      type: 'TEXT',
+    },
+    {
+      id: 708,
+      image: null,
+      msg: 'https://picsum.photos/id/231/200/300',
+      isMine: false,
+      time: '2023-06-10 22:38:38',
+      type: 'IMAGE',
+    },
+  ];
+
   const keyboardHeight = useKeyboardHeight();
   const [inputValue, setInputValue] = useState('');
   const [photos, setPhotos] = useState<IPhoto[]>([]);
   const [collectionModal, setCollectionModal] = React.useState(false);
   const [VIPhideModel, setVIPhideModel] = React.useState(false);
   const [VIPblockModel, setVIPblockModel] = React.useState(false);
+  const [reportBlockModel, setReportBlockModel] = React.useState(false);
+  const [reportHeaderText, setReportHeaderText] = React.useState('');
+  const [reportSubHeaderText, setReportSubHeaderText] = React.useState('');
+  const [openVIP, setOpenVIP] = React.useState(false);
 
   const closeMenu = () => setVisible(false);
   const handleHideRoom = async () => {
@@ -708,6 +857,13 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
     );
   };
 
+  const handleConfirm = async () => {
+    setReportBlockModel(false);
+    setBlockChat(true);
+  };
+  const handleCancel = () => {
+    setReportBlockModel(false);
+  };
   const handlePressAddImage = () => {
     navigation.navigate('ImageBrowser', {
       backScreen: 'RoomChatScreen',
@@ -727,11 +883,34 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
 
   const isBeBlocked = false;
 
+  const onUserPress = () => {
+    setTimeout(() => {
+      setOpenVIP(true);
+    }, 1000);
+    setVisibleModal(false);
+  };
+  const onBloackPress = () => {
+    setReportHeaderText('確定封鎖此用戶嗎？');
+    setReportSubHeaderText('封鎖用戶後將無法傳送訊息給您');
+    setTimeout(() => {
+      setReportBlockModel(true);
+    }, 1000);
+    setVisibleModal(false);
+  };
+  const onPasswordPress = () => {
+    setReportHeaderText('確定要隱藏此對話嗎?');
+    setReportSubHeaderText('隱藏對話後需輸入密碼才能恢復內容');
+    setTimeout(() => {
+      setReportBlockModel(true);
+    }, 1000);
+    setVisibleModal(false);
+  };
+
   return (
     <SafeAreaView
       style={{
         flex: 1,
-        paddingTop: top,
+        paddingTop: 10,
         paddingBottom: bottom,
         backgroundColor: theme.colors.black1,
       }}>
@@ -756,7 +935,8 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         </View>
         <TouchableOpacity
           onPress={() => {
-            // setSelectModalShow(true);
+            setVisibleModal(true);
+            setBlockChat(false);
           }}
           style={styles.moreStyle}>
           {mapIcon.more({ size: 20, color: theme.colors.black4 })}
@@ -765,18 +945,19 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
       <KeyboardAvoidingView
         behavior={Platform.OS === 'android' ? undefined : 'padding'}
         keyboardVerticalOffset={headerHeight}
-        style={{ flex: 1, marginTop: -keyboardHeight }}>
+        style={{ flex: 1 }}>
         {/* {renderMenuComponent()} */}
         <View style={styles.headerViewStyle}>
           <Text style={styles.headerTextStyle}>
             限時
-            <Text style={[styles.headerTextStyle,{color:theme.colors.pink}]}>{" 14 "}</Text>小時，抓緊時間開始聊天吧！
+            <Text style={[styles.headerTextStyle, { color: theme.colors.pink }]}>{' 14 '}</Text>
+            小時，抓緊時間開始聊天吧！
           </Text>
         </View>
         <View style={{ flex: 1 }}>
           <KeyboardAwareFlatList
-            // data={test}
-            data={messages}
+            data={updateMessage}
+            // data={messages}
             onEndReached={() => {
               if (hasNextPage) {
                 fetchNextPage();
@@ -788,7 +969,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
               const { index, item: targetItem } = item;
               const isNextSameDay = isSameDay(
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
-                parse(messages[index + 1]?.time, 'yyyy-MM-dd HH:mm:ss', new Date())
+                parse(updateMessage[index + 1]?.time, 'yyyy-MM-dd HH:mm:ss', new Date())
               );
               const isToday = isSameDay(
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
@@ -798,7 +979,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
                 parse(targetItem.time, 'yyyy-MM-dd HH:mm:ss', new Date()),
                 new Date(new Date().getDate() - 1)
               );
-              const isPrevSame = messages[index + 1]?.isMine === targetItem.isMine;
+              const isPrevSame = updateMessage[index + 1]?.isMine === targetItem.isMine;
               if (!isNextSameDay) {
                 return (
                   <>
@@ -911,27 +1092,43 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
               </TouchableOpacity>
             </View> */}
             <View style={styles.footerStyle}>
-              <TouchableOpacity onPress={handlePressAddImage} style={{ marginRight: 12 }}>
-                {mapIcon.photoIcon1({ color: theme.colors.black3 })}
-              </TouchableOpacity>
-              <View style={styles.inputContainer}>
-                <TextInput
-                  keyboardAppearance="dark"
-                  placeholder="輸入聊天內容"
-                  placeholderTextColor={theme.colors.black4}
-                  style={styles.inputStyle}
-                  returnKeyType="send"
-                  value={inputValue}
-                  onChangeText={setInputValue}
-                  multiline
-                />
-              </View>
-
-              <View style={styles.sendBtn}>
-                <Button buttonStyle={styles.sendBtnStyle} onPress={handleSendMessage}>
-                  {mapIcon.sendIcon({ color: theme.colors.white, size: 16 })}
-                </Button>
-              </View>
+              {!blockChat ? (
+                <>
+                  {routeVip ? (
+                    <>
+                      <TouchableOpacity onPress={handlePressAddImage} style={{ marginRight: 12 }}>
+                        {mapIcon.photoIcon1({ color: theme.colors.black3 })}
+                      </TouchableOpacity>
+                      <View style={styles.inputContainer}>
+                        <TextInput
+                          keyboardAppearance="dark"
+                          placeholder="輸入聊天內容"
+                          placeholderTextColor={theme.colors.black4}
+                          style={styles.inputStyle}
+                          returnKeyType="send"
+                          value={inputValue}
+                          onChangeText={setInputValue}
+                          multiline
+                        />
+                      </View>
+                      <View style={styles.sendBtn}>
+                        <Button buttonStyle={styles.sendBtnStyle} onPress={handleSendMessage}>
+                          {mapIcon.sendIcon({ color: theme.colors.white, size: 16 })}
+                        </Button>
+                      </View>
+                    </>
+                  ) : (
+                    <View style={{flexDirection:'row',alignItems:'center'}}>
+                      <BodyOne style={[styles.footerText,{fontSize:fontSize(16),flex:1}]}>{"已超過配對時間，如需繼續維持這段\n緣分，請升級VIP"}</BodyOne>
+                      <TouchableOpacity style={styles.vipBtnStyle} onPress={()=>{setOpenVIP(true)}}>
+                        <Text style={styles.vipText}>升級</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </>
+              ) : (
+                <BodyOne style={styles.footerText}>已封鎖此用戶</BodyOne>
+              )}
             </View>
           </View>
         </View>
@@ -961,6 +1158,40 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         modalText="升級VIP即可封鎖此用戶"
         buttonOneTitle="成為VIP"
         onClose={() => setVIPblockModel(false)}
+      />
+      <RoomChatBottomModal
+        isVisible={visibleModal}
+        onClose={() => {
+          setVisibleModal(false);
+        }}
+        onUserPress={onUserPress}
+        onBloackPress={onBloackPress}
+        onPasswordPress={onPasswordPress}
+      />
+
+      <ReportModal
+        modalText={reportSubHeaderText}
+        buttonOneTitle="刪除"
+        buttonTwoTitle="取消"
+        headerShow={true}
+        isVisible={reportBlockModel}
+        onConfirm={handleConfirm}
+        showCancel={true}
+        headerShowText={reportHeaderText}
+        unChosenBtnStyle={styles.unChosenBtnStyle}
+        chosenBtnStyle={styles.unChosenBtnStyle}
+        onClose={handleCancel}
+      />
+      <VIPModal
+        isVisible={openVIP}
+        textShow={true}
+        titleText={routeVip ? "升級VIP即可隱藏此對話":"升級VIP暢聊不受限" }
+        onClose={() => setOpenVIP(false)}
+        onConfirmCallback={() => {
+          setTimeout(() => {
+            setOpenVIP(false);
+          }, 1000);
+        }}
       />
     </SafeAreaView>
   );

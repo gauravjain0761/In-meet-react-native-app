@@ -68,7 +68,19 @@ export type RootStackParamList = {
   PurchaseHeart:undefined
   PurchaseVIPScreen:undefined
   EditSignatureScreen:undefined
-  ChatScreenLis:any
+  ChatScreenLis:undefined
+  VIPPurchaseScreen:undefined
+  ProfileImageScreen:undefined
+  EditProfilePhoto: undefined;
+  FilterSearchScreen: undefined;
+  MyUpdateScreen: undefined;
+  ProfileSettingScreen:undefined
+  NotificationSetting:undefined,
+  AccountSettings:undefined
+  ModifyPasswordSetting:undefined
+  FastLoginSettings:undefined
+  ModifyPasswordFirstSetting:undefined
+  ContactUsScreen:undefined
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

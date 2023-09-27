@@ -1,4 +1,4 @@
-import { View, Text, useWindowDimensions } from 'react-native';
+import { View, Text, useWindowDimensions, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useLayoutEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -13,6 +13,8 @@ import ProfileContactDetail from '../../components/Profile/ProfileContactDetail'
 import ProfilePost from '~/components/Profile/ProfilePost';
 import ProfilePhoto from '~/components/Profile/ProfilePhoto';
 import useCustomHeader from '~/hooks/useCustomHeader';
+import { mapIcon } from '~/constants/IconsMapping';
+import ProfileAboutDetails from '~/components/Profile/ProfileAboutDetails';
 
 const useStyles = makeStyles(theme => ({
   headerStyle: {
@@ -42,13 +44,36 @@ export default function ProfileDetailScreen(props: RootStackScreenProps<'Profile
   ]);
   const { width, height } = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
-  useCustomHeader({ title: '個人資料', navigation });
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      headerShadowVisible: false,
+      headerStyle: styles.headerStyle,
+      headerTintColor: theme.colors.white,
+      headerBackTitleVisible: false,
+      headerTitleAlign: 'center',
+      headerTitle: '個人資料',
+      headerLeft: (props) => {
+        return (
+          <TouchableOpacity onPress={navigation.goBack} style={{}}>
+            {mapIcon.backIcon({ size: 28 })}
+          </TouchableOpacity>
+        );
+      },
+    });
+  });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.black1 }}>
+      <ScrollView>
+
       <ProfileHeader showSignature />
+      {/* <ProfileAboutMe navigationProps={navigationProps} /> */}
+      <ProfileAboutDetails navigationProps={navigationProps} />
+      </ScrollView>
       {/* Description */}
-      <TabView
+      {/* <TabView
         initialLayout={{ width }}
         renderTabBar={props => {
           return (
@@ -100,7 +125,7 @@ export default function ProfileDetailScreen(props: RootStackScreenProps<'Profile
           third: () => <ProfilePhoto />,
         })}
         onIndexChange={setIndex}
-      />
+      /> */}
     </SafeAreaView>
   );
 }

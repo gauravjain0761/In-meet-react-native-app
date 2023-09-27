@@ -18,11 +18,13 @@ const useStyles = makeStyles(theme => ({
   },
   cardContainer: {
     width: width - 60,
-    height: '42%',
+    // height: '48%',
     // alignSelf: 'center',
     borderRadius: 15,
     backgroundColor: theme.colors?.white,
     alignItems:'center',
+    paddingBottom:25,
+    paddingTop:4
   },
   titleText: { color: theme.colors?.black1, textAlign: 'center' },
   subTitleText: { color: theme.colors?.black1, textAlign: 'center' },

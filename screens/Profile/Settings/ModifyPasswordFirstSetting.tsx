@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity, TextInput } from 'react-native';
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { FormProvider, useForm } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,7 +8,9 @@ import Toast from 'react-native-root-toast';
 import { ProfileStackScreenProps } from '../../../navigation/ProfileNavigator';
 import useCustomHeader from '../../../hooks/useCustomHeader';
 import {
+  BodyOne,
   BodyThree,
+  BodyTwo,
   CaptionFive,
   CaptionFour,
   SubTitleTwo,
@@ -24,8 +26,9 @@ import { getUserInfo, loginUser, patchUserToken } from '~/store/userSlice';
 import useRequestLocation from '~/hooks/useRequestLocation';
 import { storeUserToken } from '~/storage/userToken';
 import Loader from '~/components/common/Loader';
+import { useHeaderHeight } from '@react-navigation/elements';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   defaultTitle: {
     color: theme.colors?.white,
     flex: 1,
@@ -53,6 +56,9 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors?.black5,
     textAlign: 'center',
     paddingTop: 15,
+  },
+  headerStyle: {
+    backgroundColor: theme.colors?.black1,
   },
 }));
 
@@ -97,7 +103,7 @@ const reducer = (state: visiblePasswordState, action: visiblePasswordAction) => 
 };
 
 export default function ModifyPasswordFirstSetting(
-  props: ProfileStackScreenProps<'ModifyPasswordFirstSetting'>,
+  props: ProfileStackScreenProps<'ModifyPasswordFirstSetting'>
 ) {
   const { navigation } = props;
   const styles = useStyles();
@@ -109,6 +115,7 @@ export default function ModifyPasswordFirstSetting(
   const methods = useForm();
   const [loading, setLoading] = useState(false);
   const storeDispatch = useAppDispatch();
+  const headerHeight = useHeaderHeight();
 
   const {
     handleSubmit,
@@ -132,7 +139,7 @@ export default function ModifyPasswordFirstSetting(
         loginUser({
           username,
           password,
-        }),
+        })
       ).unwrap();
 
       if (loginResponse.code !== 20000) {
@@ -150,7 +157,7 @@ export default function ModifyPasswordFirstSetting(
         {
           message: '密碼錯誤',
         },
-        { shouldFocus: false },
+        { shouldFocus: false }
       );
     } finally {
       setLoading(false);
@@ -166,7 +173,23 @@ export default function ModifyPasswordFirstSetting(
   const handleOpen = () => {
     setCollectionModal(true);
   };
-  useCustomHeader({ title: '修改密碼', navigation });
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTransparent: true,
+      headerShown: true,
+      headerShadowVisible: false,
+      headerStyle: styles.headerStyle,
+      headerTintColor: theme.colors.white,
+      headerBackTitleVisible: false,
+      headerTitleAlign: 'center',
+      headerTitle: '修改密碼',
+      headerLeft: (props) => (
+        <TouchableOpacity onPress={navigation.goBack} style={{}}>
+          {mapIcon.backIcon({ size: 28 })}
+        </TouchableOpacity>
+      ),
+    });
+  });
 
   const handlePressForgetPassword = () => {
     navigation.navigate('ForgetPasswordScreen');
@@ -178,15 +201,29 @@ export default function ModifyPasswordFirstSetting(
         backgroundColor: theme.colors.black1,
         paddingTop: 20,
         paddingHorizontal: 40,
+        marginTop: headerHeight - 10,
       }}>
       <Loader isLoading={loading}>
         <FormProvider {...methods}>
           <KeyboardAwareScrollView style={styles.outerContainer}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: 5,
+              }}>
+              <BodyTwo style={{ color: theme.colors.white }}>{'舊密碼'}</BodyTwo>
+              <TouchableOpacity>
+                <BodyTwo style={{ color: theme.colors.white }}>{'忘記密碼？'}</BodyTwo>
+              </TouchableOpacity>
+            </View>
             <InputField
               ref={passwordInputRef}
               name="password"
               secureTextEntry={!state.visiblePassword}
               placeholder="輸入原有密碼"
+              // label='舊密碼'
               textContentType="password"
               onSubmit={handleSubmit(onSubmit)}
               rules={{
@@ -200,10 +237,66 @@ export default function ModifyPasswordFirstSetting(
               onRightPress={() =>
                 dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
               }
+              rightStyle={{ top: '65%' }}
+              right={mapIcon.invisiblePassword()}
+            />
+            <InputField
+              ref={passwordInputRef}
+              containerStyle={{ marginTop: 10 }}
+              name="password"
+              secureTextEntry={!state.visiblePassword}
+              placeholder="輸入原有密碼"
+              label="新密碼"
+              textContentType="password"
+              onSubmit={handleSubmit(onSubmit)}
+              rules={{
+                required: '這是必填欄位',
+                // pattern: {
+                //   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                //   message: '輸入的格式不正確',
+                // },
+              }}
+              styles={{}}
+              onRightPress={() =>
+                dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
+              }
+              rightStyle={{ top: '65%' }}
+              right={mapIcon.invisiblePassword()}
+            />
+            <InputField
+              ref={passwordInputRef}
+              containerStyle={{ marginTop: 10 }}
+              name="password"
+              secureTextEntry={!state.visiblePassword}
+              placeholder="請確認密碼"
+              label="確認密碼"
+              textContentType="password"
+              onSubmit={handleSubmit(onSubmit)}
+              rules={{
+                required: '這是必填欄位',
+                // pattern: {
+                //   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                //   message: '輸入的格式不正確',
+                // },
+              }}
+              styles={{}}
+              onRightPress={() =>
+                dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
+              }
+              rightStyle={{ top: '65%' }}
               right={mapIcon.invisiblePassword()}
             />
 
-            <ButtonTypeTwo title="繼續" onPress={handleSubmit(onSubmit)} />
+            <ButtonTypeTwo
+              title="確定修改"
+              containerStyle={{ marginTop: 70 }}
+              // onPress={handleSubmit(onSubmit)}
+              onPress={()=>{
+                navigation.push('ModifyPasswordSetting', {
+                  oldPassword: "password",
+                });
+              }}
+            />
             {/* <TouchableOpacity onPress={handlePressForgetPassword}>
             <BodyThree style={styles.forgetButtonText}>忘記密碼</BodyThree>
           </TouchableOpacity> */}

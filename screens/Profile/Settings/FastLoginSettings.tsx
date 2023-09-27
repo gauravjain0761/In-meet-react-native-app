@@ -1,6 +1,6 @@
-import { View, Text, Platform } from 'react-native';
-import React, { useEffect, useRef } from 'react';
-import { useTheme } from '@rneui/themed';
+import { View, Text, Platform, TouchableOpacity } from 'react-native';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import { useTheme, makeStyles } from '@rneui/themed';
 import { Switch } from 'react-native-paper';
 import { Divider } from '@rneui/base';
 import * as Google from 'expo-auth-session/providers/google';
@@ -13,7 +13,7 @@ import * as ExpoFacebook from 'expo-facebook';
 import LineLogin, { LoginPermission } from '@xmartlabs/react-native-line';
 import { ProfileStackScreenProps } from '../../../navigation/ProfileNavigator';
 import useCustomHeader from '../../../hooks/useCustomHeader';
-import { SubTitleOne } from '../../../components/common/Text';
+import { SubTitleOne, SubTitleTwo } from '../../../components/common/Text';
 import { RootState, useAppDispatch } from '~/store';
 import {
   patchUserFastLogin,
@@ -22,6 +22,42 @@ import {
   selectUserId,
 } from '~/store/userSlice';
 import CommonModalComponent from '~/components/common/CommonModalComponent';
+import { mapIcon } from '~/constants/IconsMapping';
+import { useHeaderHeight } from '@react-navigation/elements';
+import ReportModal from '~/components/common/ReportModal';
+
+const useStyles = makeStyles((theme) => ({
+  defaultTitle: {
+    color: theme.colors?.white,
+    flex: 1,
+  },
+  descriptionStyle: {
+    color: theme.colors?.black4,
+    // flex: 1,
+  },
+  title: {
+    color: theme.colors?.pink,
+    flex: 1,
+  },
+  headerStyle: {
+    backgroundColor: theme.colors?.black1,
+  },
+  footerContainer: {
+    marginTop: 20,
+    marginHorizontal: 24,
+    borderRadius: 18,
+    paddingVertical: 12,
+    backgroundColor: theme.colors.black2,
+  },
+  textfavorite: {
+    color: theme.colors.white,
+  },
+  unChosenBtnStyle: {
+    marginTop: 10,
+    width: 185,
+    alignSelf:'center'
+  },
+}));
 
 function SwitchComponent({ enable, onSwitch }: { enable: boolean; onSwitch: () => void }) {
   const { theme } = useTheme();
@@ -45,14 +81,17 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLoginSettings'>) {
   const { navigation } = props;
-  useCustomHeader({ title: '快速登入', navigation });
+
   const { theme } = useTheme();
+  const styles = useStyles();
+  const headerHeight = useHeaderHeight();
+
   const dispatch = useAppDispatch();
   const userId = useSelector(selectUserId);
   const userEmail = useSelector((state: RootState) => state.user.account);
   const { facebook, google, line, apple } = useSelector((state: RootState) => state.user);
   const [collectionModal, setCollectionModal] = React.useState(false);
-  const [type, setType] = React.useState('');
+  const [type, setType] = React.useState('確定要解除Facebook綁定嗎？');
   const resolveCallback = useRef(null);
   const { accessToken } = useSelector((rootState: RootState) => rootState.fastLogin);
   const [_, googleResponse, googlePromptAsync] = Google.useIdTokenAuthRequest({
@@ -62,9 +101,27 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
     iosClientId: '1037316389652-gb1ervtr4h8ukj25nrum2h907ubsvsl4.apps.googleusercontent.com',
   });
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTransparent: true,
+      headerShown: true,
+      headerShadowVisible: false,
+      headerStyle: styles.headerStyle,
+      headerTintColor: theme.colors.white,
+      headerBackTitleVisible: false,
+      headerTitleAlign: 'center',
+      headerTitle: '快速登入',
+      headerLeft: (props) => (
+        <TouchableOpacity onPress={navigation.goBack} style={{}}>
+          {mapIcon.backIcon({ size: 28 })}
+        </TouchableOpacity>
+      ),
+    });
+  });
+
   const requestForConfirm = () => {
     setCollectionModal(true);
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       resolveCallback.current = resolve;
     });
   };
@@ -92,7 +149,7 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
     }
   };
 
-  const handleUnBindAccessToken = async data => {
+  const handleUnBindAccessToken = async (data) => {
     try {
       const res = await dispatch(patchUserUnbindFastLogin({ ...data })).unwrap();
       dispatch(patchUserSocial({ ...data, value: '' }));
@@ -107,7 +164,7 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
         scopes: [LoginPermission.EMAIL, LoginPermission.PROFILE, LoginPermission.OPEN_ID],
       });
       if (loginResult.accessToken.id_token) {
-        handlePatchAccessToken({ line: {accessToken: loginResult.accessToken.id_token} }, 'LINE');
+        handlePatchAccessToken({ line: { accessToken: loginResult.accessToken.id_token } }, 'LINE');
       }
     } catch (error) {
       Toast.show('快速登入失敗');
@@ -123,7 +180,7 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
         permissions: ['public_profile', 'email'],
       });
       if (type === 'success') {
-        handlePatchAccessToken({ facebook: {accessToken: token} }, 'FACEBOOK');
+        handlePatchAccessToken({ facebook: { accessToken: token } }, 'FACEBOOK');
       } else {
         // type === 'cancel'
       }
@@ -157,14 +214,14 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
   useEffect(() => {
     if (googleResponse?.type === 'success') {
       const { idToken } = googleResponse.authentication;
-      handlePatchAccessToken({ google: {accessToken: idToken} }, 'GOOGLE');
+      handlePatchAccessToken({ google: { accessToken: idToken } }, 'GOOGLE');
     }
     return () => {};
   }, [googleResponse]);
 
   const notificationSettings = [
     {
-      title: 'Facebook綁定',
+      title: 'Facebook 綁定',
       onSwitch: async () => {
         try {
           if (facebook) {
@@ -183,7 +240,7 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
       value: Boolean(facebook),
     },
     {
-      title: 'Google綁定',
+      title: 'Google 綁定',
       onSwitch: async () => {
         try {
           if (google) {
@@ -202,7 +259,7 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
       value: Boolean(google),
     },
     {
-      title: 'Line綁定',
+      title: 'Line 綁定',
       onSwitch: async () => {
         try {
           if (line) {
@@ -221,7 +278,7 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
       value: Boolean(line),
     },
     {
-      title: 'Apple綁定',
+      title: 'Apple 綁定',
       onSwitch: async () => {
         try {
           if (apple) {
@@ -241,26 +298,41 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
     },
   ];
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.black1 }}>
-      {notificationSettings.map(setting => (
-        <View key={setting.title} style={{ paddingTop: 20 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingHorizontal: 16,
-            }}>
-            <SubTitleOne style={{ color: theme.colors.white }}>{setting.title}</SubTitleOne>
-            <SwitchComponent enable={setting.value} onSwitch={setting.onSwitch} />
+    <View style={{ flex: 1, backgroundColor: theme.colors.black1, marginTop: headerHeight - 10 }}>
+      <View style={styles.footerContainer}>
+        {notificationSettings.map((setting) => (
+          <View key={setting.title} style={{ paddingTop:12 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingHorizontal: 16,
+              }}>
+              <SubTitleTwo style={{ color: theme.colors.white }}>{setting.title}</SubTitleTwo>
+              <SwitchComponent enable={setting.value} onSwitch={setting.onSwitch} />
+            </View>
+            {/* <Divider width={2} color={theme.colors.black2} style={{ paddingTop: 20 }} /> */}
           </View>
-          <Divider width={2} color={theme.colors.black2} style={{ paddingTop: 20 }} />
-        </View>
-      ))}
-      <CommonModalComponent
+        ))}
+      </View>
+      {/* <CommonModalComponent
         modalText={type}
         isVisible={collectionModal}
         onConfirm={onConfirm}
+        onClose={onCancel}
+      /> */}
+       <ReportModal
+        modalText={type}
+        buttonOneTitle = '刪除'
+        buttonTwoTitle = '取消'
+        headerShow={true}
+        isVisible={collectionModal}
+        onConfirm={onConfirm}
+        showCancel={true}
+        headerShowText={'解除綁定'}
+        unChosenBtnStyle={styles.unChosenBtnStyle}
+        chosenBtnStyle={styles.unChosenBtnStyle}
         onClose={onCancel}
       />
     </View>

@@ -59,6 +59,23 @@ import inEyeIcon from '../assets/images/icons/inEye.png';
 import opneEmailIcon from '../assets/images/icons/opneEmail.png';
 import unCheckIcon from '../assets/images/icons/unCheck.png';
 import checkIcon from '../assets/images/icons/check.png';
+import blockIcon1 from '../assets/images/icons/blockIcon.png';
+import userIcon from '../assets/images/icons/userIcon.png';
+
+import arrowDownIcon from '../assets/images/profile/arrowDown.png';
+import inemailIcon from '../assets/images/profile/emailIcon.png';
+import livePhotoIcon from '../assets/images/profile/livePhoto.png';
+import pencilIcon from '../assets/images/profile/pencil.png';
+import VIPcard from '../assets/images/profile/VIPcard.png';
+import filterIcon1 from '../assets/images/profile/filterIcon.png';
+import settingsIcon from '../assets/images/profile/settings.png';
+
+import vip1 from '../assets/images/profile/vip1.png';
+import vip2 from '../assets/images/profile/vip2.png';
+import vip3 from '../assets/images/profile/vip3.png';
+import vip4 from '../assets/images/profile/vip4.png';
+import vip5 from '../assets/images/profile/vip5.png';
+import vip6 from '../assets/images/profile/vip6.png';
 
 type IIcon = {
   color?: string;
@@ -216,6 +233,12 @@ export const mapIcon = {
   logoIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size,resizeMode:'contain' }} source={logoIcon} />
   ),
+  blockIcon1: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size,}} source={blockIcon1} />
+  ),
+  userIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size, }} source={userIcon} />
+  ),
   pagesIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }}  source={pagesIcon} />
   ),
@@ -225,7 +248,35 @@ export const mapIcon = {
   upIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }}  source={upIcon} />
   ),
-  illus3zIcon:illus3zIcon
+  arrowDownIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={arrowDownIcon} />
+  ),
+  inemailIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={inemailIcon} />
+  ),
+  livePhotoIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={livePhotoIcon} />
+  ),
+  pencilIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={pencilIcon} />
+  ),
+  pencilIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={pencilIcon} />
+  ),
+  filterIcon1: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={filterIcon1} />
+  ),
+  settingsIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={settingsIcon} />
+  ),
+  illus3zIcon:illus3zIcon,
+  VIPcard:VIPcard,
+  vip1:vip1,
+  vip2:vip2,
+  vip3:vip3,
+  vip4:vip4,
+  vip5:vip5,
+  vip6:vip6
 };
 // to change png to svg, change the width, height and fill of the original svg file to ""(empty string),
 // and update the svg source path "import ContactIcon from '../assets/svg_icon/icon/contacticon.svg';"

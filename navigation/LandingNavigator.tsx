@@ -40,7 +40,7 @@ export default function LandingNavigator() {
   return (
     <LandingStack.Navigator initialRouteName="Landing" screenOptions={{ headerShown: false }}>
       <LandingStack.Screen name="Landing" component={LandingScreen} />
-      <LandingStack.Screen name="FilterSearchScreen" component={FilterScreen} />
+      {/* <LandingStack.Screen name="FilterSearchScreen" component={FilterScreen} /> */}
       <LandingStack.Screen name="DicoverScreen" component={DicoverScreen} />
       <LandingStack.Screen name="ConstellationSearchScreen" component={ConstellationSearchScreen} />
       <LandingStack.Screen name="ConstellationResultScreen" component={ConstellationResultScreen} />

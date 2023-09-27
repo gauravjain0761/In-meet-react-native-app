@@ -1,36 +1,51 @@
-import { View, Text, Image, Alert } from 'react-native';
-import React, { useReducer, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  ColorValue,
+  KeyboardAvoidingView,
+  Keyboard,
+  Platform,
+  TouchableWithoutFeedback,
+  TextInputProps,
+  ScrollView,
+  Image,
+} from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
+import React, { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { makeStyles, useTheme } from '@rneui/themed';
-import { FormProvider, useForm } from 'react-hook-form';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useForm, FormProvider } from 'react-hook-form';
+import { ErrorMessage } from '@hookform/error-message';
+import isEmpty from 'lodash/isEmpty';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { get } from 'lodash';
+import { AntDesign } from '@expo/vector-icons';
+
+import styled from 'styled-components/native';
 import { useSelector } from 'react-redux';
-import { ProfileStackScreenProps } from '../../../navigation/ProfileNavigator';
-import useCustomHeader from '../../../hooks/useCustomHeader';
-import { CaptionFive, CaptionFour, SubTitleTwo, TitleOne } from '../../../components/common/Text';
-import { ButtonTypeTwo, UnChosenButton } from '../../../components/common/Button';
-import CommonModalComponent from '../../../components/common/CommonModalComponent';
-import ProfileRowItem from '~/components/Profile/ProfileRowItem';
-import InputField from '~/components/common/InputField';
-import { useAppDispatch } from '~/store';
-import { mapIcon } from '~/constants/IconsMapping';
+import Toast from 'react-native-root-toast';
+
+import { RootState, useAppDispatch } from '~/store';
+import { updatePassword } from '~/store/registerSlice';
 import { userApi } from '~/api/UserAPI';
-import { selectToken } from '~/store/userSlice';
-import Loader from '~/components/common/Loader';
+import Header from '~/components/common/Header';
+import { fontSize } from '~/helpers/Fonts';
+import { RegisterVerifyCodeProps } from '~/types';
+import { mapIcon } from '~/constants/IconsMapping';
+import { CaptionFour, TitleOne } from '~/components/common/Text';
+import InputField from '~/components/common/InputField';
+import { ButtonTypeTwo, ChosenButton, UnChosenButton } from '~/components/common/Button';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const useStyles = makeStyles(theme => ({
-  defaultTitle: {
-    color: theme.colors?.white,
-    flex: 1,
-  },
-  title: {
-    color: theme.colors?.pink,
-    flex: 1,
+  headerStyle: {
+    backgroundColor: theme.colors?.black1,
   },
   container: {
     flex: 1,
-    paddingHorizontal: 40,
-    paddingTop: 100,
+    // paddingHorizontal: 40,
+    // paddingTop: 100,
     backgroundColor: theme.colors?.black1,
   },
   outerContainer: {
@@ -39,8 +54,14 @@ const useStyles = makeStyles(theme => ({
   },
   titleText: {
     color: theme.colors?.white,
-    paddingBottom: 30,
+    paddingTop:10,
     textAlign: 'center',
+  },
+  hintText: {
+    color: theme.colors?.black4,
+    textAlign: 'center',
+    marginBottom: 25,
+    marginTop:20
   },
 }));
 
@@ -84,17 +105,14 @@ const reducer = (state: visiblePasswordState, action: visiblePasswordAction) => 
   }
 };
 
-export default function ModifyPasswordSetting(
-  props: ProfileStackScreenProps<'ModifyPasswordSetting'>,
-) {
-  const { navigation, route } = props;
-  const styles = useStyles();
+export default function ModifyPasswordSetting(props: RegisterVerifyCodeProps) {
+  const { navigation } = props;
+
+  const styles = useStyles(props);
   const { theme } = useTheme();
-  const [collectionModal, setCollectionModal] = React.useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
   const passwordInputRef = useRef<TextInput>(null);
   const methods = useForm();
-  const [loading, setLoading] = useState(false);
   const storeDispatch = useAppDispatch();
   const {
     handleSubmit,
@@ -103,98 +121,140 @@ export default function ModifyPasswordSetting(
     setError,
   } = methods;
 
-  const { password, verifyPassword } = getValues();
-  const token = useSelector(selectToken);
+  const phone = useSelector((rootState: RootState) => rootState.register.phone);
+
   const onSubmit = async (data: any) => {
-    const { password, verifyPassword } = data;
-    if (password !== verifyPassword) {
-      setError('verifyPassword', {
-        message: 'This is not the same value',
-      });
-      return;
+    const { verifyCode } = data;
+    const res = await userApi.verification({ phone, verifyCode });
+    if (res !== 'success') {
+      Toast.show('驗證碼錯誤');
+    } else {
+      navigation.push('RegisterName');
     }
-    setLoading(true);
-    const oldPassword = get(route, 'params.oldPassword', '');
+  };
 
-    try {
-      await userApi.updateUserPassword({ token, oldPassword, newPassword: password });
-      navigation.goBack();
-      navigation.goBack();
-    } catch (error) {
-      Alert.alert('something went wrong', JSON.stringify(error));
-    }
-    setLoading(false);
+  const [countDown, setCountDown] = useState(30);
+  const [registerLoading, setRegisterLoading] = useState(false);
 
-    // storeDispatch(updatePassword(password))
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (countDown > 0) {
+        setCountDown(prev => prev - 1);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [countDown]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTransparent: true,
+      headerShown: false,
+      // headerShadowVisible: false,
+      // headerStyle: styles.headerStyle,
+      // headerTintColor: theme.colors.white,
+      // headerBackTitleVisible: false,
+      // headerTitleAlign: 'center',
+      // headerTitle: '忘記密碼',
+      // headerLeft: (props) => (
+      //   <TouchableOpacity onPress={navigation.goBack} style={{}}>
+      //     {mapIcon.backIcon({ size: 28 })}
+      //   </TouchableOpacity>
+      // ),
+    });
+  });
+
+  const onRegisterAgain = async () => {
+    setRegisterLoading(true);
+    const data = await userApi.phoneRegister({ phone });
+    setCountDown(30);
+    setRegisterLoading(false);
   };
-  const handleConfirm = () => {
-    setCollectionModal(false);
-  };
-  const handleCancel = () => {
-    setCollectionModal(false);
-  };
-  const handleOpen = () => {
-    setCollectionModal(true);
-  };
-  useCustomHeader({ title: '修改密碼', navigation });
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: theme.colors.black1,
-        paddingTop: 20,
-        paddingHorizontal: 40,
-      }}>
-      <Loader isLoading={loading}>
-        <FormProvider {...methods}>
-          <KeyboardAwareScrollView style={styles.outerContainer}>
-            <InputField
-              ref={passwordInputRef}
-              name="password"
-              secureTextEntry={!state.visiblePassword}
-              placeholder="輸入新密碼"
-              textContentType="password"
-              onSubmit={handleSubmit(onSubmit)}
-              rules={{
-                required: '這是必填欄位',
-                // pattern: {
-                //   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                //   message: '輸入的格式不正確',
-                // },
+    <FormProvider {...methods}>
+        <View style={styles.container}>
+      <KeyboardAwareScrollView style={styles.outerContainer}>
+        <Header containerStyle={{paddingHorizontal:20,}} title="忘記密碼" />
+        <Image
+        source={mapIcon.illus3zIcon}
+        style={{
+          width: 332,
+          height: 203,
+          position: 'absolute',
+          right:0
+        }}
+      />
+          {/* <TitleOne style={styles.titleText}>請輸入驗證碼</TitleOne> */}
+          <CaptionFour style={styles.hintText}>
+            {`我們向 ${"+886 0921234212"} 傳送了簡訊驗\n證碼，有效時間十分鐘`}
+          </CaptionFour>
+          <InputField
+            ref={passwordInputRef}
+            name="verifyCode"
+            style={{
+              marginBottom: 10,
+            }}
+            containerStyle={{ paddingHorizontal:40,paddingBottom:24}}
+            secureTextEntry={!state.visiblePassword}
+            placeholder="輸入驗證碼"
+            textContentType="password"
+            onSubmit={handleSubmit(onSubmit)}
+            keyboardType='number-pad'
+            rules={{
+              required: '這是必填欄位',
+            }}
+           styles={{}}
+          />
+          {countDown > 0 ? (
+            <UnChosenButton
+              buttonStyle={{
+                height: 32,
+                width: 260,
+                padding: 0,
+                marginBottom: 40,
+                alignItems: 'center',
+           
               }}
-              styles={{}}
-              onRightPress={() =>
-                dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
-              }
-              right={mapIcon.invisiblePassword()}
-            />
-            <InputField
-              name="verifyPassword"
-              keyboardType="default"
-              secureTextEntry={!state.visibleVerifyPassword}
-              textContentType="password"
-              placeholder="再次輸入新密碼"
-              onSubmit={handleSubmit(onSubmit)}
-              rules={{
-                required: true,
+              titleStyle={{
+                fontSize: fontSize(14),
+                color:theme?.colors?.grey6,
+                marginLeft: 3,
+                textAlign:'center'
               }}
-              styles={{}}
-              onRightPress={() =>
-                dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_VERIFY_PASSWORD })
-              }
-              right={mapIcon.invisiblePassword()}
+              containerStyle={{ paddingHorizontal:40,alignItems:'center'}}
+              style={{ alignSelf: 'center' }}
+              title={`我沒有收到驗證碼（00:${countDown < 10 ? '0' : ''}${countDown}）`}
+              icon={<AntDesign name="clockcircleo" size={14} color={theme?.colors?.grey6} />}
+              iconLeft
             />
-            <ButtonTypeTwo title="確認修改" onPress={handleSubmit(onSubmit)} />
-          </KeyboardAwareScrollView>
-        </FormProvider>
-        <CommonModalComponent
-          modalText="確定要刪除帳號嗎"
-          isVisible={collectionModal}
-          onConfirm={handleConfirm}
-          onClose={handleCancel}
-        />
-      </Loader>
-    </View>
+          ) : (
+            <ChosenButton
+              buttonStyle={{
+                height: 32,
+                width: 170,
+                padding: 0,
+                // marginBottom: 40,
+                alignItems:'center'
+              }}
+              titleStyle={{
+                fontSize: fontSize(14),
+                marginLeft: 3,
+                color:theme?.colors?.black2,
+              }}
+              containerStyle={{alignSelf:'center'}}
+              style={{ alignItems: 'center' }}
+              title="重新獲取驗證碼"
+              onPress={onRegisterAgain}
+              loading={registerLoading}
+              icon={<AntDesign name="clockcircleo" size={14} color={theme?.colors?.black2} />}
+              iconLeft
+            />
+          )}
+      </KeyboardAwareScrollView>
+          <ButtonTypeTwo title="下一步" containerStyle={{marginHorizontal:40,marginBottom:30}}
+           onPress={handleSubmit(onSubmit)} 
+           />
+        </View>
+    </FormProvider>
   );
 }

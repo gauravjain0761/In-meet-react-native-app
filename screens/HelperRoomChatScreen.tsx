@@ -538,7 +538,7 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
     <SafeAreaView
       style={{
         flex: 1,
-        paddingTop: top + 5,
+        paddingTop: top + 10,
         paddingBottom: bottom,
         backgroundColor: theme.colors.black1,
       }}>
@@ -572,7 +572,7 @@ export default function HelperRoomChatScreen(props: RootStackScreenProps<'Helper
       <KeyboardAvoidingView
         behavior={Platform.OS === 'android' ? undefined : 'padding'}
         keyboardVerticalOffset={headerHeight}
-        style={{ flex: 1, marginTop: -keyboardHeight }}>
+        style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
           <KeyboardAwareFlatList
             // data={test}

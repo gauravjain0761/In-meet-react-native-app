@@ -204,9 +204,11 @@ const useStyles = makeStyles((theme) => ({
   },
   emptyWrapper: {
     backgroundColor: theme.colors?.black1,
+    height: '100%',
+    paddingHorizontal: 90,
+    paddingTop: width * 0.47,
+    display: 'flex',
     alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
   },
 }));
 

@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     height: 185,
     resizeMode: 'contain',
     paddingLeft: 16,
-    top: height / 1.38,
+    top: height *0.72,
   },
   linearGradient: {
     paddingRight: 6,
@@ -181,7 +181,7 @@ export default function MatchCard(props: Props) {
       }}
       style={styles.cardContainer}>
       <ImageBackground
-        resizeMethod="resize"
+        // resizeMethod="resize"
         resizeMode="cover"
         style={styles.cardImage}
         source={{ uri: avatar }}>
@@ -219,7 +219,7 @@ export default function MatchCard(props: Props) {
               </SubTitleTwo>
             </View>
             <View style={styles.cardBioContainer}>
-              <CaptionFour numberOfLines={2} style={styles.bioText}>
+              <CaptionFour numberOfLines={1} style={styles.bioText}>
                 {about}
               </CaptionFour>
             </View>

@@ -72,6 +72,15 @@ const useStyles = makeStyles((theme) => ({
     width: 50,
     borderRadius: 100,
   },
+  likeIconStyle:{
+    width: 100,
+    alignSelf: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.black2,
+    height: 48,
+    justifyContent: 'center',
+    borderRadius: 20,
+  }
 }));
 enum LEVEL {
   NORMAL = 'NORMAL',
@@ -426,6 +435,7 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
         <VIPModal
           isVisible={openVIP}
           textShow={true}
+          titleText="升級VIP即可【封鎖用戶】"
           onClose={() => setOpenVIP(false)}
           onConfirmCallback={()=>{
             setTimeout(() => {
@@ -538,7 +548,7 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
           inactiveDotScale={1}
           inactiveDotColor="#C4C4C4"
         /> */}
-          {renderFloatButtonContainer()}
+          {/* {renderFloatButtonContainer()} */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', top: -15 }}>
             {Array.from(Array(4)).map((_e, i) => (
               <View
@@ -609,17 +619,9 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
           resizeMode="cover"
           style={{ width: '100%', height: 60, position: 'absolute', bottom: 0 }}>
           <TouchableOpacity
-            style={{
-              width: 100,
-              alignSelf: 'center',
-              alignItems: 'center',
-              // zIndex: -1,
-              backgroundColor: theme.colors.black2,
-              height: 48,
-              justifyContent: 'center',
-              borderRadius: 20,
-            }}>
-            {mapIcon.likeIcon({ color: theme.colors.pink, size: 28 })}
+          onPress={handleLike}
+            style={styles.likeIconStyle}>
+            { isCollected ?  mapIcon.likeIcon({ color: theme.colors.pink, size: 28 }):mapIcon.unlikeIcon({ color: theme.colors.black4, size: 28 })}
           </TouchableOpacity>
         </ImageBackground>
       </View>

@@ -87,6 +87,19 @@ import LocationPermissionScreen from '~/screens/LocationPermissionScreen';
 import PhoneLoginScreen from '~/screens/Login/PhoneLoginScreen';
 import RegisterVerifyCodeScreen from '~/screens/Login/RegisterVerifyCodeScreen';
 import ChatScreenList from '~/screens/ChatScreenList';
+import VIPPurchaseScreen from '~/screens/Profile/VIPPurchaseScreen';
+import ProfileImageScreen from '~/screens/Profile/ProfileImageScreen';
+import EditProfilePhoto from '~/screens/Profile/Edit/EditProfilePhoto';
+import FilterScreen from '~/screens/Landing/FilterScreen';
+import MyUpdateScreen from '~/screens/Landing/MyUpdateScreen';
+import ProfileSettingScreen from '~/screens/Profile/ProfileSettingScreen';
+import NotificationSetting from '~/screens/Profile/Settings/NotificationSetting';
+import BlockSetting from '~/screens/Profile/Settings/BlockSetting';
+import AccountSettings from '~/screens/Profile/Settings/AccountSettings';
+import ModifyPasswordSetting from '~/screens/Profile/Settings/ModifyPasswordSetting';
+import FastLoginSettings from '~/screens/Profile/Settings/FastLoginSettings';
+import ModifyPasswordFirstSetting from '~/screens/Profile/Settings/ModifyPasswordFirstSetting';
+import ContactUsScreen from '~/screens/Profile/ContactUsScreen';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -334,10 +347,28 @@ function RootNavigator() {
             />
             <Stack.Screen options={{}} name="ReportScreen" component={ReportScreen} />
             <Stack.Screen options={{}} name="ChatScreenList" component={ChatScreenList} />
+            <Stack.Screen options={{}} name="VIPPurchaseScreen" component={VIPPurchaseScreen} />
+            <Stack.Screen options={{}} name="ProfileImageScreen" component={ProfileImageScreen} />
             <Stack.Screen options={{}} name="ImageGalleryScreen" component={ImageGalleryScreen} />
             <Stack.Screen options={{}} name="PurchaseHeart" component={PurchaseHeart} />
             <Stack.Screen options={{}} name="PurchaseVIPScreen" component={PurchaseVIPScreen} />
             <Stack.Screen options={{}} name="EditSignatureScreen" component={EditSignatureScreen} />
+           <Stack.Screen name="EditProfilePhoto" component={EditProfilePhoto} />
+      <Stack.Screen name="FilterSearchScreen" component={FilterScreen} />
+      <Stack.Screen name="MyUpdateScreen" component={MyUpdateScreen} />
+      <Stack.Screen name="ProfileSettingScreen" component={ProfileSettingScreen} />
+      <Stack.Screen name="NotificationSetting" component={NotificationSetting} />
+      <Stack.Screen name="BlockSetting" component={BlockSetting} />
+      <Stack.Screen name="AccountSettings" component={AccountSettings} />
+      <Stack.Screen name="ModifyPasswordSetting" component={ModifyPasswordSetting} />
+      <Stack.Screen name="FastLoginSettings" component={FastLoginSettings} />
+      {/* <Stack.Screen name="ForgetPasswordScreen" component={ForgetPasswordScreen} /> */}
+      <Stack.Screen
+        name="ModifyPasswordFirstSetting"
+        component={ModifyPasswordFirstSetting}
+      />
+      <Stack.Screen name="ContactUsScreen" component={ContactUsScreen} />
+
           </Stack.Group>
 
           <Stack.Group screenOptions={{ presentation: 'modal' }}>

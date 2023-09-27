@@ -177,7 +177,29 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
       .flat()
       .filter((item) => !item.isSecret) || [];
 
-  const roomsWithHelper = [...helperRoom,...helperRoom, ...rooms];
+  const roomchat =  {
+      chatId: '1_814',
+      content: '謝謝您的體諒與支持， InMeet營運團隊感謝您',
+      createTime: '2023-06-27 15:30:54',
+      id: 992,
+      isDelete: null,
+      isFromClient: false,
+      isSecret: false,
+      notReadCount: 0,
+      recipientAvatar:
+        'https://inmeet-service.s3.ap-northeast-1.amazonaws.com/avatar/814/69efe54f-5d74-468f-b4a0-6a3a98152b6f.png',
+      recipientId: 814,
+      recipientName: '花生',
+      senderAvatar:
+        'https://inmeet-service.s3.ap-northeast-1.amazonaws.com/blog/4/58e83f9a-5952-4f73-9287-b5c7fad83614.JPG',
+      senderId: 1,
+      senderName: 'Chloe',
+      status: 'DELIVERED',
+      type: 'TEXT',
+    }
+
+
+  const roomsWithHelper = [...helperRoom,roomchat, ...rooms];
 
   const onSubmit = async (data: any) => {
     if (loading) return;
@@ -234,7 +256,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
         );
       },
     });
-  });
+  }, []);
 
   const renderEmpty = () => {
     return (
@@ -313,7 +335,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
             }
           }}
           onEndReachedThreshold={0.1}
-          keyExtractor={(item, index) => item.id.toString()}
+          keyExtractor={(item, index) => item?.id?.toString()}
           data={roomsWithHelper}
           ListEmptyComponent={renderEmpty}
           renderItem={({ index, item }: any) => {

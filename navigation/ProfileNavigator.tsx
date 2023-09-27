@@ -22,21 +22,10 @@ import PurchaseHeart from '~/screens/Profile/PurchaseHeart';
 export type ProfileStackParamList = {
   ProfileLandingScreen: undefined;
   ProfileHelpScreen: undefined;
-  ContactUsScreen: undefined;
-  ProfileSettingScreen: undefined;
-  ProfileDetailScreen: undefined;
-  BlockSetting: undefined;
   NotificationSetting: undefined;
   PurchaseVIPScreen: undefined;
   PurchaseHeart: undefined;
-  EditProfilePhoto: undefined;
   CollectionScreen: undefined;
-  FastLoginSettings: undefined;
-  ModifyPasswordSetting: undefined;
-  AccountSettings: undefined;
-  ModifyPasswordFirstSetting: undefined;
-  ForgetPasswordScreen: undefined;
-  EditSignatureScreen: undefined;
 };
 
 export type ProfileStackScreenProps<Screen extends keyof ProfileStackParamList> =
@@ -53,20 +42,8 @@ export default function ProfileNavigator() {
       <ProfileStack.Screen name="PurchaseVIPScreen" component={PurchaseVIPScreen} />
       <ProfileStack.Screen name="PurchaseHeart" component={PurchaseHeart} />
       <ProfileStack.Screen name="ProfileHelpScreen" component={ProfileHelpScreen} />
-      <ProfileStack.Screen name="ContactUsScreen" component={ContactUsScreen} />
-      <ProfileStack.Screen name="ProfileSettingScreen" component={ProfileSettingScreen} />
       <ProfileStack.Screen name="CollectionScreen" component={CollectionScreen} />
-      <ProfileStack.Screen name="BlockSetting" component={BlockSetting} />
-      <ProfileStack.Screen name="AccountSettings" component={AccountSettings} />
-      <ProfileStack.Screen name="ModifyPasswordSetting" component={ModifyPasswordSetting} />
-      <ProfileStack.Screen name="NotificationSetting" component={NotificationSetting} />
-      <ProfileStack.Screen name="FastLoginSettings" component={FastLoginSettings} />
-      <ProfileStack.Screen name="EditProfilePhoto" component={EditProfilePhoto} />
-      <ProfileStack.Screen name="ForgetPasswordScreen" component={ForgetPasswordScreen} />
-      <ProfileStack.Screen
-        name="ModifyPasswordFirstSetting"
-        component={ModifyPasswordFirstSetting}
-      />
+     
     </ProfileStack.Navigator>
   );
 }
