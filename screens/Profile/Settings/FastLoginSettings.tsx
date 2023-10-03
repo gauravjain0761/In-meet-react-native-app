@@ -1,7 +1,7 @@
 import { View, Text, Platform, TouchableOpacity } from 'react-native';
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { useTheme, makeStyles } from '@rneui/themed';
-import { Switch } from 'react-native-paper';
+// import { Switch } from 'react-native-paper';
 import { Divider } from '@rneui/base';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
@@ -25,7 +25,8 @@ import CommonModalComponent from '~/components/common/CommonModalComponent';
 import { mapIcon } from '~/constants/IconsMapping';
 import { useHeaderHeight } from '@react-navigation/elements';
 import ReportModal from '~/components/common/ReportModal';
-
+import SwitchToggle from 'react-native-switch-toggle';
+import InstaStory from 'react-native-insta-story';
 const useStyles = makeStyles((theme) => ({
   defaultTitle: {
     color: theme.colors?.white,
@@ -55,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
   unChosenBtnStyle: {
     marginTop: 10,
     width: 185,
-    alignSelf:'center'
+    alignSelf: 'center',
   },
 }));
 
@@ -63,17 +64,39 @@ function SwitchComponent({ enable, onSwitch }: { enable: boolean; onSwitch: () =
   const { theme } = useTheme();
 
   return (
-    <Switch
-      style={{
-        margin: 4,
-        borderColor: theme.colors.black4,
-        transform: Platform.OS === 'android' ? [] : [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+    // <Switch
+    //   style={{
+    //     margin: 4,
+    //     borderColor: theme.colors.black4,
+    //     transform: Platform.OS === 'android' ? [] : [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+    //   }}
+    //   ios_backgroundColor={theme.colors.black1}
+    //   thumbColor={enable ? theme.colors.black4 : theme.colors.black4}
+    //   color={enable ? theme.colors.pink : theme.colors.black4}
+    //   value={enable}
+    //   onValueChange={onSwitch}
+    // />
+    <SwitchToggle
+      switchOn={enable}
+      onPress={onSwitch}
+      backgroundColorOn="#FF4E84"
+      backgroundColorOff="#A8ABBD"
+      circleColorOn='#fff'
+      circleColorOff='#fff'
+      containerStyle={{
+        marginTop: 16,
+        width: 48,
+        height: 26,
+        borderRadius: 20,
+        padding: 4,
+        alignItems: 'center',
       }}
-      ios_backgroundColor={theme.colors.black1}
-      thumbColor={enable ? theme.colors.black4 : theme.colors.black4}
-      color={enable ? theme.colors.pink : theme.colors.black4}
-      value={enable}
-      onValueChange={onSwitch}
+      circleStyle={{
+        width: 22,
+        height: 22,
+        borderRadius: 22,
+        backgroundColor: '#fff',
+      }}
     />
   );
 }
@@ -100,6 +123,51 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
     clientId: '1037316389652-rdpfj1op7edu5jemrjosnq853s2k3489.apps.googleusercontent.com',
     iosClientId: '1037316389652-gb1ervtr4h8ukj25nrum2h907ubsvsl4.apps.googleusercontent.com',
   });
+
+  const data = [
+    {
+      user_id: 1,
+      user_image:
+        'https://pbs.twimg.com/profile_images/1222140802475773952/61OmyINj.jpg',
+      user_name: 'Ahmet Çağlar Durmuş',
+      stories: [
+        {
+          story_id: 1,
+          story_image:
+            'https://image.freepik.com/free-vector/universe-mobile-wallpaper-with-planets_79603-600.jpg',
+          swipeText: 'Custom swipe text for this story',
+          onPress: () => console.log('story 1 swiped'),
+        },
+        {
+          story_id: 2,
+          story_image:
+            'https://image.freepik.com/free-vector/mobile-wallpaper-with-fluid-shapes_79603-601.jpg',
+        },
+      ],
+    },
+    {
+      user_id: 2,
+      user_image:
+        'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&w=1000&q=80',
+      user_name: 'Test User',
+      stories: [
+        {
+          story_id: 1,
+          story_image:
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjORKvjcbMRGYPR3QIs3MofoWkD4wHzRd_eg&usqp=CAU',
+          swipeText: 'Custom swipe text for this story',
+          onPress: () => console.log('story 1 swiped'),
+        },
+        {
+          story_id: 2,
+          story_image:
+            'https://files.oyebesmartest.com/uploads/preview/vivo-u20-mobile-wallpaper-full-hd-(1)qm6qyz9v60.jpg',
+          swipeText: 'Custom swipe text for this story',
+          onPress: () => console.log('story 2 swiped'),
+        },
+      ],
+    },
+  ];
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -300,8 +368,13 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.black1, marginTop: headerHeight - 10 }}>
       <View style={styles.footerContainer}>
+        
+      {/* <InstaStory
+  data={data}
+  duration={10}
+/> */}
         {notificationSettings.map((setting) => (
-          <View key={setting.title} style={{ paddingTop:12 }}>
+          <View key={setting.title} style={{ paddingTop: 12 }}>
             <View
               style={{
                 flexDirection: 'row',
@@ -312,7 +385,7 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
               <SubTitleTwo style={{ color: theme.colors.white }}>{setting.title}</SubTitleTwo>
               <SwitchComponent enable={setting.value} onSwitch={setting.onSwitch} />
             </View>
-            {/* <Divider width={2} color={theme.colors.black2} style={{ paddingTop: 20 }} /> */}
+          
           </View>
         ))}
       </View>
@@ -322,10 +395,10 @@ export default function FastLoginSettings(props: ProfileStackScreenProps<'FastLo
         onConfirm={onConfirm}
         onClose={onCancel}
       /> */}
-       <ReportModal
+      <ReportModal
         modalText={type}
-        buttonOneTitle = '刪除'
-        buttonTwoTitle = '取消'
+        buttonOneTitle="刪除"
+        buttonTwoTitle="取消"
         headerShow={true}
         isVisible={collectionModal}
         onConfirm={onConfirm}

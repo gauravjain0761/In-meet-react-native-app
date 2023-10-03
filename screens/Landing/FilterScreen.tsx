@@ -37,6 +37,7 @@ import { fontSize } from '~/helpers/Fonts';
 import matchBg from '../../assets/images/icons/matchBg.png';
 import RoomChatBottomModal from '~/components/common/RoomChatBottomModal';
 import FilterBottomModal from '~/components/common/FilterBottomModal';
+import { selectCityData } from '~/constants/mappingValue';
 
 const { width } = Dimensions.get('window');
 
@@ -121,6 +122,8 @@ export default function FilterScreen(props: FilterScreenProps) {
   const [ageRange, setAgeRange] = useState([startAge, endAge]);
   const [distance, setDistance] = useState(rootDistance);
   const [interested, setInterested] = useState(rootInterested);
+  const [selectCityData, setSelectCityData] = useState([]);
+
   const dispatch = useAppDispatch();
   const token = useSelector(selectToken);
   const { data } = useQuery('fetchUserByInterest', () =>
@@ -246,21 +249,26 @@ export default function FilterScreen(props: FilterScreenProps) {
       <ScrollView style={{ backgroundColor: theme.colors.black1, flex: 1, marginHorizontal: 24 }}>
         <View style={styles.rowContainer}>
           <CaptionFour style={styles.filterTitle}>所選城市</CaptionFour>
-          <TouchableOpacity onPress={()=> setVisibleModal(true)}>
-            
-          {mapIcon.arrowDownIcon({ size: 20 })}
+          <TouchableOpacity onPress={() => setVisibleModal(true)}>
+            {mapIcon.arrowDownIcon({ size: 20 })}
           </TouchableOpacity>
         </View>
         <View style={styles.footerContainer}>
-          <BodyThree
-            style={{
-              color: theme.colors.white,
-              fontSize: fontSize(12),
-            }}>
-            {
-              '台北市、台北縣、桃園縣、桃園市、台南市、新竹縣、高雄市、台北市、台北縣、桃園縣、桃園市、台南市、新竹縣、高雄市'
-            }
-          </BodyThree>
+          <View  style={{flexWrap:'wrap',flex:1,flexDirection:'row'}}>
+          {selectCityData.map((item: any) => {
+            return (
+              <BodyThree
+                style={{
+                  color: theme.colors.white,
+                  fontSize: fontSize(12),
+                  marginRight:8,
+                  lineHeight:fontSize(22)
+                }}>
+                {item.name},
+              </BodyThree>
+            );
+          })}
+          </View>
         </View>
 
         {/* <Divider width={2} color={theme.colors.black2} style={{ marginBottom: 20 }} /> */}
@@ -454,6 +462,8 @@ export default function FilterScreen(props: FilterScreenProps) {
         />
       </ImageBackground>
       <FilterBottomModal
+        selectCity={selectCityData}
+        setSelectCity={setSelectCityData}
         isVisible={visibleModal}
         onClose={() => {
           setVisibleModal(false);

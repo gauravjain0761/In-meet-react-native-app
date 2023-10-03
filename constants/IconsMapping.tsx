@@ -61,6 +61,8 @@ import unCheckIcon from '../assets/images/icons/unCheck.png';
 import checkIcon from '../assets/images/icons/check.png';
 import blockIcon1 from '../assets/images/icons/blockIcon.png';
 import userIcon from '../assets/images/icons/userIcon.png';
+import likeIcon1 from '../assets/images/icons/likeIcon1.png';
+import unlikeIcon1 from '../assets/images/icons/unlikeIcon.png'
 
 import arrowDownIcon from '../assets/images/profile/arrowDown.png';
 import inemailIcon from '../assets/images/profile/emailIcon.png';
@@ -69,6 +71,7 @@ import pencilIcon from '../assets/images/profile/pencil.png';
 import VIPcard from '../assets/images/profile/VIPcard.png';
 import filterIcon1 from '../assets/images/profile/filterIcon.png';
 import settingsIcon from '../assets/images/profile/settings.png';
+import viewIcon from '../assets/images/profile/view.png';
 
 import vip1 from '../assets/images/profile/vip1.png';
 import vip2 from '../assets/images/profile/vip2.png';
@@ -118,6 +121,9 @@ export const mapIcon = {
   ),
   vectorIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={vectorIcon} />
+  ),
+  viewIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={viewIcon} />
   ),
   userClockIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }} source={userClockIcon} />
@@ -268,6 +274,12 @@ export const mapIcon = {
   ),
   settingsIcon: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }}  source={settingsIcon} />
+  ),
+  likeIcon1: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={likeIcon1} />
+  ),
+  unlikeIcon1: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={unlikeIcon1} />
   ),
   illus3zIcon:illus3zIcon,
   VIPcard:VIPcard,

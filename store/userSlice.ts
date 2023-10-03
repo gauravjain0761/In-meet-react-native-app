@@ -27,6 +27,7 @@ interface UserState extends User {
 const initialState: UserState = {
   email: '',
   name: '',
+  smoke: '',
   point: 0,
   starAmount: 0,
   city: '',
@@ -45,6 +46,7 @@ const initialState: UserState = {
   isSystemEnable: false,
   vipEndTime: '',
   fromRegister: false,
+  scrollvalue:0
 };
 
 interface SearchUserParams {
@@ -158,6 +160,8 @@ export const loginUser = createAsyncThunk(
         cancelToken: source.token,
       },
     );
+    console.log('response',response);
+    
     return response.data;
   },
 );
@@ -384,7 +388,7 @@ export const patchUserNotification = createAsyncThunk(
         isMessageEnable = true,
         isBlogEnable = true,
         isLikeEnable = true,
-      } = data;
+      } = data;   
       const authToken = await getToken();
       const response = await HttpClient.put<ActionResponse<UserProfileResponse>>(
         '/user/notification/setting',
@@ -461,6 +465,9 @@ export const userSlice = createSlice({
     patchUserAbout: (state, action: PayloadAction<any>) => {
       state.about = action.payload;
     },
+    patchUserSmoke: (state, action: PayloadAction<any>) => {
+      state.smoke = action.payload;
+    },
     patchUserSignature: (state, action: PayloadAction<any>) => {
       state.signature = action.payload;
     },
@@ -481,6 +488,9 @@ export const userSlice = createSlice({
     },
     patchUserEmail: (state, action: PayloadAction<any>) => {
       state.email = action.payload;
+    },
+    updateUserScrollValue: (state, action: PayloadAction<any>) => {
+      state.scrollvalue = action.payload;
     },
     patchUserSocial: (
       state,
@@ -653,6 +663,8 @@ export const {
   patchUserCity,
   patchUserFromRegister,
   patchUserEmail,
+  updateUserScrollValue,
+  patchUserSmoke
 } = userSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type

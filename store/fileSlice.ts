@@ -39,12 +39,17 @@ export const uploadFile = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
+      console.log('response',response);
+      
       return response.data;
     } catch (err: any) {
+      
       const error: AxiosError<ActionResponse<{ data: any }>> = err;
       if (!error.response) {
         throw err;
       }
+      console.log('errerrerrerr',error?.response);
+
       throw error.response.data;
     }
   },

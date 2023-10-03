@@ -155,6 +155,7 @@ export default function FastLoginPassWordScreen(props: FastLoginPassWordScreenPr
               // },
             }}
             styles={{}}
+            rightIconShow={true}
             onRightPress={() =>
               dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
             }
@@ -174,6 +175,7 @@ export default function FastLoginPassWordScreen(props: FastLoginPassWordScreenPr
             onRightPress={() =>
               dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_VERIFY_PASSWORD })
             }
+            rightIconShow={true}
             right={mapIcon.invisiblePassword()}
           />
           <ButtonTypeTwo loading={loading} title="下一步" onPress={handleSubmit(onSubmit)} />

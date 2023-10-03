@@ -306,6 +306,7 @@ const useStompClient = ({ recipientId }: any) => {
   const { uploadPhoto } = useUploadFile();
   const stompClientRef = useRef<Client>();
   const chatId = `${userId}_${recipientId}`;
+console.log('stompClientRef',stompClientRef);
 
   const handleSendWebSocket = async ({
     content,

@@ -59,6 +59,11 @@ export type RootStackParamList = {
     backScreen: string;
     maxLength?: number;
   };
+  ImageBrowserNew: {
+    backScreen: string;
+    maxLength?: number;
+    selectid?:number
+  };
   ProfileDetail: undefined;
   ReportScreen: undefined;
   EditProfile: undefined;

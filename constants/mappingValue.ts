@@ -8,11 +8,31 @@ export const EducationValue = {
   PHD: '博士',
 };
 export const EducationList = {
-  不透露: '不透露',
-  高中職: '高中/職',
-  五專: '五專',
-  學士: '學士',
-  碩士或以上: '碩士或以上',
+  ELEMENTARY: '小學',
+  SECONDARY: '國中',
+  HIGH_SCHOOL: '高中',
+  UNIVERSITY: '大學',
+  MASTER: '碩士',
+  PHD: '博士',
+  // 不透露: '不透露',
+  // 高中職: '高中/職',
+  // 五專: '五專',
+  // 學士: '學士',
+  // 碩士或以上: '碩士或以上',
+};
+export const heightList = {
+  '150以下': '150以下',
+    '151-155': '151-155',
+    '156-160': '156-160',
+    '161-165': '161-165',
+    '166-170': '166-170',
+    '171-175': '171-175',
+    '176-180': '176-180',
+    '181-185': '181-185',
+    '186-190': '186-190',
+    '191-195': '191-195',
+    '196-200': '196-200',
+    '200以上': '200以上',
 };
 
 export const ReligionValue = {
@@ -155,3 +175,21 @@ export enum BLOCK_REPORT_TYPE {
   FILE = 'FILE',
   BLOG = 'BLOG',
 }
+
+export   const selectCityData = [
+  {id:2, name: '基隆市', isSelect: false },
+  {id:3, name: '台北市', isSelect: false },
+  { id:4,name: '台北縣', isSelect: false },
+  { id:5,name: '桃園市', isSelect: false },
+  {id:6, name: '桃園縣', isSelect: false },
+  { id:7,name: '新竹縣', isSelect: false },
+  { id:8,name: '新竹縣', isSelect: false },
+  {id:9, name: '新竹縣', isSelect: false },
+  { id:10, name: '新竹縣', isSelect: false },
+  { id:11,name: '新竹縣', isSelect: false },
+  {id:12, name: '新竹縣', isSelect: false },
+  { id:13,name: '新竹縣', isSelect: false },
+  { id:14,name: '新竹縣', isSelect: false },
+  {id:15, name: '新竹縣', isSelect: false },
+  {id:16, name: '新竹縣', isSelect: false },
+];

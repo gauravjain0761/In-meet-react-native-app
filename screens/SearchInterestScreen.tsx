@@ -105,9 +105,10 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
-    ['searchInterest', value],
+    ['searchInterest'],
     pageObject => userApi.findWhoLikeMe({ token, account }, pageObject),
   );
+console.log('data',data);
 
   const {
     isFetchingNextPage: watchedFetchingNextPage,

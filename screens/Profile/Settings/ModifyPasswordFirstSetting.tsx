@@ -27,6 +27,7 @@ import useRequestLocation from '~/hooks/useRequestLocation';
 import { storeUserToken } from '~/storage/userToken';
 import Loader from '~/components/common/Loader';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { Feather } from '@expo/vector-icons';
 
 const useStyles = makeStyles((theme) => ({
   defaultTitle: {
@@ -68,6 +69,7 @@ enum visiblePasswordActionKind {
   VISIBLE_VERIFY_PASSWORD = 'visible_verify_password',
   INVISIBLE_VERIFY_PASSWORD = 'invisible_verify_password',
   TOGGLE_VISIBLE_PASSWORD = 'toggle_password',
+  OLD_TOGGLE_VISIBLE_PASSWORD = 'old_toggle_password',
   TOGGLE_VISIBLE_VERIFY_PASSWORD = 'toggle_visible_password',
 }
 
@@ -76,17 +78,24 @@ interface visiblePasswordAction {
 }
 
 interface visiblePasswordState {
+  oldVisiblePassword: boolean;
   visiblePassword: boolean;
   visibleVerifyPassword: boolean;
 }
 
 const initialState = {
+  oldVisiblePassword: false,
   visiblePassword: false,
   visibleVerifyPassword: false,
 };
 
 const reducer = (state: visiblePasswordState, action: visiblePasswordAction) => {
   switch (action.type) {
+    case visiblePasswordActionKind.OLD_TOGGLE_VISIBLE_PASSWORD:
+      return {
+        ...state,
+        oldVisiblePassword: !state.oldVisiblePassword,
+      };
     case visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD:
       return {
         ...state,
@@ -221,7 +230,7 @@ export default function ModifyPasswordFirstSetting(
             <InputField
               ref={passwordInputRef}
               name="password"
-              secureTextEntry={!state.visiblePassword}
+              secureTextEntry={!state.oldVisiblePassword}
               placeholder="輸入原有密碼"
               // label='舊密碼'
               textContentType="password"
@@ -235,15 +244,22 @@ export default function ModifyPasswordFirstSetting(
               }}
               styles={{}}
               onRightPress={() =>
-                dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
+                dispatch({ type: visiblePasswordActionKind.OLD_TOGGLE_VISIBLE_PASSWORD })
               }
-              rightStyle={{ top: '65%' }}
-              right={mapIcon.invisiblePassword()}
+              rightStyle={{ top: '52%' }}
+              rightIconShow={true}
+              right={
+                state.oldVisiblePassword ? (
+                  <Feather name="eye" size={22} color="#A8ABBD" />
+                ) : (
+                  mapIcon.invisiblePassword()
+                )
+              }
             />
             <InputField
-              ref={passwordInputRef}
+              // ref={passwordInputRef}
               containerStyle={{ marginTop: 10 }}
-              name="password"
+              name="Newpassword"
               secureTextEntry={!state.visiblePassword}
               placeholder="輸入原有密碼"
               label="新密碼"
@@ -261,13 +277,20 @@ export default function ModifyPasswordFirstSetting(
                 dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
               }
               rightStyle={{ top: '65%' }}
-              right={mapIcon.invisiblePassword()}
+              rightIconShow={true}
+              right={
+                state.visiblePassword ? (
+                  <Feather name="eye" size={22} color="#A8ABBD" />
+                ) : (
+                  mapIcon.invisiblePassword()
+                )
+              }
             />
             <InputField
-              ref={passwordInputRef}
+              // ref={passwordInputRef}
               containerStyle={{ marginTop: 10 }}
-              name="password"
-              secureTextEntry={!state.visiblePassword}
+              name="confirmpassword"
+              secureTextEntry={!state.visibleVerifyPassword}
               placeholder="請確認密碼"
               label="確認密碼"
               textContentType="password"
@@ -280,22 +303,29 @@ export default function ModifyPasswordFirstSetting(
                 // },
               }}
               styles={{}}
+              rightIconShow={true}
               onRightPress={() =>
-                dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
+                dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_VERIFY_PASSWORD })
               }
               rightStyle={{ top: '65%' }}
-              right={mapIcon.invisiblePassword()}
+              right={
+                state.visibleVerifyPassword ? (
+                  <Feather name="eye" size={22} color="#A8ABBD" />
+                ) : (
+                  mapIcon.invisiblePassword()
+                )
+              }
             />
 
             <ButtonTypeTwo
               title="確定修改"
               containerStyle={{ marginTop: 70 }}
-              // onPress={handleSubmit(onSubmit)}
-              onPress={()=>{
-                navigation.push('ModifyPasswordSetting', {
-                  oldPassword: "password",
-                });
-              }}
+              onPress={handleSubmit(onSubmit)}
+              // onPress={()=>{
+              //   navigation.push('ModifyPasswordSetting', {
+              //     oldPassword: "password",
+              //   });
+              // }}
             />
             {/* <TouchableOpacity onPress={handlePressForgetPassword}>
             <BodyThree style={styles.forgetButtonText}>忘記密碼</BodyThree>

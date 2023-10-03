@@ -155,6 +155,7 @@ export default function ForgetPasswordTwoScreen(props: ForgetPasswordTwoScreenPr
               // },
             }}
             styles={{}}
+            rightIconShow={true}
             onRightPress={() =>
               dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
             }
@@ -183,6 +184,7 @@ export default function ForgetPasswordTwoScreen(props: ForgetPasswordTwoScreenPr
               dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_VERIFY_PASSWORD })
             }
             containerStyle={{marginHorizontal:40}}
+            rightIconShow={true}
             right={
               state.visibleVerifyPassword ? (
                 <Feather name="eye" size={24} color="#A8ABBD" />

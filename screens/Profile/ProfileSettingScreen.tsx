@@ -177,7 +177,7 @@ export default function ProfileSettingScreen(
       description: '去訂閱',
       descriptionStyle:styles.descriptionStyle,
       onPress: () => {
-        navigation.push('FastLoginSettings');
+        navigation.push('VIPPurchaseScreen');
       },
     },
   ];

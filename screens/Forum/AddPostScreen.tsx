@@ -104,7 +104,7 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
   const styles = useStyles();
   const { theme } = useTheme();
   const [bodyText, setBodyText] = useState('');
-  const [photos, setPhotos] = useState<IPhoto[]>([{id:1},{},{},{}]);
+  const [photos, setPhotos] = useState<IPhoto[]>([]);
   const { height } = useWindowDimensions();
   const { bottom, top } = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
@@ -148,16 +148,23 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
     });
   };
 
+  console.log('photos',photos);
+  
+
   const handlePressPost = async () => {
     if (isLoading) return;
     setIsLoading(true);
     const [_, ...imgPhotos] = photos;
+    console.log(imgPhotos);
+    
     try {
-      const dataPhotos = imgPhotos.map((photo) => ({
+      const dataPhotos = photos.map((photo) => ({
         uri: Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
         name: photo.name,
         type: photo.type,
       }));
+      console.log('dataPhotos',dataPhotos);
+      
       const uploadPhotoPromise = dataPhotos.map((photo) =>
         dispatch(
           uploadFile({
@@ -182,7 +189,10 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
       const res = await dispatch(addForumPost(data)).unwrap();
       queryClient.invalidateQueries('searchForums');
       navigation.goBack();
-    } catch (error) {}
+    } catch (error) {
+      console.log('error',error);
+      
+    }
     setIsLoading(false);
   };
 
@@ -192,6 +202,10 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
     });
   };
 
+  const renderPhotos =
+    photos.length < 3
+      ? [...photos, ...Array.from({ length: 3 - photos.length }, (v, i) => v)]
+      : photos;
   return (
     <Loader isLoading={isLoading}>
       <KeyboardAwareScrollView
@@ -220,78 +234,85 @@ export default function AddPostScreen(props: RootStackScreenProps<'AddPostScreen
         </View>
 
         <View style={styles.imageContainer}>
-          <FlatList
+          {/* <FlatList
             data={photos}
             horizontal
-            renderItem={({item, index}:any) => {
-              console.log('index',item);
-              return <>
-             {item?.uri !=="" ? <TouchableOpacity
-              key="addImage"
-              onPress={handleOnPressAddImage}
-              style={[styles.image, { marginRight: 10 }, styles.addButtonContainer]}>
-              {mapIcon.addIcon({ color: theme.colors.white, size: 60 })}
-            </TouchableOpacity>:  <ImageBackground
-                key={item?.id}
-                style={[styles.image, (index + 1) % 3 !== 0 ? { marginRight: 10 } : {}]}
-                imageStyle={{ borderRadius: 15 }}
-                source={{ uri: item?.uri }}>
-                <TouchableOpacity
-                  style={{
-                    right: 10,
-                    top:10,
-                    position: 'absolute',
-                    width: 25,
-                    height: 25,
-                    borderRadius: 25 / 2,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: theme.colors.black1,
-                  }}
-                  onPress={() => handleDeleteImage(item?.id)}>
-                  {mapIcon.closeIcon({ color: theme.colors.white,size:18 })}
-                </TouchableOpacity>
-              </ImageBackground>}
-              </> 
+            renderItem={({ item, index }: any) => {
+              console.log('index', item);
+              return (
+                <>
+                  {item?.uri !== '' ? (
+                    <TouchableOpacity
+                      key="addImage"
+                      onPress={handleOnPressAddImage}
+                      style={[styles.image, { marginRight: 10 }, styles.addButtonContainer]}>
+                      {mapIcon.addIcon({ color: theme.colors.white, size: 60 })}
+                    </TouchableOpacity>
+                  ) : (
+                    <ImageBackground
+                      key={item?.id}
+                      style={[styles.image, (index + 1) % 3 !== 0 ? { marginRight: 10 } : {}]}
+                      imageStyle={{ borderRadius: 15 }}
+                      source={{ uri: item?.uri }}>
+                      <TouchableOpacity
+                        style={{
+                          right: 10,
+                          top: 10,
+                          position: 'absolute',
+                          width: 25,
+                          height: 25,
+                          borderRadius: 25 / 2,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: theme.colors.black1,
+                        }}
+                        onPress={() => handleDeleteImage(item?.id)}>
+                        {mapIcon.closeIcon({ color: theme.colors.white, size: 18 })}
+                      </TouchableOpacity>
+                    </ImageBackground>
+                  )}
+                </>
+              );
             }}
-          />
-
-          {/* {photos.map((photo: IPhoto, index) =>
-            index === 0 ? (
-              <TouchableOpacity
-                key="addImage"
-                onPress={handleOnPressAddImage}
-                style={[
-                  styles.image,
-                   { marginRight: 10 } ,
-                  styles.addButtonContainer,
-                ]}>
-                {mapIcon.addIcon({ color: theme.colors.white, size: 60 })}
-              </TouchableOpacity>
-            ) : (
-              <ImageBackground
-                key={photo.id}
-                style={[styles.image, (index + 1) % 3 !== 0 ? { marginRight: 10 } : {}]}
-                imageStyle={{ borderRadius: 15 }}
-                source={{ uri: photo.uri }}>
-                <TouchableOpacity
-                  style={{
-                    right: 10,
-                    top:10,
-                    position: 'absolute',
-                    width: 25,
-                    height: 25,
-                    borderRadius: 25 / 2,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: theme.colors.black1,
-                  }}
-                  onPress={() => handleDeleteImage(photo.id)}>
-                  {mapIcon.closeIcon({ color: theme.colors.white,size:18 })}
-                </TouchableOpacity>
-              </ImageBackground>
-            )
-          )} */}
+          /> */}
+          <ScrollView horizontal showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} >
+            {renderPhotos?.map((photo: IPhoto, index) =>
+                !photo ? (
+                  <TouchableOpacity
+                    key="addImage"
+                    onPress={handleOnPressAddImage}
+                    style={[
+                      styles.image,
+                      (index + 1) % 3 !== 0 ? { marginRight: 10 } : {marginRight: 10},
+                      styles.addButtonContainer,
+                    ]}>
+                    {mapIcon.addIcon({ color: theme.colors.white, size: 60 })}
+                  </TouchableOpacity>
+                ) : (
+                  <ImageBackground
+                    key={photo.id}
+                    style={[styles.image, (index + 1) % 3 !== 0 ? { marginRight: 10 } : {marginRight: 10}]}
+                    imageStyle={{ borderRadius: 15 }}
+                    source={{ uri: photo?.uri }}>
+                    <TouchableOpacity
+                      style={{
+                        right: 10,
+                        top: 10,
+                        position: 'absolute',
+                        width: 25,
+                        height: 25,
+                        borderRadius: 25 / 2,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: theme.colors.black1,
+                      }}
+                      onPress={() => handleDeleteImage(photo?.id)}>
+                      {mapIcon.closeIcon({ color: theme.colors.white, size: 18 })}
+                    </TouchableOpacity>
+                  </ImageBackground>
+                )
+              )}
+          </ScrollView>
         </View>
         <ButtonTypeTwo
           disabled={bodyText == '' ? true : false}

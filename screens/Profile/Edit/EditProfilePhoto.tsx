@@ -30,6 +30,7 @@ import { BodyThree, CaptionFive, CaptionFour, TitleTwo } from '~/components/comm
 import { ButtonTypeTwo } from '~/components/common/Button';
 import { userApi } from '~/api/UserAPI';
 import { fontSize } from '~/helpers/Fonts';
+import Loader from '~/components/common/Loader';
 
 const { width } = Dimensions.get('window');
 const useStyles = makeStyles((theme) => ({
@@ -61,10 +62,13 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'right',
   },
   image: {
-    width: 170,
-    height: 170,
+    // width: '100%',
     // aspectRatio: 1,
     // position: 'relative',
+    // aspectRatio: 1,
+    // position: 'relative',
+    width: 170,
+    height: 170,
     resizeMode: 'cover',
     borderRadius: 10,
   },
@@ -102,30 +106,59 @@ export default function EditProfilePhoto(props) {
   const styles = useStyles();
   const { theme } = useTheme();
   const [bodyText, setBodyText] = useState('');
-  const [photos, setPhotos] = useState<IPhoto[]>([]);
+  const [selectId, setSelectId] = useState(0);
+  const [photos, setPhotos] = useState<IPhoto[]>([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]);
+  const [photosList, setPhotosList] = useState<IPhoto[]>([]);
   const { height } = useWindowDimensions();
   const { bottom, top } = useSafeAreaInsets();
   const [activeSlide, setActiveSlide] = React.useState(0);
   const avatar = useSelector((state: RootState) => state.user.avatar);
-
+  const [loading, setLoading] = React.useState(false);
   const userId = useSelector(selectUserId) as number;
   const dispatch = useAppDispatch();
   const token = useSelector(selectToken);
   const [removedPhotosIds, setRemovedPhotosIds] = useState<number[]>([]);
+  const [userPhotosIds, setUserPhotosIds] = useState<number[]>([]);
   useFocusEffect(() => {
     const routePhotos = get(route, 'params.photos', []);
     if (!isEmpty(routePhotos)) {
-      const newPhotos = routePhotos.map((p) => ({
-        ...p,
-        id: uniqueId(),
-      }));
-      setPhotos((prev) => [...prev, ...newPhotos]);
+      if (selectId == 0) {
+        const userPhotoUpdate = userPhotosIds.map((item: any) => {
+          return {
+            ...item,
+            uri: routePhotos?.[0]?.uri,
+            name: routePhotos?.[0]?.name,
+          };
+        });
+        console.log('userPhotoUpdate',userPhotoUpdate);
+        
+        setUserPhotosIds(userPhotoUpdate);
+      } else {
+        const updatePhoto = photos.map((item) => {
+          if (item.id === selectId) {
+            return {
+              ...routePhotos[0],
+            };
+          } else {
+            return { ...item };
+          }
+        });
+        setPhotos(updatePhoto);
+      }
+
+      // const newPhotos = routePhotos.map((p,index) => ({
+      //   ...p,
+      //   id: uniqueId(),
+      // }));
+      // setPhotos((prev) => [...prev, ...newPhotos]);
       navigation.setParams({ photos: null });
+      setSelectId(0);
     }
   });
 
   useEffect(() => {
     const getAvatars = async () => {
+      setLoading(true)
       const res = await userApi.fetchUserAvatars({ token, id: userId });
       const p = res.records.map((record) => ({
         isFromRemote: true,
@@ -133,21 +166,45 @@ export default function EditProfilePhoto(props) {
         id: record.id,
         name: record.fileInfoResponse.realFileName,
       }));
-
-      setPhotos(p);
+      setLoading(false)
+      setPhotosList(p);
+      setUserPhotosIds(p);
     };
     getAvatars();
   }, []);
 
-  const handleDeleteImage = (photoId: number, isFromRemote: boolean) => {
-    if (isFromRemote) {
-      setRemovedPhotosIds((prev) => [...prev, photoId]);
-    }
-    setPhotos((prev) => {
-      const newPhoto = prev.filter((photo) => photo.id !== photoId);
-
-      return newPhoto;
+  const onMainPhotoPress = (photoId: number) => {
+    const filterdata = userPhotosIds.map((item: any) => {
+      if (item.id === photoId) {
+        return {
+          id: photoId,
+        };
+      } else {
+        return { ...item };
+      }
     });
+    setUserPhotosIds(filterdata);
+    setRemovedPhotosIds((prev) => [...prev, photoId]);
+  };
+
+  const handleDeleteImage = (photoId: number, isFromRemote: boolean) => {
+    // if (isFromRemote) {
+    //   setRemovedPhotosIds((prev) => [...prev, photoId]);
+    // }
+    const filterdata = photos.map((item) => {
+      if (item.id === photoId) {
+        return {
+          id: photoId,
+        };
+      } else {
+        return { ...item };
+      }
+    });
+    setPhotos(filterdata);
+    // setPhotos((prev) => {
+    //   const newPhoto = prev.filter((photo) => photo.id !== photoId);
+    //   return newPhoto;
+    // });
   };
   // useCustomHeader({ title: '照片編輯', navigation });
   useLayoutEffect(() => {
@@ -173,7 +230,7 @@ export default function EditProfilePhoto(props) {
     // navigation.goBack();
     try {
       const dataPhotos = photos
-        .filter((i) => !i.isFromRemote)
+        .filter((i) => !i?.isFromRemote)
         .map((photo) => ({
           uri: Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
           name: photo.name,
@@ -214,13 +271,25 @@ export default function EditProfilePhoto(props) {
     } catch (error) {}
   };
 
-  const handleOnPressAddImage = () => {
-    navigation.navigate('ImageBrowser', {
-      backScreen: 'EditProfilePhoto',
-    });
+  const handleOnPressAddImage = (item: any, isFromRemote: boolean) => {
+    if (isFromRemote) {
+      setSelectId(0);
+      navigation.navigate('ImageBrowserNew', {
+        backScreen: 'EditProfilePhoto',
+        maxLength: 1,
+        selectid: item.id,
+      });
+    } else {
+      setSelectId(item.id);
+      navigation.navigate('ImageBrowserNew', {
+        backScreen: 'EditProfilePhoto',
+        maxLength: 1,
+        selectid: item.id,
+      });
+    }
   };
 
-  const data = photos.filter((e) => e).map((item) => item.uri);
+  const data = photosList.filter((e) => e).map((item) => item.uri);
 
   const renderItem = ({ item }) => {
     return (
@@ -231,11 +300,18 @@ export default function EditProfilePhoto(props) {
     );
   };
 
-  const renderPhotos =
-    photos.length < 5
-      ? [...photos, ...Array.from({ length: 5 - photos.length }, (v, i) => v)]
-      : photos;
+  // const renderPhotos =
+  //   photos.length < 5
+  //     ? [...photos, ...Array.from({ length: 4 - photos.length }, (v, i) => v)]
+  //     : photos;
+
+  //     console.log('renderPhotos',renderPhotos);
+
   return (
+     <Loader
+      isLoading={
+        loading 
+      }>
     <View style={{ backgroundColor: theme.colors.black1, flex: 1 }}>
       <View style={{ position: 'relative' }}>
         <Carousel
@@ -268,10 +344,38 @@ export default function EditProfilePhoto(props) {
         />
       </View>
       <TitleTwo style={styles.uploadTitle}>上傳生活照</TitleTwo>
-      {/* <View style={{ flex: 1 }}>
+      {/* <View style={{ flex: 1,flexWrap:"wrap" }}>
         <Row>
           {renderPhotos.map((photo: IPhoto, index) => (
-            <Col colStyles={{ marginBottom: 5 }} key={index} xs={2} sm={2} md={2} lg={2}>
+            <Col colStyles={{ marginBottom: 5,}} key={index} xs={3} sm={3} md={3} lg={3}>
+              {!photo ? (
+                <TouchableOpacity
+                  key={index}
+                  onPress={handleOnPressAddImage}
+                  style={[styles.image, styles.addButtonContainer]}>
+                  {mapIcon.addIcon({ color: theme.colors.white, size: 60 })}
+                </TouchableOpacity>
+              ) : (
+                <ImageBackground
+                  key={index}
+                  style={[styles.image]}
+                  imageStyle={{ borderRadius: 15 }}
+                  source={{ uri: photo.uri }}>
+                  <TouchableOpacity
+                    style={{ right: 10, bottom: 10, position: 'absolute' }}
+                    onPress={() => handleDeleteImage(photo.id, photo.isFromRemote)}>
+                    {mapIcon.deleteIcon({ color: theme.colors.white })}
+                  </TouchableOpacity>
+                </ImageBackground>
+              )}
+            </Col>
+          ))}
+        </Row>
+      </View> */}
+      {/* <View style={{ flex: 1,flexWrap:"wrap" }}>
+        <Row>
+          {renderPhotos.map((photo: IPhoto, index) => (
+            <Col colStyles={{ marginBottom: 5,}} key={index} xs={3} sm={3} md={3} lg={3}>
               {!photo ? (
                 <TouchableOpacity
                   key={index}
@@ -297,47 +401,110 @@ export default function EditProfilePhoto(props) {
         </Row>
       </View> */}
       <View style={{ flexDirection: 'row', marginHorizontal: 24, flex: 1 }}>
-        <ImageBackground
-          style={[styles.image]}
-          imageStyle={{ borderRadius: 15 }}
-          source={{ uri: avatar }}>
-          <TouchableOpacity
-            style={{
-              right: 10,
-              top: 10,
-              position: 'absolute',
-              backgroundColor: "#383A44",
-              borderRadius: 18,
-              width:20,
-              height:20,
-              justifyContent:'center',
-              alignItems:'center'
-            }}
-            onPress={() => {}}>
-            {mapIcon.closeIcon({ color: theme.colors.white, size: 18 })}
-          </TouchableOpacity>
-        </ImageBackground>
-        <View style={{ marginLeft: 10 }}>
-          <FlatList
-            data={[0, 1, 2, 3]}
-            numColumns={2}
-            renderItem={() => {
-              return (
+        {userPhotosIds.map((item) => {
+          return (
+            <>
+              {!item?.uri ? (
                 <TouchableOpacity
                   // key={index}
-                  onPress={handleOnPressAddImage}
+                  onPress={() => {
+                    handleOnPressAddImage(item, true);
+                  }}
                   style={{
-                    width: 82,
-                    height: 82,
+                    width: 170,
+                    height: 170,
+                    borderRadius: 15,
                     backgroundColor: theme.colors.black2,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    borderRadius: 12,
-                    marginRight: 14,
-                    marginBottom: 6,
                   }}>
-                  {mapIcon.addIcon({ color: theme.colors.white, size: 34 })}
+                  {mapIcon.addIcon({ color: theme.colors.white, size: 70 })}
                 </TouchableOpacity>
+              ) : (
+                <ImageBackground
+                  style={[styles.image]}
+                  imageStyle={{ borderRadius: 15 }}
+                  source={{ uri: item.uri }}>
+                  <TouchableOpacity
+                    style={{
+                      right: 10,
+                      top: 10,
+                      position: 'absolute',
+                      backgroundColor: '#383A44',
+                      borderRadius: 18,
+                      width: 20,
+                      height: 20,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    onPress={() => {
+                      onMainPhotoPress(item?.id);
+                    }}>
+                    {mapIcon.closeIcon({ color: theme.colors.white, size: 18 })}
+                  </TouchableOpacity>
+                </ImageBackground>
+              )}
+            </>
+          );
+        })}
+
+        <View style={{ marginLeft: 10 }}>
+          <FlatList
+            data={photos}
+            // data={renderPhotos}
+            numColumns={2}
+            renderItem={({ item }: any) => {
+              return (
+                <>
+                  {!item?.uri ? (
+                    <TouchableOpacity
+                      // key={index}
+                      onPress={() => handleOnPressAddImage(item, false)}
+                      style={{
+                        width: 82,
+                        height: 82,
+                        backgroundColor: theme.colors.black2,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 12,
+                        marginRight: 14,
+                        marginBottom: 6,
+                      }}>
+                      {mapIcon.addIcon({ color: theme.colors.white, size: 34 })}
+                    </TouchableOpacity>
+                  ) : (
+                    <ImageBackground
+                      key={item.id}
+                      style={{
+                        width: 82,
+                        height: 82,
+                        backgroundColor: theme.colors.black2,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 12,
+                        marginRight: 14,
+                        marginBottom: 6,
+                      }}
+                      imageStyle={{ borderRadius: 4 }}
+                      source={{ uri: item?.uri }}>
+                      <TouchableOpacity
+                        style={{
+                          right: 10,
+                          top: 10,
+                          position: 'absolute',
+                          backgroundColor: '#383A44',
+                          borderRadius: 18,
+                          width: 20,
+                          height: 20,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                        onPress={() => handleDeleteImage(item?.id, item?.isFromRemote)}>
+                        {mapIcon.closeIcon({ color: theme.colors.white, size: 18 })}
+                      </TouchableOpacity>
+                    </ImageBackground>
+                  )}
+                </>
               );
             }}
           />
@@ -346,9 +513,10 @@ export default function EditProfilePhoto(props) {
 
       <ButtonTypeTwo
         onPress={handlePressPost}
-        containerStyle={{ paddingHorizontal: 40,bottom:bottom+20 }}
+        containerStyle={{ paddingHorizontal: 40, bottom: bottom + 20 }}
         title="發表"
       />
     </View>
+    </Loader>
   );
 }

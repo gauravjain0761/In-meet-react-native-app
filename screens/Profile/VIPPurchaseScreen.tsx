@@ -7,6 +7,7 @@ import {
   Alert,
   Platform,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import React, { useCallback, useEffect, useLayoutEffect } from 'react';
 import { makeStyles, useTheme, Button } from '@rneui/themed';
@@ -87,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
   avatarDisplayName: {
     color: theme.colors?.white,
     fontSize: fontSize(18),
-    marginRight:40
+    marginRight: 40,
   },
   vipText: {
     color: theme.colors?.white,
@@ -139,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 12,
     marginLeft: 8,
   },
-  vipFooterContent:{
+  vipFooterContent: {
     paddingHorizontal: 24,
     paddingVertical: 30,
     backgroundColor: '#292C33',
@@ -148,7 +149,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     flex: 1,
-  }
+  },
 }));
 
 const subSkus = Platform.select({
@@ -182,6 +183,35 @@ enum VIP_TYPE {
 }
 const iapSkus = subSkus;
 
+const vipDataList = [
+  {
+    id: 1,
+    title1: '一年制',
+    title2: '$290/月',
+    showValue: '49折',
+    vipCard: true,
+    NTText: 'NT$348, 一次付清',
+    isSelect: true,
+  },
+  {
+    id: 2,
+    title1: '3個月',
+    title2: '$390/月',
+    showValue: '49折',
+    vipCard: false,
+    NTText: 'NT$348, 一次付清',
+    isSelect: false,
+  },
+  {
+    id: 3,
+    title1: '1個月',
+    title2: '$590/月',
+    vipCard: false,
+    NTText: 'NT$348, 一次付清',
+    isSelect: false,
+  },
+];
+
 function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) {
   const { navigation } = props;
   const { theme } = useTheme();
@@ -192,6 +222,7 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
   const { width } = useWindowDimensions();
   const styles = useStyles();
   const [loading, setLoading] = React.useState(false);
+  const [vipData, setVipData] = React.useState(vipDataList);
   const [subscribedProductId, setSubscribedProdutId] = React.useState<string>();
   const data = [
     {
@@ -471,36 +502,32 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
   // if (!connected)
   //   return <Spinner visible textContent="Loading..." textStyle={{ color: 'white' }} />;
 
-  const vipData = [
-    {
-      id: 1,
-      title1: '一年制',
-      title2: '$290/月',
-      showValue: '49折',
-      vipCard: true,
-      NTText: 'NT$348, 一次付清',
-    },
-    {
-      id: 2,
-      title1: '3個月',
-      title2: '$390/月',
-      showValue: '49折',
-      vipCard: false,
-      NTText: 'NT$348, 一次付清',
-    },
-    {
-      id: 3,
-      title1: '1個月',
-      title2: '$590/月',
-      vipCard: false,
-      NTText: 'NT$348, 一次付清',
-    },
-  ];
+  const onFilterPress = (item: any) => {
+    const updateData = vipData.map((list) => {
+      if (item.id === list.id) {
+        return {
+          ...list,
+          isSelect: true,
+        };
+      } else {
+        return {
+          ...list,
+          isSelect: false,
+        };
+      }
+    });
+    setVipData(updateData);
+  };
 
   const VipCardSelect = ({ data }: any) => {
+    const showCard=vipData.filter((item)=>item.isSelect ===true)
     return (
-      <View style={[styles.vipCard, { borderColor: data.id ==1 ?'#FBBC05' : "#6F7387" }]}>
-        {data?.vipCard && (
+      <TouchableOpacity
+        onPress={() => {
+          onFilterPress(data);
+        }}
+        style={[styles.vipCard, { borderColor: data.isSelect == true ? '#FBBC05' : '#6F7387' }]}>
+        {(data?.vipCard && showCard[0].id === 1) && (
           <View style={styles.vipCardRight}>
             <SubTitleTwo style={[styles.vipText, styles.vipCardRightText]}>{'最優惠'}</SubTitleTwo>
           </View>
@@ -521,7 +548,7 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
           <BodyTwo style={styles.vipSubText}>{data?.NTText}</BodyTwo>
           {/* <BodyTwo style={styles.vipSubText}>{'升級VIP'}</BodyTwo> */}
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -574,8 +601,7 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
           inactiveDotColor="#C4C4C4"
         />
       </View>
-      <View
-        style={styles.vipFooterContent}>
+      <View style={styles.vipFooterContent}>
         {/* {purchaseCases.map(purchaseCase =>
             purchaseCase.id === selectedCase ? (
               <ButtonTypeFourChosen
@@ -599,18 +625,20 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
               />
             ),
           )} */}
+          <ScrollView style={{marginBottom:90}}>
+
         <BodyTwo style={styles.headerText}>收費方式</BodyTwo>
         {vipData.map((item) => {
           return <VipCardSelect data={item} />;
         })}
-     
+          </ScrollView>
       </View>
-         <ButtonTypeTwo
-          title={<SubTitleOne style={{ color: theme.colors.white }}>立即升級</SubTitleOne>}
-            onPress={purchase}
-            buttonStyle={{height:55}}
-            containerStyle={{marginHorizontal:40,bottom:bottom+30,}}
-          />
+      <ButtonTypeTwo
+        title={<SubTitleOne style={{ color: theme.colors.white }}>立即升級</SubTitleOne>}
+        onPress={purchase}
+        buttonStyle={{ height: 55 }}
+        containerStyle={{ marginHorizontal: 40, bottom: bottom + 30 }}
+      />
     </SafeAreaView>
     // </Loader>
   );

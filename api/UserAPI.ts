@@ -499,7 +499,7 @@ export const userApi = {
         },
       },
     ).then(res => {
-      return res.data.data;
+            return res.data.data;
     });
   },
   updateUserPassword: ({ token, oldPassword, newPassword }) => {
@@ -685,7 +685,7 @@ export const userApi = {
   },
   findWhoLikeMe: ({ token, account }, pageObject) => {
     const { pageParam = 0 } = pageObject;
-    return HttpClient.get<ActionResponse<FavoriteListResponse>>('/user/findWhoLikeMe', {
+        return HttpClient.get<ActionResponse<FavoriteListResponse>>('/user/findWhoLikeMe', {
       params: {
         page: pageParam,
         account,

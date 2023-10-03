@@ -142,16 +142,16 @@ export default function AboutMe(props: IAboutME) {
 
   return (
     <ScrollView style={{ flex: 1, marginHorizontal: 16, marginTop: 16 ,zIndex:-1}}>
-      <Input label="居住地區" iconShow={true} icon={mapIcon.locationIcon1({})} title="新北市" />
-      <Input label="星座" iconShow={true} icon={mapIcon.starIcon1({})} title="巨蟹座" />
+      <Input label="居住地區" iconShow={true} icon={mapIcon.locationIcon1({})} title={get(CITYEnum, userInfoData?.city, UN_FILLED)} />
+      <Input label="星座" iconShow={true} icon={mapIcon.starIcon1({})} title={userInfoData?.constellation} />
       <Input label="年齡" iconShow={false} title="18 歲" />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <InputSub label="身高" iconShow={false} title="159 cm" />
         <InputSub label="體重" iconShow={false} title="48 kg" />
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <InputSub label="血型" iconShow={false} title="O 型" />
-        <InputSub label="血型" iconShow={false} title="O 型" />
+        <InputSub label="血型" iconShow={false} title={get(BLOOD_ENUM, userInfoData?.bloodType, UN_FILLED)} />
+        <InputSub label="喝酒" iconShow={false} title="偶爾喝" />
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <InputSub label="抽菸習慣" iconShow={false} title="偶爾抽" />

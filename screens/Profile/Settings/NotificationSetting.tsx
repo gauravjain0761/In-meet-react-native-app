@@ -1,9 +1,9 @@
-import { View, Text, Platform ,Linking, TouchableOpacity} from 'react-native';
+import { View, Text, Platform, Linking, TouchableOpacity } from 'react-native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Icon, useTheme } from '@rneui/themed';
 import { Switch } from 'react-native-paper';
-import { Divider,  } from '@rneui/base';
-import { makeStyles,  } from '@rneui/themed';
+import { Divider } from '@rneui/base';
+import { makeStyles } from '@rneui/themed';
 
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-root-toast';
@@ -18,6 +18,7 @@ import useFirebaseMessages from '~/hooks/useFirebaseMessages';
 import messaging from '@react-native-firebase/messaging';
 import { mapIcon } from '~/constants/IconsMapping';
 import { useHeaderHeight } from '@react-navigation/elements';
+import SwitchToggle from 'react-native-switch-toggle';
 
 const useStyles = makeStyles((theme) => ({
   defaultTitle: {
@@ -51,19 +52,41 @@ function SwitchComponent({ enable, onSwitch }: { enable: boolean; onSwitch: () =
   const { theme } = useTheme();
 
   return (
-    <Switch
-      style={{
-        margin: 4,
-        borderColor: theme.colors.black4,
-        transform: Platform.OS === 'android' ? [] : [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+    // <Switch
+    //   style={{
+    //     margin: 4,
+    //     borderColor: theme.colors.black4,
+    //     transform: Platform.OS === 'android' ? [] : [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+    //   }}
+    //   ios_backgroundColor={theme.colors.black1}
+    //   thumbColor={enable ? theme.colors.white : theme.colors.white}
+    //   color={enable ? theme.colors.pink : theme.colors.black4}
+    //   value={enable}
+    //   onValueChange={onSwitch}
+    // />
+
+    <SwitchToggle
+      switchOn={enable}
+      onPress={onSwitch}
+      backgroundColorOn="#FF4E84"
+      backgroundColorOff="#A8ABBD"
+      circleColorOn="#fff"
+      circleColorOff="#fff"
+      containerStyle={{
+        marginTop: 16,
+        width: 48,
+        height: 26,
+        borderRadius: 20,
+        padding: 4,
+        alignItems: 'center',
       }}
-      ios_backgroundColor={theme.colors.black1}
-      thumbColor={enable ? theme.colors.white : theme.colors.white}
-      color={enable ? theme.colors.pink : theme.colors.black4}
-      value={enable}
-      onValueChange={onSwitch}
+      circleStyle={{
+        width: 22,
+        height: 22,
+        borderRadius: 22,
+        backgroundColor: '#fff',
+      }}
     />
-    
   );
 }
 
@@ -92,7 +115,7 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
   const headerHeight = useHeaderHeight();
 
   const { isLikeEnable, isBlogEnable, isMessageEnable, isSystemEnable, deviceToken } = useSelector(
-    (state: RootState) => state.user,
+    (state: RootState) => state.user
   );
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -109,12 +132,11 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     const currentDeviceToken = await getCurrentDeviceToken();
     if (!deviceToken || deviceToken !== currentDeviceToken) {
       try {
-        
         const token = await requestUserPermission();
         if (token) {
           await dispatch(patchUserNotification({ deviceToken: token })).unwrap();
           return true;
-        }else{
+        } else {
           Toast.show('通知設定已關閉，請至設定開啟通知。');
           if (Platform.OS === 'android') {
             await Linking.openSettings();
@@ -127,25 +149,26 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
       } catch (error) {
         // Toast.show(JSON.stringify(error));
       }
-    }else return true;
+    } else return true;
   };
   const notificationSettings = [
     {
       title: '看過我',
-      onSwitch: async newValue => {
+      onSwitch: async (newValue) => {
         try {
           const havePermission = await handleOn();
-          if(havePermission){
-          setIsLoading(true);
-          await dispatch(
-            patchUserNotification({
-              deviceToken,
-              isLikeEnable: newValue,
-              isBlogEnable,
-              isMessageEnable,
-              isSystemEnable,
-            }),
-          );}
+          if (havePermission) {
+            setIsLoading(true);
+            await dispatch(
+              patchUserNotification({
+                deviceToken,
+                isLikeEnable: !isLikeEnable,
+                isBlogEnable,
+                isMessageEnable,
+                isSystemEnable,
+              })
+            );
+          }
         } catch (error) {
           Toast.show(JSON.stringify(error));
         }
@@ -155,20 +178,21 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     },
     {
       title: '收到喜歡時',
-      onSwitch: async newValue => {
+      onSwitch: async (newValue) => {
         try {
           const havePermission = await handleOn();
-          if(havePermission){
-          setIsLoading(true);
-          await dispatch(
-            patchUserNotification({
-              deviceToken,
-              isLikeEnable: newValue,
-              isBlogEnable,
-              isMessageEnable,
-              isSystemEnable,
-            }),
-          );}
+          if (havePermission) {
+            setIsLoading(true);
+            await dispatch(
+              patchUserNotification({
+                deviceToken,
+                isLikeEnable: !isLikeEnable,
+                isBlogEnable,
+                isMessageEnable,
+                isSystemEnable,
+              })
+            );
+          }
         } catch (error) {
           Toast.show(JSON.stringify(error));
         }
@@ -178,20 +202,21 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     },
     {
       title: '配對成功',
-      onSwitch: async newValue => {
+      onSwitch: async (newValue) => {
         try {
           const havePermission = await handleOn();
-          if(havePermission){
-          setIsLoading(true);
-          await dispatch(
-            patchUserNotification({
-              deviceToken,
-              isLikeEnable: newValue,
-              isBlogEnable,
-              isMessageEnable,
-              isSystemEnable,
-            }),
-          );}
+          if (havePermission) {
+            setIsLoading(true);
+            await dispatch(
+              patchUserNotification({
+                deviceToken,
+                isLikeEnable: !isLikeEnable,
+                isBlogEnable,
+                isMessageEnable,
+                isSystemEnable,
+              })
+            );
+          }
         } catch (error) {
           Toast.show(JSON.stringify(error));
         }
@@ -201,20 +226,21 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     },
     {
       title: '收到新訊息時',
-      onSwitch: async newValue => {
+      onSwitch: async (newValue) => {
         try {
           const havePermission = await handleOn();
-          if(havePermission){
-          setIsLoading(true);
-          await dispatch(
-            patchUserNotification({
-              deviceToken,
-              isLikeEnable,
-              isBlogEnable ,
-              isMessageEnable : newValue,
-              isSystemEnable,
-            }),
-          );}
+          if (havePermission) {
+            setIsLoading(true);
+            await dispatch(
+              patchUserNotification({
+                deviceToken,
+                isLikeEnable,
+                isBlogEnable,
+                isMessageEnable: !isMessageEnable,
+                isSystemEnable,
+              })
+            );
+          }
         } catch (error) {
           Toast.show(JSON.stringify(error));
         }
@@ -224,21 +250,22 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     },
     {
       title: '喜歡對象的動態',
-      onSwitch: async newValue => {
+      onSwitch: async (newValue) => {
         await handleOn();
         try {
           const havePermission = await handleOn();
-          if(havePermission){
-          setIsLoading(true);
-          await dispatch(
-            patchUserNotification({
-              deviceToken,
-              isLikeEnable,
-              isBlogEnable,
-              isMessageEnable,
-              isSystemEnable : newValue,
-            }),
-          );}
+          if (havePermission) {
+            setIsLoading(true);
+            await dispatch(
+              patchUserNotification({
+                deviceToken,
+                isLikeEnable,
+                isBlogEnable,
+                isMessageEnable,
+                isSystemEnable: !isSystemEnable,
+              })
+            );
+          }
         } catch (error) {
           // Toast.show(JSON.stringify(error));
         }
@@ -248,21 +275,22 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     },
     {
       title: '收到動態回應時',
-      onSwitch: async newValue => {
+      onSwitch: async (newValue) => {
         await handleOn();
         try {
           const havePermission = await handleOn();
-          if(havePermission){
-          setIsLoading(true);
-          await dispatch(
-            patchUserNotification({
-              deviceToken,
-              isLikeEnable,
-              isBlogEnable : newValue,
-              isMessageEnable ,
-              isSystemEnable,
-            }),
-          );}
+          if (havePermission) {
+            setIsLoading(true);
+            await dispatch(
+              patchUserNotification({
+                deviceToken,
+                isLikeEnable,
+                isBlogEnable: !isBlogEnable,
+                isMessageEnable,
+                isSystemEnable,
+              })
+            );
+          }
         } catch (error) {
           Toast.show(JSON.stringify(error));
         }
@@ -270,71 +298,70 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
       },
       value: isBlogEnable,
     },
-   
   ];
-  const dataRow1=[
+  const dataRow1 = [
     {
       title: '系統通知',
-      onSwitch: async newValue => {
+      onSwitch: async (newValue) => {
         await handleOn();
         try {
           const havePermission = await handleOn();
-          if(havePermission){
-          setIsLoading(true);
-          await dispatch(
-            patchUserNotification({
-              deviceToken,
-              isLikeEnable,
-              isBlogEnable,
-              isMessageEnable,
-              isSystemEnable : newValue,
-            }),
-          );}
+          if (havePermission) {
+            setIsLoading(true);
+            await dispatch(
+              patchUserNotification({
+                deviceToken,
+                isLikeEnable,
+                isBlogEnable,
+                isMessageEnable: !isMessageEnable,
+                isSystemEnable,
+              })
+            );
+          }
         } catch (error) {
           // Toast.show(JSON.stringify(error));
         }
         setIsLoading(false);
       },
-      value: isSystemEnable,
+      value: isMessageEnable,
     },
-  ]
+  ];
   return (
     <Loader isLoading={isLoading}>
-      <View style={{ flex: 1, backgroundColor: theme.colors.black1 ,marginTop: headerHeight - 10 }}>
-       
-      <View style={styles.footerContainer}>
-        {notificationSettings.map(setting => (
-          <View key={setting.title} style={{paddingTop:10}}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingHorizontal: 16,
-              }}>
-              <BodyOne style={{ color: theme.colors.white }}>{setting.title}</BodyOne>
-              <SwitchComponent enable={setting.value} onSwitch={setting.onSwitch} />
+      <View style={{ flex: 1, backgroundColor: theme.colors.black1, marginTop: headerHeight - 10 }}>
+        <View style={styles.footerContainer}>
+          {notificationSettings.map((setting) => (
+            <View key={setting.title} style={{ paddingTop: 10 }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingHorizontal: 16,
+                }}>
+                <BodyOne style={{ color: theme.colors.white }}>{setting.title}</BodyOne>
+                <SwitchComponent enable={setting.value} onSwitch={setting.onSwitch} />
+              </View>
+              {/* <Divider width={2} color={theme.colors.black2} style={{ paddingTop: 20 }} /> */}
             </View>
-            {/* <Divider width={2} color={theme.colors.black2} style={{ paddingTop: 20 }} /> */}
-          </View>
-        ))}
+          ))}
         </View>
-      <View style={styles.footerContainer}>
-        {dataRow1.map(setting => (
-          <View key={setting.title}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingHorizontal: 16,
-              }}>
-              <BodyOne style={{ color: theme.colors.white }}>{setting.title}</BodyOne>
-              <SwitchComponent enable={setting.value} onSwitch={setting.onSwitch} />
+        <View style={styles.footerContainer}>
+          {dataRow1.map((setting) => (
+            <View key={setting.title}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingHorizontal: 16,
+                }}>
+                <BodyOne style={{ color: theme.colors.white }}>{setting.title}</BodyOne>
+                <SwitchComponent enable={setting.value} onSwitch={setting.onSwitch} />
+              </View>
+              {/* <Divider width={2} color={theme.colors.black2} style={{ paddingTop: 20 }} /> */}
             </View>
-            {/* <Divider width={2} color={theme.colors.black2} style={{ paddingTop: 20 }} /> */}
-          </View>
-        ))}
+          ))}
         </View>
       </View>
     </Loader>

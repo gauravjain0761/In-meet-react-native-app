@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   FlatList,
-  Image
+  Image,
 } from 'react-native';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { HeaderBackButton, useHeaderHeight } from '@react-navigation/elements';
@@ -32,7 +32,7 @@ import {
   setFilterInterested,
   setFilterStartAge,
 } from '~/store/userSlice';
-import { interestApi } from '~/api/UserAPI';
+import { interestApi, userApi } from '~/api/UserAPI';
 import { mapIcon } from '~/constants/IconsMapping';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fontSize } from '~/helpers/Fonts';
@@ -40,8 +40,10 @@ import matchBg from '../../assets/images/icons/matchBg.png';
 import RoomChatBottomModal from '~/components/common/RoomChatBottomModal';
 import FilterBottomModal from '~/components/common/FilterBottomModal';
 import { updateCurrentId } from '~/store/forumSlice';
+import Loader from '~/components/common/Loader';
+import { get } from 'lodash';
 
-const { width,height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const useStyles = makeStyles((theme) => ({
   headerStyle: {
@@ -73,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
     width: '80%',
     textAlign: 'center',
     alignSelf: 'center',
+    height:35
   },
   footerCard: {
     flexDirection: 'row',
@@ -116,7 +119,13 @@ export default function MyUpdateScreenz(props: FilterScreenProps) {
   const { data } = useQuery('fetchUserByInterest', () =>
     interestApi.fetchAllInterest({ token, hobbyName: '', limit: 100 }, {})
   );
+  const { data: blogList, isLoading } = useQuery(['fetchUserBlogs', user?.id], () =>
+    userApi.fetchUserBlogs({ token, id: user?.id })
+  );
+  console.log('blogList', blogList);
+
   const interestLists = data?.records;
+  console.log('interestLists', interestLists);
 
   const [localSelectedInterests, setLocalSelectedInterests] = useState(hobbyIds);
 
@@ -232,7 +241,7 @@ export default function MyUpdateScreenz(props: FilterScreenProps) {
 
   const renderListEmptyComponent = () => {
     return (
-      <View style={{ alignItems: 'center', top:height*0.3 }}>
+      <View style={{ alignItems: 'center', top: height * 0.3 }}>
         {mapIcon.tabViewBgIcon({ size: 100 })}
         <Text
           style={{
@@ -241,7 +250,7 @@ export default function MyUpdateScreenz(props: FilterScreenProps) {
             fontSize: fontSize(16),
             lineHeight: 25,
             fontFamily: 'roboto',
-            marginTop:20
+            marginTop: 20,
           }}>
           {'尚未發布任何動態'}
         </Text>
@@ -250,44 +259,50 @@ export default function MyUpdateScreenz(props: FilterScreenProps) {
   };
 
   return (
-    <SafeAreaView
-      style={{ backgroundColor: theme.colors.black1, flex: 1, marginTop: headerHeight - 25 }}>
-      <FlatList
-         data={[0, 1, 2,3,4,5]}
-        // data={[]}
-        style={{flex:1}}
-        contentContainerStyle={{flex:1}}
-        numColumns={2}
-        columnWrapperStyle={styles.cardWrapper}
-        ListEmptyComponent={renderListEmptyComponent}
-        renderItem={() => {
-          return (
-            <TouchableOpacity onPress={()=>{
-              dispatch(updateCurrentId(62));
-              navigation.push('ForumDetailScreen');
-            }} style={styles.cardContainer}>
-              <Image
-                source={{ uri: 'https://picsum.photos/id/231/200/300' }}
-                resizeMode="cover"
-                style={styles.imageStyle}
-              />
-              <CaptionFour style={styles.textStyle}>
-                {'路跑美乞條追，斤升支杯語帶左蛋戶包呀送「那像請...'}
-              </CaptionFour>
-              <View style={[styles.footerCard, { alignSelf: 'center', marginTop: 8 }]}>
-                <TouchableOpacity style={[styles.footerCard, { marginRight: 20 }]}>
-                  {mapIcon.favoriteIcon({ size: 20 })}
-                  <BodyThree style={styles.textfavorite}>1290</BodyThree>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.footerCard}>
-                  {mapIcon.commentIcon({ size: 20 })}
-                  <BodyThree style={styles.textfavorite}>0</BodyThree>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-      />
-    </SafeAreaView>
+    <Loader isLoading={isLoading}>
+      <SafeAreaView
+        style={{ backgroundColor: theme.colors.black1, flex: 1, marginTop: headerHeight - 25 }}>
+        <FlatList
+          //  data={[0, 1, 2,3,4,5]}
+          data={blogList?.records}
+          style={{ flex: 1 }}
+          // contentContainerStyle={{flex:1}}
+          numColumns={2}
+          columnWrapperStyle={styles.cardWrapper}
+          ListEmptyComponent={renderListEmptyComponent}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(updateCurrentId(item?.id));
+                  navigation.push('ForumDetailScreen');
+                }}
+                style={styles.cardContainer}>
+                <Image
+                  source={{
+                    uri: item?.photo
+                      ? get(item?.photo?.split(','), '[0]', '')
+                      : 'https://via.placeholder.com/200x300?text=Default',
+                  }}
+                  resizeMode="cover"
+                  style={styles.imageStyle}
+                />
+                <CaptionFour style={styles.textStyle}>{item?.content}</CaptionFour>
+                <View style={[styles.footerCard, { alignSelf: 'center', marginTop: 8 }]}>
+                  <TouchableOpacity style={[styles.footerCard, { marginRight: 20 }]}>
+                    {mapIcon.favoriteIcon({ size: 20 })}
+                    <BodyThree style={styles.textfavorite}>0</BodyThree>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.footerCard}>
+                    {mapIcon.commentIcon({ size: 20 })}
+                    <BodyThree style={styles.textfavorite}>0</BodyThree>
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </SafeAreaView>
+    </Loader>
   );
 }

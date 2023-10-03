@@ -100,6 +100,7 @@ import ModifyPasswordSetting from '~/screens/Profile/Settings/ModifyPasswordSett
 import FastLoginSettings from '~/screens/Profile/Settings/FastLoginSettings';
 import ModifyPasswordFirstSetting from '~/screens/Profile/Settings/ModifyPasswordFirstSetting';
 import ContactUsScreen from '~/screens/Profile/ContactUsScreen';
+import ImageBrowserScreenNew from '../screens/ImageBrowserScreenNew';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -374,6 +375,7 @@ function RootNavigator() {
           <Stack.Group screenOptions={{ presentation: 'modal' }}>
             <Stack.Screen name="Modal" component={ModalScreen} />
             <Stack.Screen name="ImageBrowser" component={ImageBrowserScreen} />
+            <Stack.Screen name="ImageBrowserNew" component={ImageBrowserScreenNew} />
           </Stack.Group>
         </>
       ) : (

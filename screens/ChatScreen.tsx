@@ -365,6 +365,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
                 styles={{ width: '100%', ...styles.inputStyle, color: theme.colors.black }}
                 secureTextEntry={!visiblePassword}
                 onRightPress={() => setVisiblePassword(!visiblePassword)}
+            rightIconShow={true}
                 right={mapIcon.invisiblePassword()}
               />
 

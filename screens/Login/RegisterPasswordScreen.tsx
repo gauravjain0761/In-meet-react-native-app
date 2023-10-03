@@ -141,6 +141,7 @@ export default function RegisterPasswordScreen(props: RegisterPasswordScreenProp
             onRightPress={() =>
               dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
             }
+            rightIconShow={true}
             right={mapIcon.invisiblePassword()}
           />
           <InputField
@@ -157,6 +158,7 @@ export default function RegisterPasswordScreen(props: RegisterPasswordScreenProp
             onRightPress={() =>
               dispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_VERIFY_PASSWORD })
             }
+            rightIconShow={true}
             right={mapIcon.invisiblePassword()}
           />
           <ButtonTypeTwo title="下一步" onPress={handleSubmit(onSubmit)}  />

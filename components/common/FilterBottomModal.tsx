@@ -6,7 +6,7 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactNativeModal from 'react-native-modal';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { BodyThree, SubTitleTwo } from './Text';
@@ -16,6 +16,7 @@ import Picker from 'react-native-picker-select';
 import { fontSize } from '~/helpers/Fonts';
 import DynamicallySelectedPicker from './DynamicallySelectedPicker';
 import matchBg from '../../assets/images/icons/matchBg.png';
+import { selectCityData } from '~/constants/mappingValue';
 
 const height = Dimensions.get('window').height;
 const useStyles = makeStyles((theme) => ({
@@ -67,33 +68,25 @@ const useStyles = makeStyles((theme) => ({
 
 interface ICommonModal {
   onClose?: () => void;
-  onUserPress?: () => void;
-  onBloackPress?: () => void;
-  onPasswordPress?: () => void;
+  onSelectBtns?: () => void;
   onConfirm?: (value: any) => void;
   isVisible?: boolean;
   modalText?: string;
   buttonOneTitle?: string;
   data?: any;
+  selectCity?: any;
+  setSelectCity: any;
 }
 export default function FilterBottomModal(props: ICommonModal) {
   //用CommonModalComponent out時如果會卡住就用這個
-  const {
-    onClose,
-    isVisible,
-    onConfirm,
-    modalText = '選擇居住地區',
-    buttonOneTitle = '確定',
-    data,
-    onUserPress,
-    onBloackPress,
-    onPasswordPress,
-  } = props;
+  const { onClose, isVisible, data, onSelectBtns, selectCity, setSelectCity } = props;
   const styles = useStyles();
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(4);
   const windowWidth = Dimensions.get('window').width;
   const height = 300;
   const { theme } = useTheme();
+  const [selectCityList, setSelectCityList] = useState(selectCityData);
+  const [allCity, setAllCity] = useState(false);
 
   const handleCloseModal = () => {
     if (onClose) {
@@ -101,24 +94,32 @@ export default function FilterBottomModal(props: ICommonModal) {
     }
   };
 
-  const listData = [
-    { name: '全部城市', isSelect: false },
-    { name: '基隆市', isSelect: false },
-    { name: '台北市', isSelect: true },
-    { name: '台北縣', isSelect: true },
-    { name: '桃園市', isSelect: true },
-    { name: '桃園縣', isSelect: false },
-    { name: '新竹縣', isSelect: false },
-    { name: '新竹縣', isSelect: false },
-    { name: '新竹縣', isSelect: false },
-    { name: '新竹縣', isSelect: false },
-    { name: '新竹縣', isSelect: false },
-    { name: '新竹縣', isSelect: false },
-    { name: '新竹縣', isSelect: true },
-    { name: '新竹縣', isSelect: false },
-    { name: '新竹縣', isSelect: true },
-    { name: '新竹縣', isSelect: false },
-  ];
+  const onSelectPress = (item: any) => {
+    const updateData = selectCityList.map((list: any) => {
+      if (item.id === list.id) {
+        return {
+          ...list,
+          isSelect: !item.isSelect,
+        };
+      } else {
+        return {
+          ...list,
+        };
+      }
+    });
+    setSelectCityList(updateData);
+  };
+
+  const onConfirmPress = () => {
+    const filterData = selectCityList.filter((item) => item.isSelect === true);
+    setSelectCity(filterData);
+    onClose();
+  };
+  const onSelectAllCityPress = () => {
+    const filterData = selectCityList.map((item) => {return {...item, isSelect: !allCity}});
+    setSelectCityList(filterData);
+    setAllCity(!allCity)
+  };
 
   return (
     <ReactNativeModal
@@ -135,63 +136,90 @@ export default function FilterBottomModal(props: ICommonModal) {
         </TouchableOpacity>
         <View style={styles.cardContainer}>
           <View style={styles.diviedStyle} />
-          <BodyThree
-            style={{
-              color: theme.colors.white,
-              marginVertical: 12,
-            }}>
-            {'已選城市'}
-          </BodyThree>
-          {listData.map((item: any) => {
-            return (
-              <TouchableOpacity
-                style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                {item?.isSelect ? (
-                  <View
+          <ScrollView style={{ marginBottom: 80 }}>
+            <BodyThree
+              style={{
+                color: theme.colors.white,
+                marginVertical: 12,
+              }}>
+              {'已選城市'}
+            </BodyThree>
+            <TouchableOpacity
+                  onPress={() => onSelectAllCityPress()}
+                  style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                  {allCity ? (
+                    mapIcon.checkIcon({ size: 19 })
+                  ) : (
+                    <View
+                      style={{
+                        width: 19,
+                        height: 19,
+                        borderRadius: 19,
+                        borderWidth: 0.5,
+                        borderColor: theme.colors.black4,
+                      }}
+                    />
+                  )}
+                  <BodyThree
                     style={{
-                      width: 19,
-                      height: 19,
-                      borderRadius: 19,
-                      borderWidth: 0.5,
-                      borderColor: theme.colors.black4,
-                    }}
-                  />
-                ) : (
-                  mapIcon.checkIcon({ size: 19 })
-                )}
-                <BodyThree
-                  style={{
-                    color: theme.colors.white,
-                    marginLeft: 10,
-                  }}>
-                  {item?.name}
-                </BodyThree>
-              </TouchableOpacity>
-            );
-          })}
-         
+                      color: theme.colors.white,
+                      marginLeft: 10,
+                    }}>
+                    {"全部城市"}
+                  </BodyThree>
+                </TouchableOpacity>
+            {selectCityList.map((item: any) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => onSelectPress(item)}
+                  style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                  {item?.isSelect ? (
+                    mapIcon.checkIcon({ size: 19 })
+                  ) : (
+                    <View
+                      style={{
+                        width: 19,
+                        height: 19,
+                        borderRadius: 19,
+                        borderWidth: 0.5,
+                        borderColor: theme.colors.black4,
+                      }}
+                    />
+                  )}
+                  <BodyThree
+                    style={{
+                      color: theme.colors.white,
+                      marginLeft: 10,
+                    }}>
+                    {item?.name}
+                  </BodyThree>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
         <ImageBackground
-            source={matchBg}
-            resizeMode="cover"
-            style={{
-              width: '100%',
-              height: 80,
-              paddingBottom: 60,
-              position: 'absolute',
-              bottom: 0,
-              alignSelf:'center'
-            }}>
-            <ButtonTypeTwo
-              containerStyle={[
-                // styles.buttonStyle,
-                { marginBottom: 10, marginTop: 10, marginHorizontal: 50 },
-              ]}
-              buttonStyle={{ height: 48 }}
-              // titleStyle={styles.textStyle}
-              title="儲存"
-            />
-          </ImageBackground>
+          source={matchBg}
+          resizeMode="cover"
+          style={{
+            width: '100%',
+            height: 80,
+            paddingBottom: 60,
+            position: 'absolute',
+            bottom: 0,
+            alignSelf: 'center',
+          }}>
+          <ButtonTypeTwo
+            containerStyle={[
+              // styles.buttonStyle,
+              { marginBottom: 10, marginTop: 10, marginHorizontal: 50 },
+            ]}
+            buttonStyle={{ height: 48 }}
+            // titleStyle={styles.textStyle}
+            title="儲存"
+            onPress={onConfirmPress}
+          />
+        </ImageBackground>
       </View>
     </ReactNativeModal>
   );

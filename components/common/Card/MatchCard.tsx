@@ -1,8 +1,8 @@
-import { View, Text, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { View, Text, ImageBackground, Dimensions, TouchableOpacity, Animated } from 'react-native';
+import React, { useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { makeStyles, useTheme } from '@rneui/themed';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useSelector } from 'react-redux';
 import { get } from 'lodash';
 import { useNavigation } from '@react-navigation/native';
@@ -11,13 +11,14 @@ import { LikeButton } from '../Button';
 import { mapIcon } from '../../../constants/IconsMapping';
 import { CollectorUser, userApi } from '~/api/UserAPI';
 import { selectToken, selectUserId } from '~/store/userSlice';
-import { useAppDispatch } from '~/store';
+import { RootState, useAppDispatch } from '~/store';
 import { updateCurrentMatchingId } from '~/store/interestSlice';
 import defaultAvatar from '~/assets/images/icons/profile.png';
 import { calculateAge } from '~/helpers/convertDate';
 import { CITYEnum } from '~/constants/mappingValue';
 import { UN_FILLED } from '~/constants/defaultValue';
 import { color } from '@rneui/base';
+import { hp } from '~/helpers/globalFunctions';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -31,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     overflow: 'hidden',
     resizeMode: 'cover',
+    // top: -60,
+    marginTop: -(height * 0.0691),
+    // left: -21,
+    marginLeft: -(width * 0.05),
   },
   cardImage: {
     position: 'absolute',
@@ -44,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     height: 185,
     resizeMode: 'contain',
     paddingLeft: 16,
-    top: height *0.72,
+    top: height * 0.72,
   },
   linearGradient: {
     paddingRight: 6,
@@ -107,14 +112,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  user: User;
+  user?: User;
   favoriteList?: CollectorUser[];
-  onPress: () => void;
-  onfavoritBtn: () => void;
-  onArrowPress: () => void;
+  onPress?: () => void;
+  onfavoritBtn?: () => void;
+  onArrowPress?: () => void;
+  onClosePress?: () => void;
+  onLikePress?: () => void;
+  refList?: any;
+  index?: any;
 }
 export default function MatchCard(props: Props) {
-  const { user, favoriteList, onPress ,onfavoritBtn,onArrowPress} = props;
+  const {
+    refList,
+    user,
+    favoriteList,
+    onPress,
+    onfavoritBtn,
+    onArrowPress,
+    onLikePress,
+    onClosePress,
+    index
+  } = props;
   const styles = useStyles();
   const { theme } = useTheme();
   const { city, name, about, id, avatar, birthday } = user;
@@ -124,6 +143,50 @@ export default function MatchCard(props: Props) {
   const isCollected = favoriteList?.map((record) => record.favoriteUser.id).includes(id);
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const [end, setEnd] = useState(0);
+  // current is for get the current content is now playing
+  const [current, setCurrent] = useState(0);
+  // if load true then start the animation of the bars at the top
+  const [load, setLoad] = useState(false);
+  // progress is the animation value of the bars content playing the current state
+  const progress = useRef(new Animated.Value(0)).current;
+  const currentUserId = useSelector((state: RootState) => state.interest.currentMatchingId);
+  const { data: avatarList } = useQuery(['fetchUserAvatars', id], () =>
+    userApi.fetchUserAvatars({ token, id: id })
+  );
+  const {
+    scrollvalue
+  } = useSelector((state: RootState) => state.user);
+
+
+
+  const [content, setContent] = useState([
+    {
+      content:
+        'https://firebasestorage.googleapis.com/v0/b/instagram-clone-f3106.appspot.com/o/1.jpg?alt=media&token=63304587-513b-436d-a228-a6dc0680a16a',
+      type: 'image',
+      finish: 0,
+    },
+    {
+      content:
+        'https://firebasestorage.googleapis.com/v0/b/instagram-clone-f3106.appspot.com/o/6.jpg?alt=media&token=1121dc71-927d-4517-9a53-23ede1e1b386',
+      type: 'image',
+      finish: 0,
+    },
+    {
+      content:
+        'https://firebasestorage.googleapis.com/v0/b/instagram-clone-f3106.appspot.com/o/7.jpg?alt=media&token=7e92782a-cd84-43b6-aba6-6fe6269eded6',
+      type: 'image',
+      finish: 0,
+    },
+  ]);
+  // const urlList =
+  //   avatarList?.records.length !== 0 && avatarList
+  //     ? avatarList?.records.map((record) => {
+  //         return { ...record.fileInfoResponse, finish: 0 };
+  //       })
+  //     : avatar;
+  // console.log('avatarList', content);
 
   const { mutate, isLoading } = useMutation(userApi.collectUser, {
     onSuccess: (data) => {
@@ -152,6 +215,7 @@ export default function MatchCard(props: Props) {
     }
   );
 
+
   const handleLike = () => {
     if (!id || isLoading || removeLoading) {
       return;
@@ -171,6 +235,77 @@ export default function MatchCard(props: Props) {
     });
   };
 
+  const start = (n) => {
+    // @ts-ignore
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 2000,
+    }).start(({ finished }) => {
+      if (finished) {
+        next();
+      }
+    });
+  };
+
+  function play() {
+    start(end);
+  }
+  function close() {
+    progress.setValue(0);
+    setLoad(false);
+    setCurrent(0);
+    setContent([
+      {
+        content:
+          'https://firebasestorage.googleapis.com/v0/b/instagram-clone-f3106.appspot.com/o/1.jpg?alt=media&token=63304587-513b-436d-a228-a6dc0680a16a',
+        type: 'image',
+        finish: 0,
+      },
+      {
+        content:
+          'https://firebasestorage.googleapis.com/v0/b/instagram-clone-f3106.appspot.com/o/6.jpg?alt=media&token=1121dc71-927d-4517-9a53-23ede1e1b386',
+        type: 'image',
+        finish: 0,
+      },
+      {
+        content:
+          'https://firebasestorage.googleapis.com/v0/b/instagram-clone-f3106.appspot.com/o/7.jpg?alt=media&token=7e92782a-cd84-43b6-aba6-6fe6269eded6',
+        type: 'image',
+        finish: 0,
+      },
+    ]);
+    console.log('close icon pressed');
+  }
+  // next() is for changing the content of the current content to +1
+  function next() {
+    // // check if the next content is not empty
+    if (current !== content?.length - 1) {
+      let datalist = content;
+      datalist[current].finish = 1;
+      setContent(datalist);
+      setCurrent(current + 1);
+      progress.setValue(0);
+      setLoad(false);
+    } else {
+      close();
+    }
+  }
+
+  // function previous() {
+  //   // checking if the previous content is not empty
+  //   if (current - 1 >= 0) {
+  //     let data = [...content];
+  //     data[current].finish = 0;
+  //     setContent(data);
+  //     setCurrent(current + 1);
+  //     progress.setValue(0);
+  //     setLoad(false);
+  //   } else {
+  //     // the previous content is empty
+  //     close();
+  //   }
+  // }
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -181,15 +316,22 @@ export default function MatchCard(props: Props) {
       }}
       style={styles.cardContainer}>
       <ImageBackground
+        onLoadEnd={() => {
+          // progress.setValue(0);
+          // play();
+        }}
         // resizeMethod="resize"
         resizeMode="cover"
-        style={styles.cardImage}
+        style={[
+          styles.cardImage,
+          { backgroundColor: avatar ? 'transparent' : theme.colors.black2 },
+        ]}
         source={{ uri: avatar }}>
-        <View style={styles.forDefaultAvatar}>
+        {/* <View style={styles.forDefaultAvatar}>
           {avatar ? null : <mapIcon.defaultAvatar color={'#8E8E8F'} />}
-        </View>
+        </View> */}
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around', top: "20%" }}>
+        {/* <View style={{ flexDirection: 'row', justifyContent: 'space-around', top: '20%' }}>
           {Array.from(Array(4)).map((_e, i) => (
             <View
               key={i}
@@ -197,13 +339,68 @@ export default function MatchCard(props: Props) {
                 width: 78,
                 height: 4,
                 borderRadius: 4,
-                backgroundColor: 0 === i ? '#fff' : "rgba(255, 255, 255, 0.3)",
+                backgroundColor: 0 === i ? '#fff' : 'rgba(255, 255, 255, 0.3)',
                 // marginLeft: i === 0 ? 0 : 6,
                 // marginBottom: 24,
               }}
             />
           ))}
+        </View> */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            top: '20%',
+            // paddingTop: 10,
+            paddingHorizontal: 10,
+          }}>
+          {content?.length > 0 &&
+            content?.map((index, key) => {
+              return (
+                // THE BACKGROUND
+                <View
+                  key={key}
+                  style={{
+                    height: 2,
+                    flex: 1,
+                    flexDirection: 'row',
+                    backgroundColor: 'rgba(117, 117, 117, 0.5)',
+                    marginHorizontal: 2,
+                  }}>
+                  {/* THE ANIMATION OF THE BAR*/}
+                  <Animated.View
+                    style={{
+                      flex: current == key ? progress : content?.[key]?.finish,
+                      height: 2,
+                      backgroundColor: 'rgba(255, 255, 255, 1)',
+                    }}
+                  />
+                </View>
+              );
+            })}
         </View>
+       {scrollvalue > 100 && <View
+          style={{
+            opacity:1,
+            transform: [{ rotate: '-30deg' }],
+            position: 'absolute',
+            top: height*0.14,
+            left: width * 0.06,
+            zIndex:1,
+          }}>
+          {refList?.current?.state?.firstCardIndex ===index &&mapIcon.likeIcon1({size:100})}
+        </View>}
+       {scrollvalue < -100 && <Animated.View
+          style={{
+            opacity: 1,
+            transform: [{ rotate: "30deg" }],
+            position: "absolute",
+            top: height*0.14,
+            right: width * 0.05,
+            zIndex: 1000
+          }}>
+          {refList?.current?.state?.firstCardIndex ===index && mapIcon.unlikeIcon1({size:100})}
+        </Animated.View>}
 
         <View style={[styles.linearGradient]}>
           <ImageBackground
@@ -227,14 +424,18 @@ export default function MatchCard(props: Props) {
               <TouchableOpacity style={styles.buttonStyle} onPress={onPress}>
                 {mapIcon.gobackIcon({ size: 22 })}
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.buttonStyle, { width: 85 }]}>
+              <TouchableOpacity
+                onPress={() => onClosePress()}
+                style={[styles.buttonStyle, { width: 85 }]}>
                 {mapIcon.closeIcon({ size: 38 })}
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.buttonStyle, { width: 85 }]} onPress={onfavoritBtn}>
+              <TouchableOpacity
+                onPress={() => onLikePress()}
+                style={[styles.buttonStyle, { width: 85 }]}>
                 {mapIcon.likeIcon({ color: theme.colors.pink, size: 28 })}
               </TouchableOpacity>
               <TouchableOpacity
-              onPress={onArrowPress}
+                onPress={onArrowPress}
                 style={[
                   styles.buttonStyle,
                   { backgroundColor: 'rgba(255, 255, 255, 0.60)', width: 40, height: 40 },

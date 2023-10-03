@@ -27,6 +27,7 @@ import {
   ReligionValue,
   bloodList,
   drinkingHabits,
+  heightList,
   mapCity,
   smokingHabits,
 } from '../../constants/mappingValue';
@@ -35,7 +36,16 @@ import { convertDate, convertToYYMMDD } from '~/helpers/convertDate';
 import matchBg from '../../assets/images/icons/matchBg.png';
 import { fontSize } from '~/helpers/Fonts';
 import CityModal from '../common/CityModal';
-import { patchUserBloodType, patchUserCity, selectUserId, updateUser } from '~/store/userSlice';
+import {
+  patchUserBloodType,
+  patchUserCity,
+  patchUserEducation,
+  patchUserHeight,
+  patchUserReligion,
+  patchUserSmoke,
+  selectUserId,
+  updateUser,
+} from '~/store/userSlice';
 import Toast from 'react-native-root-toast';
 
 const { width } = Dimensions.get('window');
@@ -99,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const UN_FILLED_WITH_HEART = '尚未填寫 (填寫完成獲得3顆愛心)';
+const UN_FILLED_WITH_HEART = '尚未填寫';
 
 export default function ProfileAboutDetails(props) {
   const { navigationProps } = props;
@@ -119,6 +129,8 @@ export default function ProfileAboutDetails(props) {
     about,
     height,
     hobbies,
+    weight,
+    smoke
   } = useSelector((state: RootState) => state.user);
   const [collectionModal, setCollectionModal] = React.useState(false);
   const [bloodListModal, setBloodListModal] = React.useState(false);
@@ -126,10 +138,17 @@ export default function ProfileAboutDetails(props) {
   const [smokingHabitsModal, setSmokingHabitsModal] = React.useState(false);
   const [religionModal, setReligionModal] = React.useState(false);
   const [educationModal, setEducationModal] = React.useState(false);
+  const [heightModal, setheightModal] = React.useState(false);
   const dispatch = useAppDispatch();
   const userId = useSelector(selectUserId);
+  const [localName, setLocalName] = useState(name || '');
+  const [localWeight, setLocalWeight] = useState(weight || '');
   const [localCity, setLocalCity] = useState(city || '');
   const [bloodType, setBloodType] = useState(bloodTypeStore || '');
+  const [localReligion, setLocalReligion] = useState(religion || '');
+  const [selectedEducation, setSelectedEducation] = useState(education || '');
+  const [localHeight, setLocalHeight] = useState(height || heightModal['150以下']);
+  const [localSmoke, setLocalSmoke] = useState( smoke || "");
 
   const navigation = useNavigation();
   const columns = [
@@ -224,7 +243,13 @@ export default function ProfileAboutDetails(props) {
   ];
 
   const profileData = [
-    { label: '暱稱', name: name, id: 1, filed: 'input' },
+    {
+      label: '暱稱',
+      name: localName,
+      id: 1,
+      filed: 'input',
+      onChangeText: (text) => setLocalName(text),
+    },
     {
       label: '簡介',
       name: about,
@@ -238,8 +263,23 @@ export default function ProfileAboutDetails(props) {
         });
       },
     },
-    { label: '身高', name: height, id: 3, filed: 'input' },
-    { label: '體重', name: '尚未填寫', id: 4, filed: 'input' },
+    {
+      label: '身高',
+      name: localHeight ? HeightValue[String(localHeight)] : UN_FILLED_WITH_HEART,
+      id: 3,
+      filed: 'Btn',
+      onEdit: () => {
+        //@ts-ignore
+        setheightModal(true);
+      },
+    },
+    {
+      label: '體重',
+      name: localWeight == '' ? '' : localWeight,
+      id: 4,
+      filed: 'input',
+      onChangeText: (text) => setLocalWeight(text)
+    },
     {
       label: '血型',
       name: bloodType ? BLOOD_ENUM[bloodType] : UN_FILLED,
@@ -269,15 +309,22 @@ export default function ProfileAboutDetails(props) {
       id: 1,
       filed: 'Btn',
       onEdit: () => {
-        setDrinkingHabitsModal(true);
+        setDrinkingHabitsModal(true)
+      }
+    },
+    {
+      label: '抽菸',
+      name:localSmoke ? localSmoke : '尚未填寫',
+      filed: 'Btn',
+      id: 2,
+      onEdit: () => {
+        setSmokingHabitsModal(true);
       },
     },
-
-    { label: '抽菸', name: '偶爾抽', filed: 'Btn', id: 2 },
     { label: '職業', name: job || UN_FILLED_WITH_HEART, id: 3 },
     {
       label: '宗教',
-      name: religion ? ReligionValue[religion] : UN_FILLED,
+      name: localReligion ? ReligionValue[localReligion] : UN_FILLED,
       id: 4,
       onEdit: () => {
         setReligionModal(true);
@@ -285,11 +332,11 @@ export default function ProfileAboutDetails(props) {
     },
     {
       label: '教育程度',
-      name: education ? EducationValue[education] : UN_FILLED_WITH_HEART,
+      name: selectedEducation ? EducationValue[selectedEducation] : UN_FILLED_WITH_HEART,
       id: 5,
-      onEdit:()=>{
+      onEdit: () => {
         setEducationModal(true);
-      }
+      },
     },
   ];
 
@@ -302,12 +349,28 @@ export default function ProfileAboutDetails(props) {
     setSmokingHabitsModal(false);
     setReligionModal(false);
     setEducationModal(false);
+    setheightModal(false);
+  };
 
+  const handleConfirm = async () => {
+    if (localName == '') return;
+    await dispatch(
+      updateUser({
+        userId,
+        city: localCity,
+        name: localName,
+        bloodType: bloodType,
+        religion: localReligion,
+        education: selectedEducation,
+        height: localHeight,
+        weight: localWeight,
+        smoke:localSmoke
+      })
+    ).unwrap();
   };
 
   const handlePatchInterests = async (value: any) => {
     try {
-      await dispatch(updateUser({ userId, city: value.value })).unwrap();
       dispatch(patchUserCity(localCity));
       setLocalCity(value.value);
       setCollectionModal(false);
@@ -317,14 +380,49 @@ export default function ProfileAboutDetails(props) {
   };
   const handlebloodListModal = async (value: any) => {
     try {
-      await dispatch(updateUser({ userId, bloodType })).unwrap();
       dispatch(patchUserBloodType(bloodType));
-      // setLocalCity(value.value)
+      setBloodType(value.value);
       setBloodListModal(false);
     } catch (error) {
       Toast.show(JSON.stringify(error));
     }
   };
+  const handlereligionModal = async (value: any) => {
+    try {
+      setReligionModal(false);
+      dispatch(patchUserReligion(value.value));
+      setLocalReligion(value.value);
+    } catch (error) {
+      Toast.show(JSON.stringify(error));
+    }
+  };
+  const handleEducationModal = async (value: any) => {
+    try {
+      setEducationModal(false);
+      dispatch(patchUserEducation(value.value));
+      setSelectedEducation(value.value);
+    } catch (error) {
+      Toast.show(JSON.stringify(error));
+    }
+  };
+  const handleHeightModal = async (value: any) => {
+    try {
+      setheightModal(false);
+      dispatch(patchUserHeight(value.value));
+      setLocalHeight(value.value);
+    } catch (error) {
+      Toast.show(JSON.stringify(error));
+    }
+  }
+  const handleSmokingHabitsModal = async (value: any) => {
+    try {
+      setSmokingHabitsModal(false);
+      dispatch(patchUserSmoke(value.value));
+      setLocalSmoke(value.value);
+    } catch (error) {
+      Toast.show(JSON.stringify(error));
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -343,6 +441,9 @@ export default function ProfileAboutDetails(props) {
                     {column.filed === 'input' ? (
                       <TextInput
                         value={column.name}
+                        placeholder={column.name == '' ? '尚未填寫' : ''}
+                        placeholderTextColor={theme.colors.black4}
+                        onChangeText={column?.onChangeText}
                         style={[
                           {
                             color: theme.colors.white,
@@ -443,8 +544,8 @@ export default function ProfileAboutDetails(props) {
           ]}
           buttonStyle={{ height: 50 }}
           titleStyle={styles.textStyle}
-          title="立刻加入"
-          // onPress={handleConfirm}
+          title="儲存"
+          onPress={handleConfirm}
         />
       </ImageBackground>
       <CityModal
@@ -492,8 +593,8 @@ export default function ProfileAboutDetails(props) {
           value: cityValue,
         }))}
         onConfirm={(value: any) => {
-          // handlebloodListModal(value);
-          setSmokingHabitsModal(false);
+          handleSmokingHabitsModal(value);
+          // setSmokingHabitsModal(false);
         }}
         onClose={handleCancel}
       />
@@ -505,8 +606,7 @@ export default function ProfileAboutDetails(props) {
           value: cityValue,
         }))}
         onConfirm={(value: any) => {
-          // handlebloodListModal(value);
-          setReligionModal(false);
+          handlereligionModal(value);
         }}
         onClose={handleCancel}
       />
@@ -518,8 +618,19 @@ export default function ProfileAboutDetails(props) {
           value: cityValue,
         }))}
         onConfirm={(value: any) => {
-          // handlebloodListModal(value);
-          setEducationModal(false);
+          handleEducationModal(value);
+        }}
+        onClose={handleCancel}
+      />
+      <CityModal
+        modalText="选择高度"
+        isVisible={heightModal}
+        data={Object.entries(heightList).map(([cityValue, cityName]) => ({
+          label: cityName,
+          value: cityValue,
+        }))}
+        onConfirm={(value: any) => {
+          handleHeightModal(value);
         }}
         onClose={handleCancel}
       />

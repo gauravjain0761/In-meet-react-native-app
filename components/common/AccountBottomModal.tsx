@@ -128,6 +128,7 @@ export default function AccountBottomModal(props: ICommonModal) {
                 rightStyle={{ top: '65%' }}
                 onRightPress={() => setShowEye(!showEye)}
                 containerStyle={{ marginHorizontal: 12 }}
+            rightIconShow={true}
                 right={
                   showEye ? (
                     <Feather name="eye" size={24} color="#A8ABBD" />

@@ -28,6 +28,7 @@ interface IInputField extends TextInputProps {
   required?: boolean;
   containerStyle?:any
   rightStyle?:any
+  rightIconShow?:boolean
 }
 
 const useStyles = makeStyles(theme => ({
@@ -79,6 +80,7 @@ export default forwardRef<Handle, IInputField>(function InputField(props, ref) {
     required,
     containerStyle,
     rightStyle,
+    rightIconShow,
     ...rest
   } = props;
   const inputRef = useRef<TextInput>(null);
@@ -135,7 +137,7 @@ export default forwardRef<Handle, IInputField>(function InputField(props, ref) {
                 ...styles,
               }}
             />
-            {right && (
+            {rightIconShow && (
               <View
                 style={[
                   classes.iconContainer,

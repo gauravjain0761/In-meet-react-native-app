@@ -102,9 +102,15 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
   const [openVIP, setOpenVIP] = React.useState(false);
   const [openLockVIP, setOpenLockVIP] = React.useState(false);
 
+  // const [routes] = React.useState([
+  //   { key: 'first', title: '關於我' },
+  //   { key: 'second', title: '動態' },
+   // { key: 'third', title: '相簿' },
+  // ]);
   const [routes] = React.useState([
     { key: 'first', title: '關於我' },
     { key: 'second', title: '動態' },
+   
   ]);
   const { bottom, top } = useSafeAreaInsets();
   const userId = useSelector(selectUserId);
@@ -121,6 +127,8 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
       refetchOnMount: true,
     }
   );
+  console.log("userInfoData",userInfoData);
+  
   const { data: favoriteList } = useQuery('getFavoriteUser', () =>
     userApi.getFavoriteUser({ token })
   );
@@ -550,14 +558,14 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
         /> */}
           {/* {renderFloatButtonContainer()} */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', top: -15 }}>
-            {Array.from(Array(4)).map((_e, i) => (
+            {data.map((_e, i) => (
               <View
                 key={i}
                 style={{
                   width: 78,
                   height: 4,
                   borderRadius: 4,
-                  backgroundColor: 0 === i ? '#fff' : 'rgba(255, 255, 255, 0.3)',
+                  backgroundColor: activeSlide === i ? '#fff' : 'rgba(255, 255, 255, 0.3)',
                   // marginLeft: i === 0 ? 0 : 6,
                   // marginBottom: 24,
                 }}
@@ -611,6 +619,11 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
                 <SearchAboutPost userInfoData={userInfoData} adjustHeight={adjustHeight} />
               ),
             })}
+            // renderScene={SceneMap({
+            //   first: () => <AboutMe userInfoData={userInfoData} adjustHeight={adjustHeight} />,
+            //   second: () => <AboutPost userInfoData={userInfoData} adjustHeight={adjustHeight} />,
+            //   third: () => <AboutPhoto userInfoData={userInfoData} adjustHeight={adjustHeight} />,
+            // })}
             onIndexChange={setIndex}
           />
         </View>

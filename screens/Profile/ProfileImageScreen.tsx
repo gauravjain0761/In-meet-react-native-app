@@ -296,7 +296,7 @@ export default function ProfileImageScreen(props: RegisterImageScreenProps) {
           disabled={imageValue !== '' ? true : false}
           disabledStyle={{ backgroundColor: 'rgba(255, 78, 132, 0.6)' }}
           disabledTitleStyle={{ color: 'rgba(255, 255, 255, 0.2)' }}
-          title={<SubTitleOne style={styles.chosenButtonText}>完成</SubTitleOne>}
+          title={<SubTitleOne style={styles.chosenButtonText}>儲存</SubTitleOne>}
           containerStyle={{ borderRadius: 30 }}
         />
       </View>

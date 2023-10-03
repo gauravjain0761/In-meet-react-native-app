@@ -380,6 +380,7 @@ export default function RegisterNameScreen(props: RegisterNameScreenProps) {
               onRightPress={() =>
                 reducerDispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_PASSWORD })
               }
+              rightIconShow={true}
               right={
                 state.visiblePassword ? (
                   <Feather name="eye" size={24} color="#A8ABBD" />
@@ -401,6 +402,7 @@ export default function RegisterNameScreen(props: RegisterNameScreenProps) {
               onRightPress={() =>
                 reducerDispatch({ type: visiblePasswordActionKind.TOGGLE_VISIBLE_VERIFY_PASSWORD })
               }
+              rightIconShow={true}
               right={
                 state.visibleVerifyPassword ? (
                   <Feather name="eye" size={24} color="#A8ABBD" />

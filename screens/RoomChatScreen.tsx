@@ -358,7 +358,7 @@ function ChatBubble(props) {
           </View> */}
           <View
             style={{
-              backgroundColor: theme.colors.pink,
+              backgroundColor: "#FF4E8480",
               maxWidth: 260,
               borderRadius: 18,
               borderBottomRightRadius: 0,
@@ -1145,7 +1145,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
           handleJoinVip();
           setVIPhideModel(false);
         }}
-        modalText="升級VIP即可隱藏此對話"
+        modalText="升級VIP即可使用此功能"
         buttonOneTitle="成為VIP"
         onClose={() => setVIPhideModel(false)}
       />
@@ -1155,7 +1155,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
           handleJoinVip();
           setVIPblockModel(false);
         }}
-        modalText="升級VIP即可封鎖此用戶"
+        modalText="升級VIP即可使用此功能"
         buttonOneTitle="成為VIP"
         onClose={() => setVIPblockModel(false)}
       />
@@ -1185,7 +1185,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
       <VIPModal
         isVisible={openVIP}
         textShow={true}
-        titleText={routeVip ? "升級VIP即可隱藏此對話":"升級VIP暢聊不受限" }
+        titleText={routeVip ? "升級VIP即可使用此功能":"升級VIP暢聊不受限" }
         onClose={() => setOpenVIP(false)}
         onConfirmCallback={() => {
           setTimeout(() => {

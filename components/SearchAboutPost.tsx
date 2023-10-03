@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
     width: '80%',
     textAlign: 'center',
     alignSelf: 'center',
+    height:35
   },
   footerCard: {
     flexDirection: 'row',
@@ -78,7 +79,7 @@ export default function SearchAboutPost(props: IAboutME) {
   const [chatModal, setChatModal] = useState(false);
   const queryClient = useQueryClient();
   const [currentSelectedId, setCurrentSelectedId] = useState(0);
-  const { data: blogList } = useQuery(['fetchUserBlogs', currentUserId], () =>
+  const { data: blogList,isLoading } = useQuery(['fetchUserBlogs', currentUserId], () =>
     userApi.fetchUserBlogs({ token, id: currentUserId })
   );
 
@@ -126,24 +127,25 @@ export default function SearchAboutPost(props: IAboutME) {
   };
 
   return (
-    // <Loader isLoading={isUnLockLoading}>
+    <Loader isLoading={isLoading}>
     <View style={{ marginTop: 10 }}>
-      <FlatList
-         data={[0, 1, 2,3,4,5]}
-    
+     <FlatList
+        data={blogList?.records}
+        // data={[1,4,5,4]}
         numColumns={2}
         columnWrapperStyle={styles.cardWrapper}
+        keyExtractor={(item,index)=>index.toString()}
         ListEmptyComponent={renderListEmptyComponent}
-        renderItem={() => {
+        renderItem={({item}:any) => {
           return (
             <View style={styles.cardContainer}>
               <Image
-                source={{ uri: 'https://picsum.photos/id/231/200/300' }}
+                source={{ uri: item?.photo ? item?.photo : 'https://picsum.photos/id/231/200/300' }}
                 resizeMode="cover"
                 style={styles.imageStyle}
               />
               <CaptionFour style={styles.textStyle}>
-                {'路跑美乞條追，斤升支杯語帶左蛋戶包呀送「那像請...'}
+                {item?.content}
               </CaptionFour>
               <View style={[styles.footerCard, { alignSelf: 'center', marginTop: 8 }]}>
                 <TouchableOpacity style={[styles.footerCard, { marginRight: 20 }]}>
@@ -161,6 +163,6 @@ export default function SearchAboutPost(props: IAboutME) {
       />
     </View>
 
-    // </Loader>
+    </Loader>
   );
 }

@@ -99,10 +99,11 @@ export default function AboutPost(props: IAboutME) {
   const [chatModal, setChatModal] = useState(false);
   const queryClient = useQueryClient();
   const [currentSelectedId, setCurrentSelectedId] = useState(0);
-  const { data: blogList } = useQuery(['fetchUserBlogs', currentUserId], () =>
-    userApi.fetchUserBlogs({ token, id: currentUserId }),
+  const {id} = useSelector((state: RootState) => state.user);
+  const { data: blogList } = useQuery(['fetchUserBlogs', id], () =>
+    userApi.fetchUserBlogs({ token, id: id }),
   );
-
+  
   const { mutate: unLockPrivatePhoto, isLoading: isUnLockLoading } = useMutation(
     userApi.unLockPrivatePost,
     {

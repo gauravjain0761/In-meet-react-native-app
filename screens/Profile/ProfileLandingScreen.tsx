@@ -266,14 +266,14 @@ const secondData=[
       navigation.push('ProfileSettingScreen');
     },
   },
-  {
-    title: '聯絡我們',
-    titleStyle: styles.defaultTitle,
-    rightIcon: mapIcon.inemailIcon(),
-    onPress: () => {
-      navigation.push('ContactUsScreen');
-    },
-  },
+  // {
+  //   title: '聯絡我們',
+  //   titleStyle: styles.defaultTitle,
+  //   rightIcon: mapIcon.inemailIcon(),
+  //   onPress: () => {
+  //     navigation.push('ContactUsScreen');
+  //   },
+  // },
 ]
 
   useFocusEffect(
@@ -385,6 +385,7 @@ const secondData=[
         <View style={styles.footerContainer}>
           {NewData.map((item) => (
             <ProfileRowItemNew
+            showIcon={true}
               key={item.title}
               title={item.title}
               titleStyle={item.titleStyle}

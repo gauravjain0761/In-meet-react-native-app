@@ -57,6 +57,7 @@ import userSlice, {
   updateUser,
   getUserLocation,
   getUserInfo,
+  updateUserScrollValue,
 } from '~/store/userSlice';
 import Loader from '~/components/common/Loader';
 import { RootState, useAppDispatch } from '~/store';
@@ -94,6 +95,9 @@ import { fontSize } from '../helpers/Fonts';
 import emptyImg from '../assets/images/icons/emptyImg.png';
 import VerifiedModel from '~/components/common/VerifiedModel';
 import MatchModal from '~/components/common/MatchModal';
+import CardSwiper from '~/components/CardSwiper';
+import Swiper from 'react-native-deck-swiper';
+import { hp } from '~/helpers/globalFunctions';
 
 const { height, width } = Dimensions.get('window');
 
@@ -102,6 +106,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.colors?.black1,
     // minHeight: height,
     flex: 1,
+  },
+  swiperContainer: {
+    marginTop: -hp(3.5),
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
@@ -287,6 +295,7 @@ export default function LandingScreen(props: LandingScreenProps) {
   const [openLocationAsync] = useRequestLocation();
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
+  const useSwiper = useRef<any>(0);
 
   const {
     isLoading,
@@ -341,18 +350,6 @@ export default function LandingScreen(props: LandingScreenProps) {
   const handleDicoverScreen = () => {
     navigation.navigate('DicoverScreen');
   };
-
-  const renderRow = ({ item }) => (
-    <MatchCard
-      user={item}
-      favoriteList={favoriteList?.records}
-      onPress={() => {
-        setVipConnectModal(true);
-      }}
-      onfavoritBtn={() => setShowVerifiedModal(true)}
-      onArrowPress={()=>setShowMatchModal(true)}
-    />
-  );
 
   const renderListHeaderComponent = () => {
     return (
@@ -499,7 +496,7 @@ export default function LandingScreen(props: LandingScreenProps) {
     };
     const checkLogin = async () => {
       if (currentUserData.data.isGetLoginReward === false) {
-        setLoginModal(true);
+        // setLoginModal(true);
       } else {
         setLoginModal(false);
       }
@@ -531,6 +528,74 @@ export default function LandingScreen(props: LandingScreenProps) {
     }
   }, [currentStep]);
 
+  // const [data, setData] = useState<any>();
+  const [isMorePage, setIsMorePage] = useState(true);
+  const [isMoreHotListPage, setIsMoreHotListPage] = useState(true);
+  const [itemCount, setItemCount] = useState(0);
+  const [isFooterLoading, setIsFooterLoading] = useState(false);
+  const [pageCount, setPageCount] = useState(1);
+  const [hotListPageCount, setHotListPageCount] = useState(1);
+
+  const getMoreData = async () => {
+    if (hasNextPage && !isRefetchError) {
+      fetchNextPage();
+    }
+  };
+  const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: any) => {
+    const paddingToBottom = 10;
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+  };
+  const onDislikePressed = (ref: any) => {
+    console.log('ref', ref);
+
+    ref?.current?.swipeLeft();
+  };
+
+  const onLikePressed = (ref: any) => {
+    ref?.current?.swipeRight();
+  };
+
+  const onSwipe = (index: number) => {
+    dispatch(updateUserScrollValue(0));
+    if (index == users?.length - 4) {
+      if (isMorePage) {
+        setPageCount(pageCount + 1);
+        fetchNextPage();
+      }
+    }
+  };
+
+
+  const onSwipeLeft = () => {
+    dispatch(updateUserScrollValue(0));
+    setItemCount(itemCount + 1);
+  };
+
+  const onSwipeRight = () => {
+    dispatch(updateUserScrollValue(0));
+    setItemCount(itemCount + 1);
+  };
+
+  const onSwiping = (ref: any) => {
+    dispatch(updateUserScrollValue(ref));
+  };
+
+  const renderRow = (item, index) => (
+    <MatchCard
+      index={index}
+      refList={useSwiper}
+      user={item}
+      favoriteList={favoriteList?.records}
+      onPress={() => {
+        setVipConnectModal(true);
+      }}
+      onClosePress={() => onDislikePressed(useSwiper)}
+      onLikePress={() => onLikePressed(useSwiper)}
+    />
+  );
+
+  // const renderRow = ({ item }) => <SmallCard user={item} favoriteList={favoriteList?.records} />;
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -538,7 +603,7 @@ export default function LandingScreen(props: LandingScreenProps) {
         {mapIcon.logoIcon({ size: 36 })}
         <Pressable onPress={handleDicoverScreen}>{mapIcon.pagesIcon({ size: 24 })}</Pressable>
       </View>
-      <View style={styles.cardView}>
+      {/* <View style={styles.cardView}>
         <SwiperFlatList
           contentContainerStyle={{ flex: users?.length == 0 ? 1 : 0 }}
           // numColumns={1}
@@ -559,7 +624,55 @@ export default function LandingScreen(props: LandingScreenProps) {
           ListEmptyComponent={renderListEmptyComponent()}
           // ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
         />
-      </View>
+      </View> */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        onScroll={({ nativeEvent }) => {
+          if (isCloseToBottom(nativeEvent)) {
+            !isFooterLoading && getMoreData();
+          }
+        }}>
+        <View style={styles.cardView}>
+          {/* {users?.length > 0 && (
+            <>
+              <CardSwiper
+                data={users?.slice(4)}
+                onDislikePressed={onDislikePressed}
+                onLikePressed={onLikePressed}
+                onSwipeLeft={onSwipeLeft}
+                onSwipeRight={onSwipeRight}
+                onSwipePress={onSwipe}
+                renderCard={renderRow}
+              />
+            </>
+          )} */}
+          {users?.length > 0 && (
+            <Swiper
+              ref={useSwiper}
+              animateCardOpacity={true}
+              containerStyle={styles.swiperContainer}
+              cards={users}
+              renderCard={renderRow}
+              cardIndex={0}
+              backgroundColor="white"
+              stackSize={3}
+              verticalSwipe={false}
+              infinite={false}
+              showSecondCard={true}
+              //   stackSeparation={-hp(3.07)}
+              animateOverlayLabelsOpacity={true}
+              onSwiped={onSwipe}
+              onSwipedRight={onSwipeRight}
+              onSwiping={onSwiping}
+              onSwipedLeft={onSwipeLeft}
+              dragEnd={() => {
+                dispatch(updateUserScrollValue(0));
+              }}
+              swipeBackCard={true}
+            />
+          )}
+        </View>
+      </ScrollView>
       <BannerModal
         animationType="slide"
         transparent
@@ -627,7 +740,8 @@ export default function LandingScreen(props: LandingScreenProps) {
       <ModalComponent
         animationType="slide"
         transparent
-        modalVisible={currentStep == 6 && loginModal}
+        // modalVisible={currentStep == 6 && loginModal}
+        modalVisible={loginModal}
         onCloseModal={() => {
           setCurrentStep(currentStep + 1);
           setLoginModal(false);
