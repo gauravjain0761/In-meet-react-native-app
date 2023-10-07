@@ -2,6 +2,7 @@ import { get, isEmpty } from 'lodash';
 import { Blog, BlogReply } from '~/store/forumSlice';
 import { IInterest } from '~/store/interestSlice';
 import HttpClient, { cancelTokenSource } from '../axios/axios';
+import { ActionResponse } from '~/types/custom';
 
 interface UserResponse {
   data: {
@@ -145,6 +146,26 @@ export const userApi = {
         // ...(lng && { lng }),
         // ...(lat && { lat }),
         ...(distance && { distance }),
+      },
+      headers: {
+        Authorization: token,
+      },
+    }).then(res => {
+      return res.data.data;
+    });
+  },
+  fetchUserpair: (data, pageObject) => {
+    const { pageParam = 1, queryKey } = pageObject;
+    const {
+      token,
+    } = data;
+
+    return HttpClient.get<ActionResponse<UserResponse>>('/userpair', {
+      params: {
+        page: pageParam,
+        limit:20,
+        order:"asc",
+        sort:'id'
       },
       headers: {
         Authorization: token,
@@ -317,14 +338,29 @@ export const userApi = {
       return res.data.data;
     });
   },
-  deleteUserAvatars: ({ token, id }) => {
-    return HttpClient.delete<ActionResponse<any>>(`/user/photo/${id}`, {
+  fetchUserLike: ({ token, id,isLike }:any) => {
+    return HttpClient.get<ActionResponse<FileRecordResponse>>(`/user/like`, {
+      params: {
+        userId: id,
+        liked:isLike
+      },
       headers: {
         Authorization: token,
       },
     }).then(res => {
       return res.data.data;
     });
+  },
+  deleteUserAvatars: ({ token, id }) => {
+    return HttpClient.delete<ActionResponse<any>>(`/user/photo/${id}`, {
+      headers: {
+        Authorization: token,
+      },
+    }).then(res => {
+      console.log('reeeee',res);
+      
+      return res.data.data;
+    }).catch((err)=>console.log("sdasdasdadad",err))
   },
   fetchUserBlogs: ({ token, id }) => {
     return HttpClient.get<ActionResponse<BlogListResponse>>(`/blog/list`, {
@@ -499,7 +535,9 @@ export const userApi = {
         },
       },
     ).then(res => {
-            return res.data.data;
+      console.log('res.data.data',res.data.data);
+      
+      return res.data.data;
     });
   },
   updateUserPassword: ({ token, oldPassword, newPassword }) => {
@@ -659,10 +697,14 @@ export const userApi = {
       },
     })
       .then(res => {
-        return res.data.data;
+        console.log('該用戶已經註冊',res);
+        
+                return res.data.data;
       })
       .catch(err => {
-        return { err };
+        console.log("eeerrr",err);
+        
+                return { err };
       });
   },
   verification: ({ phone, verifyCode }: { phone: string; verifyCode: string }) => {
@@ -683,27 +725,70 @@ export const userApi = {
         return { err };
       });
   },
-  findWhoLikeMe: ({ token, account }, pageObject) => {
+  findWhoLikeMe: ({ token, id }, pageObject) => {
     const { pageParam = 0 } = pageObject;
-        return HttpClient.get<ActionResponse<FavoriteListResponse>>('/user/findWhoLikeMe', {
+    
+    return HttpClient.get<ActionResponse<FavoriteListResponse>>('/user/findWhoLikeMe', {
       params: {
         page: pageParam,
-        account,
+        userId:id,
+        limit:10
       },
       headers: {
         Authorization: token,
       },
     }).then(res => {
       return res.data.data;
-    });
+    }).catch((err)=>console.log("errrrr",err) )
   },
-  findWhoWatchedMe: ({ token, account }, pageObject) => {
+  findUserpairLikeMe: ({ token, id }, pageObject) => {
+    const { pageParam = 1 } = pageObject;
+    console.log('token',id);
+    
+    return HttpClient.get<ActionResponse<FavoriteListResponse>>('/userpair/history', {
+      params: {
+        userId:id,
+        modeChange:true,
+        isTest:true,
+        liked:true,
+        page: pageParam,
+        limit:10,
+      },
+      headers: {
+        Authorization: token,
+      },
+    }).then(res => {
+      return res.data.data;
+    }).catch((err)=>console.log("errrrr",err) )
+  },
+  findUserpairWatchedMe: ({ token, id }, pageObject) => {
+    const { pageParam = 1 } = pageObject;
+    return HttpClient.get<ActionResponse<FavoriteListResponse>>('/userpair/history', {
+      params: {
+        userId:id,
+        modeChange:true,
+        isTest:true,
+        watched:true,
+        page: pageParam,
+        limit:10,
+      },
+      headers: {
+        Authorization: token,
+      },
+    }).then(res => {
+      console.log('resss',res.data);
+      
+      return res.data.data;
+    }).catch((err)=>console.log("errrrr",err) )
+  },
+  findWhoWatchedMe: ({ token, id }, pageObject) => {
     const { pageParam = 0 } = pageObject;
 
     return HttpClient.get<ActionResponse<FavoriteListResponse>>('/user/findWhoWatchedMe', {
       params: {
         page: pageParam,
-        account,
+        userId:id,
+        limit:10
       },
       headers: {
         Authorization: token,

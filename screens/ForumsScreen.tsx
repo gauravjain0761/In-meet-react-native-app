@@ -390,16 +390,15 @@ function ForumCardComponent({
   const handleJoinVip = () => {
     navigation.push('PurchaseVIPScreen');
   };
-
   return (
     <Loader isLoading={isLikeLoading || isReplyLoading || isUnLikeLoading}>
       <View style={styles.headerContainer}>
         <View style={styles.avatarContainer}>
           <TouchableOpacity onPress={()=>{
-            //  if (id) {
-            //   navigation.navigate('MatchingDetailScreen');
-            //   dispatch(updateCurrentMatchingId(id));
-            // }
+             if (user?.id) {
+              navigation.navigate('MatchingDetailScreen');      
+              dispatch(updateCurrentMatchingId(user?.id));
+            }
           }}  activeOpacity={1} style={styles.imageContainer}>
             <Image
               style={styles.avatar}
@@ -408,7 +407,7 @@ function ForumCardComponent({
           </TouchableOpacity>
           <View style={styles.postDetailContainer}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <BodyTwo style={styles.avatarDisplayName}>{user.name}</BodyTwo>
+              <BodyTwo style={styles.avatarDisplayName}>{user?.name}</BodyTwo>
               <TouchableOpacity onPress={handleLike} style={{ paddingLeft: 5 }}>
                 {mapIcon.vipdiamondIcon({
                   size: 18,
@@ -739,7 +738,7 @@ export default function ForumsScreen(props: RootTabScreenProps<'Forums'>) {
           <FlatList
             renderItem={(index) => renderRow(index)}
             data={forums}
-            initialScrollIndex={listindex}
+            // initialScrollIndex={listindex}
             ref={ref}
             onEndReached={() => {
               if (hasNextPage) {
@@ -747,7 +746,7 @@ export default function ForumsScreen(props: RootTabScreenProps<'Forums'>) {
               }
             }}
             onScrollBeginDrag={e => setOffset(e.nativeEvent.contentOffset.y)}
-            onScrollEndDrag={scrollHandler}
+            // onScrollEndDrag={scrollHandler}
             showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             onEndReachedThreshold={0.1}

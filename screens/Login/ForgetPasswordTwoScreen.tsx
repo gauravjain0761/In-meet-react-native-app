@@ -161,7 +161,7 @@ export default function ForgetPasswordTwoScreen(props: ForgetPasswordTwoScreenPr
             }
             right={
               state.visiblePassword ? (
-                <Feather name="eye" size={24} color="#A8ABBD" />
+                mapIcon.eyeIcon({size:24})
               ) : (
                 mapIcon.invisiblePassword()
               )
@@ -187,7 +187,7 @@ export default function ForgetPasswordTwoScreen(props: ForgetPasswordTwoScreenPr
             rightIconShow={true}
             right={
               state.visibleVerifyPassword ? (
-                <Feather name="eye" size={24} color="#A8ABBD" />
+                mapIcon.eyeIcon({size:24})
               ) : (
                 mapIcon.invisiblePassword()
               )

@@ -26,7 +26,6 @@ import { mapIcon } from '~/constants/IconsMapping';
 import { useHeaderHeight } from '@react-navigation/elements';
 import ReportModal from '~/components/common/ReportModal';
 import SwitchToggle from 'react-native-switch-toggle';
-import InstaStory from 'react-native-insta-story';
 const useStyles = makeStyles((theme) => ({
   defaultTitle: {
     color: theme.colors?.white,

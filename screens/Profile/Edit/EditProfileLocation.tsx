@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 function EditProfileLocation(props) {
   const { navigation } = props;
   useCustomHeader({ title: '居住地', navigation });
-  const city = useSelector((state: RootState) => state.user.city);
+  const city = useSelector((state: RootState) => state.user?.city);
 
   const { theme } = useTheme();
   const styles = useStyles();

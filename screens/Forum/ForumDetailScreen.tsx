@@ -483,9 +483,11 @@ export default function ForumDetailScreen(props: RootStackScreenProps<'ForumDeta
   return (
     <SafeAreaView style={{ backgroundColor: theme.colors.black1, flex: 1, paddingTop: top - 10 }}>
       <HeaderView />
+
+     
       <KeyboardAwareScrollView
         contentContainerStyle={{ paddingBottom: bottom, flex: 1 }}
-        // style={{ backgroundColor: theme.colors.black1,flex:1 }}
+       
         keyboardShouldPersistTaps="always"
         onScroll={({ nativeEvent }) => {
           if (hasNextPage && isCloseToBottom(nativeEvent)) {
@@ -493,8 +495,10 @@ export default function ForumDetailScreen(props: RootStackScreenProps<'ForumDeta
           }
         }}
         scrollEventThrottle={400}>
+          
         <Loader isLoading={isLoading || isLikeLoading || isUnLikeLoading}>
-          <View style={{ flex: 1 }}>
+        <ScrollView  style={{ backgroundColor: theme.colors.black1,flex:1 }}>
+          {/* <View style={{ flex: 1 }}> */}
             {/* <View style={styles.headerContainer}>
             <View style={styles.avatarContainer}>
               <TouchableOpacity style={styles.imageContainer}>
@@ -647,7 +651,8 @@ export default function ForumDetailScreen(props: RootStackScreenProps<'ForumDeta
               <BodyTwo style={styles.chatCount}>{'則留言'}</BodyTwo>
             </View>
             <ScrollView style={{ flex: 1, marginTop: 10 }}>{renderBlogReplies()}</ScrollView>
-          </View>
+          {/* </View> */}
+          </ScrollView>
           <View style={styles.footerStyle}>
             {!keyboardStatus && (
               <Image
@@ -667,6 +672,7 @@ export default function ForumDetailScreen(props: RootStackScreenProps<'ForumDeta
                 multiline
               />
             </View>
+         
             {keyboardStatus ? (
               <View style={styles.sendBtn}>
                 <Button buttonStyle={styles.sendBtnStyle} onPress={handlePressReply}>
@@ -706,6 +712,7 @@ export default function ForumDetailScreen(props: RootStackScreenProps<'ForumDeta
           />
         </Loader>
       </KeyboardAwareScrollView>
+    
     </SafeAreaView>
   );
 }

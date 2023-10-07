@@ -3,6 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import type { RootState } from './index';
 import HttpClient, { CancelToken } from '../axios/axios';
+import { ActionResponse } from '~/types/custom';
 
 type LocationObject = {
   longitude: number;
@@ -108,7 +109,7 @@ export const patchRegister = createAsyncThunk(
       if (!error.response) {
         throw err;
       }
-      throw error.response.data;
+            throw error.response.data;
     }
   },
 );

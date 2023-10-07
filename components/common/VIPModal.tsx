@@ -66,7 +66,7 @@ interface IConfirmModal {
 }
 
 export default function VIPModal(props: IConfirmModal) {
-  const { isVisible, onClose, onConfirmCallback, textShow, titleText="升級VIP即可【封鎖用戶】" } = props;
+  const { isVisible, onClose, onConfirmCallback, textShow, titleText="升級VIP即可使用此功能" } = props;
   const { theme } = useTheme();
   const styles = useStyles();
   const navigation = useNavigation();
@@ -93,7 +93,7 @@ export default function VIPModal(props: IConfirmModal) {
             升級VIP
           </Text>
           <CaptionFour style={[styles.subTitleText, { marginBottom: 27 }]}>
-            {textShow ? titleText : "加入VIP將享受到{'\n'}更快速的配對體驗"}
+            {textShow ? titleText : "升級VIP即可使用此功能"}
           </CaptionFour>
           <ButtonTypeTwo
             containerStyle={[styles.buttonStyle, { marginBottom: 10, marginTop: 10 }]}

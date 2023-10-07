@@ -10,7 +10,7 @@ import { BodyThree, CaptionFour, SubTitleTwo, TitleTwo } from '../Text';
 import { LikeButton } from '../Button';
 import { mapIcon } from '../../../constants/IconsMapping';
 import { CollectorUser, userApi } from '~/api/UserAPI';
-import { selectToken, selectUserId } from '~/store/userSlice';
+import { getUserLike, getUserWatch, selectToken, selectUserId } from '~/store/userSlice';
 import { useAppDispatch } from '~/store';
 import { updateCurrentMatchingId } from '~/store/interestSlice';
 import defaultAvatar from '~/assets/images/icons/profile.png';
@@ -43,8 +43,8 @@ const useStyles = makeStyles((theme) => ({
   cardIntroContainer: {
     // flexDirection: 'row',
     // alignItems:'center',
-    flex:1,
-    alignSelf:'center'
+    flex: 1,
+    alignSelf: 'center',
   },
   introText: {
     color: theme.colors?.white,
@@ -79,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
     height: 80,
     paddingHorizontal: 16,
     flexDirection: 'row',
-    alignItems:"center"
+    alignItems: 'center',
   },
   buttonStyle: {
     width: 32,
@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.colors.white,
     justifyContent: 'center',
     alignItems: 'center',
-    top:8
+    top: 8,
   },
 }));
 
@@ -136,6 +136,14 @@ export default function DicoverCard(props: Props) {
   );
 
   const handleLike = () => {
+    dispatch(
+      getUserWatch({
+        token,
+        isLike: true,
+        id:id,
+      })
+    );
+    dispatch(getUserLike({ token, isLike: true, id: id }));
     if (!id || isLoading || removeLoading) {
       return;
     }
@@ -188,8 +196,11 @@ export default function DicoverCard(props: Props) {
                   size: 15,
                 })}
               /> */}
-              <TouchableOpacity style={styles.buttonStyle}>
-              {mapIcon.likeIcon({ color: theme.colors.pink, size: 18 })}
+              <TouchableOpacity style={styles.buttonStyle} onPress={handleLike}>
+                {/* {mapIcon.likeIcon({ color: theme.colors.pink, size: 18 })} */}
+                {isCollected
+                  ? mapIcon.likeIcon({ color: theme.colors.pink, size: 18 })
+                  : mapIcon.unlikeIcon({ color: theme.colors.black4, size: 18 })}
               </TouchableOpacity>
             </View>
           </ImageBackground>

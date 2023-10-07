@@ -280,7 +280,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
       const { data } = await dispatch(
         patchRegister({ ...register, phone: `${register.phone}` })
       ).unwrap();
-
+    
       if (data?.id) {
         if (register.avatar) {
           await dispatch(

@@ -250,7 +250,7 @@ export default function ModifyPasswordFirstSetting(
               rightIconShow={true}
               right={
                 state.oldVisiblePassword ? (
-                  <Feather name="eye" size={22} color="#A8ABBD" />
+                  mapIcon.eyeIcon({size:24})
                 ) : (
                   mapIcon.invisiblePassword()
                 )
@@ -280,7 +280,7 @@ export default function ModifyPasswordFirstSetting(
               rightIconShow={true}
               right={
                 state.visiblePassword ? (
-                  <Feather name="eye" size={22} color="#A8ABBD" />
+                  mapIcon.eyeIcon({size:24})
                 ) : (
                   mapIcon.invisiblePassword()
                 )
@@ -310,7 +310,7 @@ export default function ModifyPasswordFirstSetting(
               rightStyle={{ top: '65%' }}
               right={
                 state.visibleVerifyPassword ? (
-                  <Feather name="eye" size={22} color="#A8ABBD" />
+                  mapIcon.eyeIcon({size:24})
                 ) : (
                   mapIcon.invisiblePassword()
                 )

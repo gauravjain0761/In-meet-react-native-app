@@ -12,7 +12,7 @@ import useCustomHeader from '../../../hooks/useCustomHeader';
 import { BodyOne, SubTitleOne } from '../../../components/common/Text';
 import { RootState, useAppDispatch } from '~/store';
 import Loader from '~/components/common/Loader';
-import { patchUserNotification } from '~/store/userSlice';
+import { patchUserBlogEnable, patchUserLikeEnable, patchUserMessageEnable, patchUserNotification, patchUserSystemEnable } from '~/store/userSlice';
 import BannerModal from '~/components/common/BannerModal';
 import useFirebaseMessages from '~/hooks/useFirebaseMessages';
 import messaging from '@react-native-firebase/messaging';
@@ -118,6 +118,9 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     (state: RootState) => state.user
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isSeemeEnable, setIsSeemeEnable] = useState(false);
+  const [isPairingEnable, setIsPairingEnable] = useState(false);
+  const [isReceiveEnable, setIsReceiveEnable] = useState(false);
   const dispatch = useAppDispatch();
   const { requestUserPermission } = useFirebaseMessages();
   const getCurrentDeviceToken = async () => {
@@ -155,26 +158,11 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     {
       title: '看過我',
       onSwitch: async (newValue) => {
-        try {
-          const havePermission = await handleOn();
-          if (havePermission) {
-            setIsLoading(true);
-            await dispatch(
-              patchUserNotification({
-                deviceToken,
-                isLikeEnable: !isLikeEnable,
-                isBlogEnable,
-                isMessageEnable,
-                isSystemEnable,
-              })
-            );
-          }
-        } catch (error) {
-          Toast.show(JSON.stringify(error));
-        }
+        setIsLoading(true);
+        setIsSeemeEnable(!isSeemeEnable)
         setIsLoading(false);
       },
-      value: isLikeEnable,
+      value: isSeemeEnable,
     },
     {
       title: '收到喜歡時',
@@ -192,6 +180,7 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
                 isSystemEnable,
               })
             );
+            dispatch(patchUserLikeEnable(!isLikeEnable))
           }
         } catch (error) {
           Toast.show(JSON.stringify(error));
@@ -203,50 +192,20 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
     {
       title: '配對成功',
       onSwitch: async (newValue) => {
-        try {
-          const havePermission = await handleOn();
-          if (havePermission) {
-            setIsLoading(true);
-            await dispatch(
-              patchUserNotification({
-                deviceToken,
-                isLikeEnable: !isLikeEnable,
-                isBlogEnable,
-                isMessageEnable,
-                isSystemEnable,
-              })
-            );
-          }
-        } catch (error) {
-          Toast.show(JSON.stringify(error));
-        }
+        setIsLoading(true);
+        setIsPairingEnable(!isPairingEnable);
         setIsLoading(false);
       },
-      value: isLikeEnable,
+      value: isPairingEnable,
     },
     {
       title: '收到新訊息時',
       onSwitch: async (newValue) => {
-        try {
-          const havePermission = await handleOn();
-          if (havePermission) {
-            setIsLoading(true);
-            await dispatch(
-              patchUserNotification({
-                deviceToken,
-                isLikeEnable,
-                isBlogEnable,
-                isMessageEnable: !isMessageEnable,
-                isSystemEnable,
-              })
-            );
-          }
-        } catch (error) {
-          Toast.show(JSON.stringify(error));
-        }
+        setIsLoading(true);
+        setIsReceiveEnable(!isReceiveEnable)
         setIsLoading(false);
       },
-      value: isMessageEnable,
+      value: isReceiveEnable,
     },
     {
       title: '喜歡對象的動態',
@@ -256,6 +215,7 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
           const havePermission = await handleOn();
           if (havePermission) {
             setIsLoading(true);
+            dispatch(patchUserSystemEnable(!isSystemEnable))
             await dispatch(
               patchUserNotification({
                 deviceToken,
@@ -281,6 +241,7 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
           const havePermission = await handleOn();
           if (havePermission) {
             setIsLoading(true);
+            dispatch(patchUserBlogEnable(!isBlogEnable))
             await dispatch(
               patchUserNotification({
                 deviceToken,
@@ -308,6 +269,7 @@ export default function NotificationSetting(props: ProfileStackScreenProps<'Noti
           const havePermission = await handleOn();
           if (havePermission) {
             setIsLoading(true);
+            dispatch(patchUserMessageEnable(!isMessageEnable))
             await dispatch(
               patchUserNotification({
                 deviceToken,

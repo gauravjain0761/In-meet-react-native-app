@@ -13,7 +13,7 @@ import { BodyThree } from '../components/common/Text';
 import { SearchInterestListProps } from '../navigation/InterestNavigator';
 import Loader from '~/components/common/Loader';
 import { interestApi, userApi } from '~/api/UserAPI';
-import { selectToken, selectAccount } from '~/store/userSlice';
+import { selectToken, selectAccount, selectUserId } from '~/store/userSlice';
 import { IInterest, ILikeInfo } from '~/store/interestSlice';
 import { ButtonTypeTwo, ChosenButton } from '~/components/common/Button';
 import LikeCard from '~/components/common/Card/LikeCard';
@@ -101,39 +101,52 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
   const { theme } = useTheme();
   const token = useSelector(selectToken);
   const account = useSelector(selectAccount);
+  const id = useSelector(selectUserId);
   const [tabSelected, setTabSelected] = useState(TABS.LIKE);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
+  //   ['searchInterest'],
+  //   pageObject => userApi.findWhoLikeMe({ token, id }, pageObject),
+  // );
   const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
     ['searchInterest'],
-    pageObject => userApi.findWhoLikeMe({ token, account }, pageObject),
+    pageObject => userApi.findUserpairLikeMe({ token, id }, pageObject),
   );
-console.log('data',data);
+// console.log('data',data);
 
+  // const {
+  //   isFetchingNextPage: watchedFetchingNextPage,
+  //   fetchNextPage: watchedFetchNextPage,
+  //   hasNextPage: watchedHasNextPage,
+  //   data: watchedData,
+  // } = useInfiniteQuery(['searchWatched', value], pageObject =>
+  //   userApi.findWhoWatchedMe({ token, id }, pageObject),
+  // );
   const {
     isFetchingNextPage: watchedFetchingNextPage,
     fetchNextPage: watchedFetchNextPage,
     hasNextPage: watchedHasNextPage,
     data: watchedData,
   } = useInfiniteQuery(['searchWatched', value], pageObject =>
-    userApi.findWhoWatchedMe({ token, account }, pageObject),
+    userApi.findUserpairWatchedMe({ token, id }, pageObject),
   );
 
   const watchedList = watchedData?.pages
     .map(page => {
-      return page;
+      return page?.records;
     })
     .flat();
 
   const interests = data?.pages
     .map(page => {
-      return page;
+      return page?.records;
     })
     .flat();
 
   const renderRow = ({ item }: { item: ILikeInfo }) => {
     return (
-      <LikeCard interest={{ ...item, ...item.user }} hideLikeIcon={tabSelected === TABS.VISIT} />
+      <LikeCard interest={{ ...item, ...item.user,}} hideLikeIcon={tabSelected === TABS.VISIT} />
     );
   };
 
@@ -227,7 +240,7 @@ console.log('data',data);
               onEndReachedThreshold={0.1}
               data={interests}
               columnWrapperStyle={{ justifyContent: 'space-between' }}
-              keyExtractor={(item, index) => item.user.id.toString()}
+              keyExtractor={(item, index) => index.toString()}
               renderItem={renderRow}
               ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
             />
@@ -253,7 +266,7 @@ console.log('data',data);
               onEndReachedThreshold={0.1}
               data={watchedList}
               columnWrapperStyle={{ justifyContent: 'space-between' }}
-              keyExtractor={(item, index) => item.user.id.toString()}
+              keyExtractor={(item, index) => index.toString()}
               renderItem={renderRow}
               ListFooterComponent={watchedFetchingNextPage ? <ActivityIndicator /> : null}
             />

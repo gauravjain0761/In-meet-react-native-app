@@ -300,7 +300,7 @@ export default function ReportCard({ onDelete = () => {}, onRoomCardPress, roomD
       <VIPModal
           isVisible={openVIP}
           textShow={true}
-          titleText="升級VIP即可【封鎖用戶】"
+          titleText="升級VIP即可使用此功能"
           onClose={() => setOpenVIP(false)}
           onConfirmCallback={()=>{
             setTimeout(() => {

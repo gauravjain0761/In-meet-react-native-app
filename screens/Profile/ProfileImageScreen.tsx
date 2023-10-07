@@ -41,7 +41,7 @@ import { RootState, useAppDispatch } from '~/store';
 import { cleanUpRegister, patchRegister, updateAvatar } from '~/store/registerSlice';
 import uploadFile from '~/store/fileSlice';
 import { clearUserStorage, storeUserIsFromRegistered, storeUserToken } from '~/storage/userToken';
-import { loginUser, patchUserFromRegister, patchUserToken } from '~/store/userSlice';
+import { loginUser, patchUserFromRegister, patchUserToken, selectUserId } from '~/store/userSlice';
 import useRequestLocation from '~/hooks/useRequestLocation';
 import Header from '~/components/common/Header';
 import { fontSize } from '~/helpers/Fonts';
@@ -114,10 +114,11 @@ export default function ProfileImageScreen(props: RegisterImageScreenProps) {
   const register = useSelector((state: RootState) => state.register);
   const { bottom, top } = useSafeAreaInsets();
   const avatar = useSelector((state: RootState) => state.user.avatar);
+  const id = useSelector(selectUserId);
 
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
-  const [imageValue, setimageValue] = useState(null);
+  const [imageValue, setimageValue] = useState(avatar);
   const {
     control,
     handleSubmit,
@@ -129,6 +130,41 @@ export default function ProfileImageScreen(props: RegisterImageScreenProps) {
       avatar: null,
     },
   });
+
+  const handleRegister = async (avatarData) => {
+    try {
+      setLoading(true);
+      if (avatarData.uri) {
+        await dispatch(
+          uploadFile({
+            fileData: {
+              type: Platform.OS === 'ios' ? 'image' : 'image/jpg',
+              uri: Platform.OS === 'ios' ? avatarData.uri.replace('file://', '') : avatarData.uri,
+              name: 'unnamed.png',
+            },
+            fileType: 'AVATAR',
+            userId: id,
+          })
+        ).unwrap();
+        await dispatch(updateAvatar(avatarData.uri));
+        navigation.goBack()
+      }
+    } catch (error) {
+      Toast.show(JSON.stringify(error));
+    }
+    setLoading(false);
+  };
+
+  const onSubmit = async (data: any) => {
+  
+    const { avatar } = data;    
+    if (!avatar) {
+      Toast.show('請至少上傳一張照片');
+    } else {
+    
+      handleRegister(avatar);
+    }
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -176,7 +212,7 @@ export default function ProfileImageScreen(props: RegisterImageScreenProps) {
                 aspect: [1, 1],
               });
               if (pickerResult.cancelled === true) return;
-
+              setimageValue(pickerResult?.uri);
               onChange(pickerResult);
             } catch (error) {
               alert(error);
@@ -210,6 +246,7 @@ export default function ProfileImageScreen(props: RegisterImageScreenProps) {
               }
               const pickerResult = await ImagePicker.launchCameraAsync();
               if (pickerResult.cancelled === true) return;
+              setimageValue(pickerResult?.uri);
 
               onChange(pickerResult);
             } catch (error) {
@@ -225,6 +262,7 @@ export default function ProfileImageScreen(props: RegisterImageScreenProps) {
   const backToPrevious = () => {
     navigation.goBack();
   };
+  console.log('imageValue', imageValue);
 
   const HeaderView = () => {
     return (
@@ -267,20 +305,20 @@ export default function ProfileImageScreen(props: RegisterImageScreenProps) {
         <Controller
           name="avatar"
           control={control}
-          rules={
-            {
-              // required: 'This is required',
-            }
-          }
+          rules={{
+            required: 'This is required',
+          }}
           render={({ field: { onChange, value } }) => {
-            setimageValue(value?.uri);
             return (
               <View style={styles.bodyContainer}>
                 <View style={styles.imageContainer}>
-                  <Image style={styles.image} source={avatar ? { uri: avatar } : defaultAvatar} />
+                  <Image
+                    style={styles.image}
+                    source={imageValue ? { uri: imageValue } : defaultAvatar}
+                  />
                 </View>
                 <ButtonTypeTwo
-                        onPress={() => handlePressOnEdit(onChange)}
+                  onPress={() => handlePressOnEdit(onChange)}
                   containerStyle={styles.editButtonStyle}
                   title={<SubTitleOne style={styles.editButtonText}>換一張</SubTitleOne>}
                 />
@@ -292,12 +330,13 @@ export default function ProfileImageScreen(props: RegisterImageScreenProps) {
       <View style={styles.footerContainer}>
         <ButtonTypeTwo
           // activeOpacity={0.9}
-          // loading={loading}
-          disabled={imageValue !== '' ? true : false}
+          loading={loading}
+          disabled={imageValue == avatar ? true : false}
           disabledStyle={{ backgroundColor: 'rgba(255, 78, 132, 0.6)' }}
           disabledTitleStyle={{ color: 'rgba(255, 255, 255, 0.2)' }}
           title={<SubTitleOne style={styles.chosenButtonText}>儲存</SubTitleOne>}
           containerStyle={{ borderRadius: 30 }}
+          onPress={ handleSubmit(onSubmit)}
         />
       </View>
     </SafeAreaView>

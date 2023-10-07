@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
     width: '80%',
     textAlign: 'center',
     alignSelf: 'center',
-    height:35
+    height: 35,
   },
   footerCard: {
     flexDirection: 'row',
@@ -278,15 +278,27 @@ export default function MyUpdateScreenz(props: FilterScreenProps) {
                   navigation.push('ForumDetailScreen');
                 }}
                 style={styles.cardContainer}>
-                <Image
-                  source={{
-                    uri: item?.photo
-                      ? get(item?.photo?.split(','), '[0]', '')
-                      : 'https://via.placeholder.com/200x300?text=Default',
-                  }}
-                  resizeMode="cover"
-                  style={styles.imageStyle}
-                />
+                {item?.photo ? (
+                  <Image
+                    source={{
+                      uri: get(item?.photo?.split(','), '[0]', ''),
+                    }}
+                    resizeMode="cover"
+                    style={styles.imageStyle}
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.imageStyle,
+                      {
+                        backgroundColor: theme.colors.black4,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      },
+                    ]}>
+                    <BodyThree style={{ color: '#fff', fontSize: fontSize(20) }}>無照片</BodyThree>
+                  </View>
+                )}
                 <CaptionFour style={styles.textStyle}>{item?.content}</CaptionFour>
                 <View style={[styles.footerCard, { alignSelf: 'center', marginTop: 8 }]}>
                   <TouchableOpacity style={[styles.footerCard, { marginRight: 20 }]}>

@@ -6,6 +6,7 @@ import HttpClient, { CancelToken } from '../axios/axios';
 import { getToken, storeUserToken } from '~/storage/userToken';
 import { FastLoginType } from './fastLoginSlice';
 import { contactType } from '~/constants/mappingValue';
+import { ActionResponse } from '~/types/custom';
 
 enum GENDER {
   MALE = 'MALE',
@@ -46,7 +47,8 @@ const initialState: UserState = {
   isSystemEnable: false,
   vipEndTime: '',
   fromRegister: false,
-  scrollvalue:0
+  scrollvalue:0,
+  drink:''
 };
 
 interface SearchUserParams {
@@ -417,6 +419,80 @@ export const patchUserNotification = createAsyncThunk(
   },
 );
 
+export const getUserLike = createAsyncThunk(
+  '/userpair/like',
+  async (
+    data: {
+      token?: string;
+      isLike?:boolean,
+      id?:number
+    },
+    { signal },
+  ) => {
+    const { token = '',isLike ,id} = data;
+    console.log('data',isLike ,id);
+    
+    try {
+      const storageToken = await getToken();
+      const response = await HttpClient.get<ActionResponse<UserProfileResponse>>('/userpair/like', {
+        headers: {
+          Authorization: token || storageToken,
+        },
+        params:{
+          id:id,
+          liked:isLike
+        }
+      });
+      console.log('response',response.data);
+      
+      return response.data;
+    } catch (err: any) {
+      const error: AxiosError<ActionResponse<{ data: any }>> = err;
+      if (!error.response) {
+        throw err;
+      }
+      throw error.response.data;
+    }
+  },
+);
+
+export const getUserWatch = createAsyncThunk(
+  '/userpair/watch',
+  async (
+    data: {
+      token?: string;
+      isLike?:boolean,
+      id?:number
+    },
+    { signal },
+  ) => {
+    const { token = '',isLike ,id} = data;
+    console.log('data',isLike ,id);
+    
+    try {
+      const storageToken = await getToken();
+      const response = await HttpClient.get<ActionResponse<UserProfileResponse>>('/userpair/watch', {
+        headers: {
+          Authorization: token || storageToken,
+        },
+        params:{
+          id:id,
+          liked:isLike
+        }
+      });
+      console.log('responsessss',response.data);
+      
+      return response.data;
+    } catch (err: any) {
+      const error: AxiosError<ActionResponse<{ data: any }>> = err;
+      if (!error.response) {
+        throw err;
+      }
+      throw error.response.data;
+    }
+  },
+);
+
 export const userSlice = createSlice({
   name: 'user',
   // `createSlice` will infer the state type from the `initialState` argument
@@ -468,6 +544,9 @@ export const userSlice = createSlice({
     patchUserSmoke: (state, action: PayloadAction<any>) => {
       state.smoke = action.payload;
     },
+    patchUserDrink: (state, action: PayloadAction<any>) => {
+      state.drink = action.payload;
+    },
     patchUserSignature: (state, action: PayloadAction<any>) => {
       state.signature = action.payload;
     },
@@ -488,6 +567,18 @@ export const userSlice = createSlice({
     },
     patchUserEmail: (state, action: PayloadAction<any>) => {
       state.email = action.payload;
+    },
+    patchUserLikeEnable: (state, action: PayloadAction<any>) => {
+      state.isLikeEnable = action.payload;
+    },
+    patchUserBlogEnable: (state, action: PayloadAction<any>) => {
+      state.isBlogEnable = action.payload;
+    },
+    patchUserMessageEnable: (state, action: PayloadAction<any>) => {
+      state.isMessageEnable = action.payload;
+    },
+    patchUserSystemEnable: (state, action: PayloadAction<any>) => {
+      state.isSystemEnable = action.payload;
     },
     updateUserScrollValue: (state, action: PayloadAction<any>) => {
       state.scrollvalue = action.payload;
@@ -627,11 +718,10 @@ export const userSlice = createSlice({
       state: UserState,
       action: { payload: ActionResponse<UserProfileResponse> },
     ) => {
-      state.isBlogEnable = action.payload.data.isBlogEnable;
-      state.isLikeEnable = action.payload.data.isLikeEnable;
-      state.isMessageEnable = action.payload.data.isMessageEnable;
-      state.isSystemEnable = action.payload.data.isSystemEnable;
-      state.deviceToken = action.payload.data.deviceToken;
+      // state.isBlogEnable = action.payload.data.isBlogEnable;
+      // state.isMessageEnable = action.payload.data.isMessageEnable;
+      // state.isSystemEnable = action.payload.data.isSystemEnable;
+      // state.deviceToken = action.payload.data.deviceToken;
     },
     [logoutUser.fulfilled.type]: (state: UserState, action: { payload: any }) => {
       state.token = '';
@@ -664,7 +754,12 @@ export const {
   patchUserFromRegister,
   patchUserEmail,
   updateUserScrollValue,
-  patchUserSmoke
+  patchUserSmoke,
+  patchUserDrink,
+  patchUserLikeEnable,
+  patchUserBlogEnable,
+  patchUserMessageEnable,
+  patchUserSystemEnable
 } = userSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type

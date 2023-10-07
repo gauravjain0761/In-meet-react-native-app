@@ -23,7 +23,7 @@ import {
 } from 'react-native-keyboard-aware-scroll-view';
 import { Button, Icon } from '@rneui/base';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { get, isEmpty, set, uniqueId } from 'lodash';
+import { get, isEmpty, lowerFirst, set, uniqueId } from 'lodash';
 import { Client, Message, StompConfig } from '@stomp/stompjs';
 import { useSelector } from 'react-redux';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
@@ -189,17 +189,17 @@ const useStyles = makeStyles((theme) => ({
   },
   vipText: {
     color: theme.colors.white,
-    fontSize:fontSize(14),
-    fontFamily:"roboto"
+    fontSize: fontSize(14),
+    fontFamily: 'roboto',
   },
-  vipBtnStyle:{
-    width:70,
-    height:40,
-    backgroundColor:theme.colors.pink,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:20
-  }
+  vipBtnStyle: {
+    width: 70,
+    height: 40,
+    backgroundColor: theme.colors.pink,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+  },
 }));
 
 function ChatBubble(props) {
@@ -358,7 +358,7 @@ function ChatBubble(props) {
           </View> */}
           <View
             style={{
-              backgroundColor: "#FF4E8480",
+              backgroundColor: '#FF4E8480',
               maxWidth: 260,
               borderRadius: 18,
               borderBottomRightRadius: 0,
@@ -475,7 +475,7 @@ const useStompClient = () => {
     let sub2;
     const stompConfig: StompConfig = {
       connectHeaders: {},
-      brokerURL: 'wss://api.inmeet.vip/ws',
+      brokerURL: 'wss://uat.inmeet.vip/ws',
       debug(debug) {
         console.log('debug: ', debug);
       },
@@ -619,6 +619,8 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         },
       }
     );
+  console.log('data', data);
+
   const convertFunction = (dataModel) => {
     const result = {};
     const isMine = get(dataModel, 'senderId', '') === userId;
@@ -697,6 +699,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const [inputValue, setInputValue] = useState('');
   const [photos, setPhotos] = useState<IPhoto[]>([]);
   const [collectionModal, setCollectionModal] = React.useState(false);
+  const [selectBtn, setSelectBtn] = React.useState(false);
   const [VIPhideModel, setVIPhideModel] = React.useState(false);
   const [VIPblockModel, setVIPblockModel] = React.useState(false);
   const [reportBlockModel, setReportBlockModel] = React.useState(false);
@@ -715,9 +718,11 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
       Toast.show(JSON.stringify(error));
     }
     setCollectionModal(false);
+    setReportBlockModel(false);
   };
   const handleJoinVip = () => {
-    navigation.push('PurchaseVIPScreen');
+    navigation.push('VIPPurchaseScreen');
+    // navigation.push('PurchaseVIPScreen');
   };
 
   useFocusEffect(() => {
@@ -858,8 +863,22 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   };
 
   const handleConfirm = async () => {
-    setReportBlockModel(false);
-    setBlockChat(true);
+    if(selectBtn){
+      if (isBlocked) {
+        if (isRemoveLoading) return;
+        if (!isBlockedId) return;
+        removeBlockInfo({ token, id: isBlockedId });
+        setReportBlockModel(false);
+      } else {
+        if (isBlockUserInfoLoading) return;
+        blockUserInfo({ token, userId, blockUserId: recipientId });
+        setReportBlockModel(false);
+      }
+      setReportBlockModel(false);
+    }else{
+      handleHideRoom()
+    }
+    // setBlockChat(true);
   };
   const handleCancel = () => {
     setReportBlockModel(false);
@@ -884,26 +903,44 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const isBeBlocked = false;
 
   const onUserPress = () => {
-    setTimeout(() => {
-      setOpenVIP(true);
-    }, 1000);
+    // setTimeout(() => {
+    //   setOpenVIP(true);
+    // }, 1000);
     setVisibleModal(false);
+    navigation.navigate('MatchingDetailScreen');
+    dispatch(updateCurrentMatchingId(recipientId));
   };
   const onBloackPress = () => {
-    setReportHeaderText('確定封鎖此用戶嗎？');
-    setReportSubHeaderText('封鎖用戶後將無法傳送訊息給您');
-    setTimeout(() => {
-      setReportBlockModel(true);
-    }, 1000);
-    setVisibleModal(false);
+    if (isVIP) {
+      setSelectBtn(true)
+      setReportHeaderText('確定封鎖此用戶嗎？');
+      setReportSubHeaderText('封鎖用戶後將無法傳送訊息給您');
+      setTimeout(() => {
+        setReportBlockModel(true);
+      }, 1000);
+      setVisibleModal(false);
+    } else {
+      setTimeout(() => {
+        setOpenVIP(true);
+      }, 1000);
+      setVisibleModal(false);
+    }
   };
   const onPasswordPress = () => {
-    setReportHeaderText('確定要隱藏此對話嗎?');
-    setReportSubHeaderText('隱藏對話後需輸入密碼才能恢復內容');
-    setTimeout(() => {
-      setReportBlockModel(true);
-    }, 1000);
-    setVisibleModal(false);
+    if (isVIP) {
+      setSelectBtn(false)
+      setReportHeaderText('確定要隱藏此對話嗎?');
+      setReportSubHeaderText('隱藏對話後需輸入密碼才能恢復內容');
+      setTimeout(() => {
+        setReportBlockModel(true);
+      }, 1000);
+      setVisibleModal(false);
+    } else {
+      setTimeout(() => {
+        setOpenVIP(true);
+      }, 1000);
+      setVisibleModal(false);
+    }
   };
 
   return (
@@ -947,17 +984,17 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         keyboardVerticalOffset={headerHeight}
         style={{ flex: 1 }}>
         {/* {renderMenuComponent()} */}
-        <View style={styles.headerViewStyle}>
+        {/* <View style={styles.headerViewStyle}>
           <Text style={styles.headerTextStyle}>
             限時
             <Text style={[styles.headerTextStyle, { color: theme.colors.pink }]}>{' 14 '}</Text>
             小時，抓緊時間開始聊天吧！
           </Text>
-        </View>
+        </View> */}
         <View style={{ flex: 1 }}>
           <KeyboardAwareFlatList
-            data={updateMessage}
-            // data={messages}
+            // data={updateMessage}
+            data={messages}
             onEndReached={() => {
               if (hasNextPage) {
                 fetchNextPage();
@@ -1092,7 +1129,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
               </TouchableOpacity>
             </View> */}
             <View style={styles.footerStyle}>
-              {!blockChat ? (
+              {!isBlocked ? (
                 <>
                   {routeVip ? (
                     <>
@@ -1118,9 +1155,15 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
                       </View>
                     </>
                   ) : (
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                      <BodyOne style={[styles.footerText,{fontSize:fontSize(16),flex:1}]}>{"已超過配對時間，如需繼續維持這段\n緣分，請升級VIP"}</BodyOne>
-                      <TouchableOpacity style={styles.vipBtnStyle} onPress={()=>{setOpenVIP(true)}}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <BodyOne style={[styles.footerText, { fontSize: fontSize(16), flex: 1 }]}>
+                        {'已超過配對時間，如需繼續維持這段\n緣分，請升級VIP'}
+                      </BodyOne>
+                      <TouchableOpacity
+                        style={styles.vipBtnStyle}
+                        onPress={() => {
+                          setOpenVIP(true);
+                        }}>
                         <Text style={styles.vipText}>升級</Text>
                       </TouchableOpacity>
                     </View>
@@ -1185,12 +1228,13 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
       <VIPModal
         isVisible={openVIP}
         textShow={true}
-        titleText={routeVip ? "升級VIP即可使用此功能":"升級VIP暢聊不受限" }
+        titleText={routeVip ? '升級VIP即可使用此功能' : '升級VIP即可使用此功能'}
         onClose={() => setOpenVIP(false)}
         onConfirmCallback={() => {
           setTimeout(() => {
-            setOpenVIP(false);
+            handleJoinVip()
           }, 1000);
+          setOpenVIP(false)
         }}
       />
     </SafeAreaView>

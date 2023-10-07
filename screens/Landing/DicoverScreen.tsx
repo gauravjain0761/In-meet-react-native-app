@@ -87,7 +87,7 @@ export default function DicoverScreen(props: DicoverScreenProps) {
   const dispatch = useAppDispatch();
   const token = useSelector(selectToken);
   const user = useSelector((state: RootState) => state.user);
-  const { distance, interested, hobbyIds, endAge, startAge, id: userId } = user;
+  const { distance, interested, hobbyIds, endAge, startAge,} = user;
   const [openLocationAsync] = useRequestLocation();
 
   const {
@@ -101,7 +101,7 @@ export default function DicoverScreen(props: DicoverScreenProps) {
   } = useInfiniteQuery(
     ['searchUserInLandingScreen', distance, interested, endAge, startAge, hobbyIds],
     (pageObject) =>
-      userApi.fetchUser({ token, gender: interested, hobbyId: hobbyIds, distance }, pageObject),
+      userApi.fetchUserpair({ token, gender: interested, hobbyId: hobbyIds, distance }, pageObject),
     {
       getNextPageParam: (lastPage) => {
         if (lastPage.page.totalPage !== lastPage.page.currentPage) {
@@ -125,7 +125,7 @@ export default function DicoverScreen(props: DicoverScreenProps) {
     navigation.navigate('FilterSearchScreen');
   };
 
-  const renderRow = ({ item }) => <DicoverCard user={item} favoriteList={favoriteList?.records} />;
+  const renderRow = ({ item }) => <DicoverCard user={item?.user} favoriteList={favoriteList?.records} />;
 
 
 
@@ -147,7 +147,7 @@ export default function DicoverScreen(props: DicoverScreenProps) {
         onEndReachedThreshold={0.1}
         data={users?.slice(4)}
         columnWrapperStyle={styles.cardWrapper}
-        keyExtractor={(item, index) => item.id.toString()}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={renderRow}
         ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
       />

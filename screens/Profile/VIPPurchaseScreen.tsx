@@ -218,7 +218,7 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
   const { bottom, top } = useSafeAreaInsets();
 
   const [activeSlide, setActiveSlide] = React.useState(0);
-  const [selectedCase, setSelectedCase] = React.useState('com.inmeet.inmeet.vip.three.moth');
+  const [selectedCase, setSelectedCase] = React.useState('com.inmeet.inmeet.vip.one.month');
   const { width } = useWindowDimensions();
   const styles = useStyles();
   const [loading, setLoading] = React.useState(false);
@@ -477,6 +477,8 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
       </View>
     );
   };
+  console.log('subscriptions',subscriptions);
+  
   const purchaseCases = subscriptions
     .map((prd) => ({
       id: prd.productId,
@@ -487,20 +489,21 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
                 ? `現在方案${title[prd.productId]}`
                 : title[prd.productId]
             }`
-          : prd.title.replace('(InMeet)', ''),
+          : prd.title.replace('-VIP (INMEET)', ''),
       dollars: prd.localizedPrice,
-      price: prd.price,
+      price: `$${prd.price}/月`,
     }))
     .sort((a, b) => {
       return Number(a.price) - Number(b.price);
     });
+console.log('purchaseCases',purchaseCases);
 
   function handleHelpPress() {
     WebBrowser.openBrowserAsync('https://inmeet.vip/terms-of-use');
   }
 
-  // if (!connected)
-  //   return <Spinner visible textContent="Loading..." textStyle={{ color: 'white' }} />;
+  if (!connected)
+    return <Spinner visible textContent="Loading..." textStyle={{ color: 'white' }} />;
 
   const onFilterPress = (item: any) => {
     const updateData = vipData.map((list) => {
@@ -519,23 +522,23 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
     setVipData(updateData);
   };
 
-  const VipCardSelect = ({ data }: any) => {
+  const VipCardSelect = ({ data,index }: any) => {
     const showCard=vipData.filter((item)=>item.isSelect ===true)
     return (
       <TouchableOpacity
         onPress={() => {
-          onFilterPress(data);
+          setSelectedCase(data?.id);
         }}
-        style={[styles.vipCard, { borderColor: data.isSelect == true ? '#FBBC05' : '#6F7387' }]}>
-        {(data?.vipCard && showCard[0].id === 1) && (
+        style={[styles.vipCard, { borderColor: data?.id === selectedCase ? '#FBBC05' : '#6F7387' }]}>
+        {(index === 0 && selectedCase === "com.inmeet.inmeet.vip.one.month") && (
           <View style={styles.vipCardRight}>
             <SubTitleTwo style={[styles.vipText, styles.vipCardRightText]}>{'最優惠'}</SubTitleTwo>
           </View>
         )}
         <View style={styles.vipContent}>
-          <SubTitleTwo style={styles.vipText}>{data?.title1}</SubTitleTwo>
+          <SubTitleTwo style={styles.vipText}>{data?.caseMonths}</SubTitleTwo>
           <View style={styles.vipDiviStyle} />
-          <SubTitleTwo style={styles.vipText}>{data?.title2}</SubTitleTwo>
+          <SubTitleTwo style={styles.vipText}>{data?.price}</SubTitleTwo>
           {data?.showValue && (
             <View style={styles.vipShowValue}>
               <SubTitleTwo style={[styles.vipText, { fontSize: fontSize(12), lineHeight: 12 }]}>
@@ -545,7 +548,7 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
           )}
         </View>
         <View style={{ flexDirection: 'row', paddingBottom: 20 }}>
-          <BodyTwo style={styles.vipSubText}>{data?.NTText}</BodyTwo>
+          <BodyTwo style={styles.vipSubText}>{"NT$3480，一次付清"}</BodyTwo>
           {/* <BodyTwo style={styles.vipSubText}>{'升級VIP'}</BodyTwo> */}
         </View>
       </TouchableOpacity>
@@ -553,10 +556,10 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
   };
 
   return (
-    // <Loader
-    //   isLoading={
-    //     loading || isAddVIPLoading || isAddAndroidVIPLoading || subscriptions.length === 0
-    //   }>
+    <Loader
+      isLoading={
+        loading || isAddVIPLoading || isAddAndroidVIPLoading || subscriptions.length === 0
+      }>
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.black1 }}>
       <Image
         source={Illus4}
@@ -627,9 +630,9 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
           )} */}
           <ScrollView style={{marginBottom:90}}>
 
-        <BodyTwo style={styles.headerText}>收費方式</BodyTwo>
-        {vipData.map((item) => {
-          return <VipCardSelect data={item} />;
+          <BodyTwo style={styles.headerText}>收費方式</BodyTwo>
+        {purchaseCases.map((item,index) => {
+          return <VipCardSelect data={item} index={index} />;
         })}
           </ScrollView>
       </View>
@@ -640,7 +643,7 @@ function VIPPurchaseScreen(props: ProfileStackScreenProps<'VIPPurchaseScreen'>) 
         containerStyle={{ marginHorizontal: 40, bottom: bottom + 30 }}
       />
     </SafeAreaView>
-    // </Loader>
+    </Loader>
   );
 }
 

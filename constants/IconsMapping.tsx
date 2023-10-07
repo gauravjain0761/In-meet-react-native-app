@@ -72,6 +72,7 @@ import VIPcard from '../assets/images/profile/VIPcard.png';
 import filterIcon1 from '../assets/images/profile/filterIcon.png';
 import settingsIcon from '../assets/images/profile/settings.png';
 import viewIcon from '../assets/images/profile/view.png';
+import eyeIcon from '../assets/images/profile/eyeIcon.png';
 
 import vip1 from '../assets/images/profile/vip1.png';
 import vip2 from '../assets/images/profile/vip2.png';
@@ -85,8 +86,8 @@ type IIcon = {
   size?: number;
 };
 export const mapIcon = {
-  invisiblePassword: ({ color }: IIcon = {}) => (
-    <Image style={{ tintColor: color }} source={invisiblePassword} />
+  invisiblePassword: ({ color,size=24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }} source={invisiblePassword} />
   ),
   defaultAvatar: ({ color, size }: IIcon = {}) => (
     <DefaultAvatar fill={color} width={size} height={size} />
@@ -280,6 +281,9 @@ export const mapIcon = {
   ),
   unlikeIcon1: ({ color, size = 24 }: IIcon = {}) => (
     <Image style={{ tintColor: color, width: size, height: size }}  source={unlikeIcon1} />
+  ),
+  eyeIcon: ({ color, size = 24 }: IIcon = {}) => (
+    <Image style={{ tintColor: color, width: size, height: size }}  source={eyeIcon} />
   ),
   illus3zIcon:illus3zIcon,
   VIPcard:VIPcard,

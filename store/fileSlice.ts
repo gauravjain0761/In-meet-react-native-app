@@ -6,6 +6,7 @@ import { get, isEmpty } from 'lodash';
 import type { RootState } from './index';
 import HttpClient, { CancelToken } from '../axios/axios';
 import { getToken } from '~/storage/userToken';
+import { ActionResponse } from '~/types/custom';
 
 export const uploadFile = createAsyncThunk(
   'file/upload',
@@ -19,6 +20,8 @@ export const uploadFile = createAsyncThunk(
   ) => {
     try {
       const source = CancelToken.source();
+      console.log('source',source);
+      
       signal.addEventListener('abort', () => {
         source.cancel();
       });
@@ -27,6 +30,8 @@ export const uploadFile = createAsyncThunk(
 
       const bodyFormData = new FormData();
       bodyFormData.append('file', fileData);
+      console.log('bodyFormData',bodyFormData);
+      
       const response = await HttpClient.post('/file/upload', bodyFormData, {
         params: {
           userId,
@@ -44,11 +49,11 @@ export const uploadFile = createAsyncThunk(
       return response.data;
     } catch (err: any) {
       
+      console.log('errerrerrerr',err);
       const error: AxiosError<ActionResponse<{ data: any }>> = err;
       if (!error.response) {
         throw err;
       }
-      console.log('errerrerrerr',error?.response);
 
       throw error.response.data;
     }

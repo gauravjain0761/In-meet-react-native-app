@@ -39,8 +39,11 @@ import CityModal from '../common/CityModal';
 import {
   patchUserBloodType,
   patchUserCity,
+  patchUserDrink,
   patchUserEducation,
   patchUserHeight,
+  patchUserJob,
+  patchUserName,
   patchUserReligion,
   patchUserSmoke,
   selectUserId,
@@ -130,8 +133,12 @@ export default function ProfileAboutDetails(props) {
     height,
     hobbies,
     weight,
-    smoke
+    smoke,
+    drink,
   } = useSelector((state: RootState) => state.user);
+  const user = useSelector((state: RootState) => state.user);
+  console.log('user', user);
+
   const [collectionModal, setCollectionModal] = React.useState(false);
   const [bloodListModal, setBloodListModal] = React.useState(false);
   const [drinkingHabitsModal, setDrinkingHabitsModal] = React.useState(false);
@@ -142,13 +149,15 @@ export default function ProfileAboutDetails(props) {
   const dispatch = useAppDispatch();
   const userId = useSelector(selectUserId);
   const [localName, setLocalName] = useState(name || '');
+  const [localJob, setLocalJob] = useState(job || '');
   const [localWeight, setLocalWeight] = useState(weight || '');
   const [localCity, setLocalCity] = useState(city || '');
   const [bloodType, setBloodType] = useState(bloodTypeStore || '');
   const [localReligion, setLocalReligion] = useState(religion || '');
   const [selectedEducation, setSelectedEducation] = useState(education || '');
   const [localHeight, setLocalHeight] = useState(height || heightModal['150以下']);
-  const [localSmoke, setLocalSmoke] = useState( smoke || "");
+  const [localSmoke, setLocalSmoke] = useState(smoke || '');
+  const [localDrink, setLocalDrink] = useState(drink || '');
 
   const navigation = useNavigation();
   const columns = [
@@ -278,7 +287,7 @@ export default function ProfileAboutDetails(props) {
       name: localWeight == '' ? '' : localWeight,
       id: 4,
       filed: 'input',
-      onChangeText: (text) => setLocalWeight(text)
+      onChangeText: (text) => setLocalWeight(text),
     },
     {
       label: '血型',
@@ -305,23 +314,29 @@ export default function ProfileAboutDetails(props) {
   const profileData1 = [
     {
       label: '喝酒',
-      name: '滴酒不沾',
+      name: localDrink ? localDrink : '尚未填寫',
       id: 1,
       filed: 'Btn',
       onEdit: () => {
-        setDrinkingHabitsModal(true)
-      }
+        setDrinkingHabitsModal(true);
+      },
     },
     {
       label: '抽菸',
-      name:localSmoke ? localSmoke : '尚未填寫',
+      name: localSmoke ? localSmoke : '尚未填寫',
       filed: 'Btn',
       id: 2,
       onEdit: () => {
         setSmokingHabitsModal(true);
       },
     },
-    { label: '職業', name: job || UN_FILLED_WITH_HEART, id: 3 },
+    {
+      label: '職業',
+      name: localJob,
+      id: 3,
+      filed: 'input',
+      onChangeText: (text) => setLocalJob(text),
+    },
     {
       label: '宗教',
       name: localReligion ? ReligionValue[localReligion] : UN_FILLED,
@@ -354,6 +369,9 @@ export default function ProfileAboutDetails(props) {
 
   const handleConfirm = async () => {
     if (localName == '') return;
+    if (job === "") return;
+    dispatch(patchUserJob(localJob));
+    dispatch(patchUserName(localName));
     await dispatch(
       updateUser({
         userId,
@@ -364,9 +382,11 @@ export default function ProfileAboutDetails(props) {
         education: selectedEducation,
         height: localHeight,
         weight: localWeight,
-        smoke:localSmoke
+        smoke: localSmoke,
+        job:localJob
       })
     ).unwrap();
+    navigation.goBack()
   };
 
   const handlePatchInterests = async (value: any) => {
@@ -413,7 +433,7 @@ export default function ProfileAboutDetails(props) {
     } catch (error) {
       Toast.show(JSON.stringify(error));
     }
-  }
+  };
   const handleSmokingHabitsModal = async (value: any) => {
     try {
       setSmokingHabitsModal(false);
@@ -422,7 +442,18 @@ export default function ProfileAboutDetails(props) {
     } catch (error) {
       Toast.show(JSON.stringify(error));
     }
-  }
+  };
+  const handleDrinkingHabitsModal = async (value: any) => {
+    try {
+      setDrinkingHabitsModal(false);
+      dispatch(patchUserDrink(value.value));
+      setLocalDrink(value.value);
+    } catch (error) {
+      Toast.show(JSON.stringify(error));
+    }
+  };
+
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -494,18 +525,21 @@ export default function ProfileAboutDetails(props) {
                     <BodyThree style={styles.rowTitle}>{column.label}</BodyThree>
                     {column.filed === 'input' ? (
                       <TextInput
-                        value={column.name}
-                        style={[
-                          {
-                            color: theme.colors.white,
-                            paddingHorizontal: 16,
-                            fontSize: fontSize(14),
-                          },
-                          (column.name === UN_FILLED ||
-                            column.name === UN_FILLED_WITH_HEART ||
-                            column.label == '生日') &&
-                            styles.unfilledText,
-                        ]}
+                      value={column.name}
+                      placeholder={column.name == '' ? '尚未填寫' : ''}
+                      placeholderTextColor={theme.colors.black4}
+                      onChangeText={column?.onChangeText}
+                      style={[
+                        {
+                          color: theme.colors.white,
+                          paddingHorizontal: 16,
+                          fontSize: fontSize(14),
+                        },
+                        (column.name === UN_FILLED ||
+                          column.name === UN_FILLED_WITH_HEART ||
+                          column.label == '生日') &&
+                          styles.unfilledText,
+                      ]}
                       />
                     ) : (
                       <TouchableOpacity onPress={column?.onEdit} style={{ flex: 1 }}>
@@ -580,8 +614,7 @@ export default function ProfileAboutDetails(props) {
           value: cityValue,
         }))}
         onConfirm={(value: any) => {
-          // handlebloodListModal(value);
-          setDrinkingHabitsModal(false);
+          handleDrinkingHabitsModal(value);
         }}
         onClose={handleCancel}
       />

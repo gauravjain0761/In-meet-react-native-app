@@ -38,7 +38,7 @@ import Loader from '~/components/common/Loader';
 import { fontSize } from '~/helpers/Fonts';
 import ChatBottomModal from '~/components/common/ChatBottomModal';
 const { width } = Dimensions.get('window');
-
+import { useIsFocused } from '@react-navigation/native';
 const useStyles = makeStyles((theme) => ({
   headerStyle: {
     backgroundColor: theme.colors?.black1,
@@ -119,6 +119,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
     setError,
   } = methods;
   const [loading, setLoading] = useState(false);
+  const isFocused = useIsFocused();
   const headerHeight = useHeaderHeight();
   const { width, height } = useWindowDimensions();
   const queryClient = useQueryClient();
@@ -166,7 +167,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
       return () => {
         clearInterval(time);
       };
-    }, [refetch, refetchHelper])
+    }, [refetch, refetchHelper, isFocused])
   );
   useEffect(() => {}, []);
 
@@ -177,39 +178,24 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
       .flat()
       .filter((item) => !item.isSecret) || [];
 
-  const roomchat =  {
-      chatId: '1_814',
-      content: '謝謝您的體諒與支持， InMeet營運團隊感謝您',
-      createTime: '2023-06-27 15:30:54',
-      id: 992,
-      isDelete: null,
-      isFromClient: false,
-      isSecret: false,
-      notReadCount: 0,
-      recipientAvatar:
-        'https://inmeet-service.s3.ap-northeast-1.amazonaws.com/avatar/814/69efe54f-5d74-468f-b4a0-6a3a98152b6f.png',
-      recipientId: 814,
-      recipientName: '花生',
-      senderAvatar:
-        'https://inmeet-service.s3.ap-northeast-1.amazonaws.com/blog/4/58e83f9a-5952-4f73-9287-b5c7fad83614.JPG',
-      senderId: 1,
-      senderName: 'Chloe',
-      status: 'DELIVERED',
-      type: 'TEXT',
-    }
 
-
-  const roomsWithHelper = [...helperRoom,roomchat, ...rooms];
+  const roomsWithHelper = [...helperRoom, ...rooms];
 
   const onSubmit = async (data: any) => {
     if (loading) return;
     setLoading(true);
     const password = data?.password;
+    console.log('passsoee',password);
+    
     try {
       const res = await userApi.unHideRoomChat({ password, userId, token });
+      console.log('ressss',res);
+      
       if (res?.code !== 20000) {
         throw new Error('something went wrong');
       }
+      setVisibleModal(false);
+      navigation.push('ChatScreenList');
       queryClient.invalidateQueries('getRoomList');
     } catch (error) {
       Toast.show('失敗');
@@ -274,14 +260,14 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
   return (
     <Loader isLoading={loading}>
       <View style={{ flex: 1, backgroundColor: theme.colors.black1 }}>
-        {roomsWithHelper?.length === 0 && (
+        {/* {roomsWithHelper?.length === 0 && (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <SubTitleTwo style={{ color: theme.colors.black4 }}>您尚未加入好友</SubTitleTwo>
             <SubTitleTwo style={{ color: theme.colors.black4 }}>
               快到首頁尋找志同道合的朋友吧！
             </SubTitleTwo>
           </View>
-        )}
+        )} */}
 
         {/* <Menu
           contentStyle={{
@@ -396,7 +382,7 @@ export default function ChatScreen(props: RootTabScreenProps<'Chat'>) {
           onSubmitPress={handleSubmit(onSubmit)}
           onSecondPress={() => {
             setVisibleModal(false);
-            navigation.push('ChatScreenList');
+            handleReadAll()
           }}
         />
       </View>

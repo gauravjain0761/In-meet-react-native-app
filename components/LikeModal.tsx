@@ -9,7 +9,7 @@ import { useInfiniteQuery } from 'react-query';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { ButtonTypeTwo } from './common/Button';
 import { userApi } from '~/api/UserAPI';
-import { selectAccount, selectToken } from '~/store/userSlice';
+import { selectAccount, selectToken, selectUserId } from '~/store/userSlice';
 import Empty from '../assets/images/like-empty.png';
 import LikeCircleCard from './common/Card/LikeCircleCard';
 import { fontSize } from '~/helpers/Fonts';
@@ -107,32 +107,45 @@ export default function LikeModal(props: ILikeModal) {
   const navigation = useNavigation();
   const [tabSelected, setTabSelected] = useState(TABS.LIKE);
   const token = useSelector(selectToken);
-  const account = useSelector(selectAccount);
+  const id = useSelector(selectUserId);
   const [value, setValue] = useState('');
 
+  // const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
+  //   ['searchInterest', value],
+  //   pageObject => userApi.findWhoLikeMe({ token, id }, pageObject),
+  // );
   const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
-    ['searchInterest', value],
-    pageObject => userApi.findWhoLikeMe({ token, account }, pageObject),
+    ['searchInterest'],
+    pageObject => userApi.findUserpairLikeMe({ token, id}, pageObject),
   );
 
+  // const {
+  //   isFetchingNextPage: watchedFetchingNextPage,
+  //   fetchNextPage: watchedFetchNextPage,
+  //   hasNextPage: watchedHasNextPage,
+  //   data: watchedData,
+  // } = useInfiniteQuery(['searchWatched', value], pageObject =>
+  //   userApi.findWhoWatchedMe({ token, account }, pageObject),
+  // );
   const {
     isFetchingNextPage: watchedFetchingNextPage,
     fetchNextPage: watchedFetchNextPage,
     hasNextPage: watchedHasNextPage,
     data: watchedData,
   } = useInfiniteQuery(['searchWatched', value], pageObject =>
-    userApi.findWhoWatchedMe({ token, account }, pageObject),
+    userApi.findUserpairWatchedMe({ token, id }, pageObject),
   );
 
   const watchedList = watchedData?.pages
     .map(page => {
-      return page;
+      return page?.records;
     })
     .flat();
 
+
   const interests = data?.pages
     .map(page => {
-      return page;
+      return page?.records;
     })
     .flat();
 
@@ -247,7 +260,7 @@ export default function LikeModal(props: ILikeModal) {
                   }}
                   onEndReachedThreshold={0.1}
                   data={interests}
-                  keyExtractor={(item, index) => item.user.id.toString()}
+                  keyExtractor={(item, index) => index.toString()}
                   renderItem={renderRow}
                   ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
                 />
@@ -276,7 +289,7 @@ export default function LikeModal(props: ILikeModal) {
                   }}
                   onEndReachedThreshold={0.1}
                   data={watchedList}
-                  keyExtractor={(item, index) => item.user.id.toString()}
+                  keyExtractor={(item, index) => index.toString()}
                   renderItem={renderRow}
                   ListFooterComponent={watchedFetchingNextPage ? <ActivityIndicator /> : null}
                 />

@@ -131,7 +131,7 @@ export default function AccountBottomModal(props: ICommonModal) {
             rightIconShow={true}
                 right={
                   showEye ? (
-                    <Feather name="eye" size={24} color="#A8ABBD" />
+                    mapIcon.eyeIcon({size:24})
                   ) : (
                     mapIcon.invisiblePassword()
                   )

@@ -107,6 +107,7 @@ export default function FilterBottomModal(props: ICommonModal) {
         };
       }
     });
+    setAllCity(false)
     setSelectCityList(updateData);
   };
 

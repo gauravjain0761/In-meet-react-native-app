@@ -21,7 +21,7 @@ import Line from '../../components/common/Icon/Line';
 import HttpClient from '~/axios/axios';
 import { useAppDispatch } from '~/store';
 import { updateFastLoginType, FastLoginType, updateAccessToken } from '~/store/fastLoginSlice';
-import { socialLoginUser } from '~/store/userSlice';
+import { patchUserToken, socialLoginUser } from '~/store/userSlice';
 import { storeUserToken } from '~/storage/userToken';
 import Loader from '~/components/common/Loader';
 import { updateEmail, updatePassword } from '~/store/registerSlice';
@@ -97,6 +97,7 @@ export default function PreLoginScreen(props: PreLoginScreenProps) {
     clientId: '1037316389652-rdpfj1op7edu5jemrjosnq853s2k3489.apps.googleusercontent.com',
     iosClientId: '1037316389652-gb1ervtr4h8ukj25nrum2h907ubsvsl4.apps.googleusercontent.com',
   });
+console.log('googleResponse',googleResponse);
 
   const handlePressRegister = () => {
     navigation.push('RegisterPhone');
@@ -118,9 +119,15 @@ export default function PreLoginScreen(props: PreLoginScreenProps) {
     accessToken: string;
   }) => {
     try {
+      console.log('type',type);
+      console.log('type accessToken',accessToken);
+      
       const res = await dispatch(socialLoginUser({ type, accessToken })).unwrap();
+      console.log("tokennnnn",res);
+      
       if (res.data.token) {
         // await dispatch(getUserInfo({ token: res.data.token })).unwrap();
+        await dispatch(patchUserToken(res.data.token));
         await storeUserToken(res.data.token);
         return;
       }
@@ -137,9 +144,10 @@ export default function PreLoginScreen(props: PreLoginScreenProps) {
         navigation.push('RegisterName');
         return;
       }
-      navigation.push('FastLoginEmailScreen', {
-        email: res.data.email,
-      });
+      // navigation.push('FastLoginEmailScreen', {
+      //   email: res.data.email,
+      // });
+      navigation.push('RegisterPhone');
     } catch (error) {
       if (error?.message === '該用戶已經註冊') {
         Toast.show('此電子郵件已註冊，請登入後再至「個人」>「設定」>「快速登入」綁定第三方平台', {
@@ -189,6 +197,8 @@ export default function PreLoginScreen(props: PreLoginScreenProps) {
 
   useEffect(() => {
     if (googleResponse?.type === 'success') {
+      console.log('googleResponse.authentication',googleResponse.authentication);
+      
       const { idToken } = googleResponse.authentication;
       if (idToken) {
         handleNextStep({

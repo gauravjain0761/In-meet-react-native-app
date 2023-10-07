@@ -25,6 +25,7 @@ import { FileRecord, userApi } from '~/api/UserAPI';
 import Loader from './common/Loader';
 import ConfirmUnLockPhotoModal from './common/ConfirmUnLockPhotoModal';
 import { fontSize } from '~/helpers/Fonts';
+import { useTheme } from '@rneui/themed';
 
 const { width } = Dimensions.get('window');
 interface IAboutME {
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
     width: '80%',
     textAlign: 'center',
     alignSelf: 'center',
-    height:35
+    height: 35,
   },
   footerCard: {
     flexDirection: 'row',
@@ -71,15 +72,16 @@ const useStyles = makeStyles((theme) => ({
 export default function SearchAboutPost(props: IAboutME) {
   const { adjustHeight, userInfoData = {} } = props;
   const styles = useStyles();
+  const { theme } = useTheme();
+
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
-  const { name } = userInfoData;
   const currentUserId = useSelector((state: RootState) => state.interest.currentMatchingId);
   const token = useSelector(selectToken);
   const [chatModal, setChatModal] = useState(false);
   const queryClient = useQueryClient();
   const [currentSelectedId, setCurrentSelectedId] = useState(0);
-  const { data: blogList,isLoading } = useQuery(['fetchUserBlogs', currentUserId], () =>
+  const { data: blogList, isLoading } = useQuery(['fetchUserBlogs', currentUserId], () =>
     userApi.fetchUserBlogs({ token, id: currentUserId })
   );
 
@@ -127,30 +129,39 @@ export default function SearchAboutPost(props: IAboutME) {
   };
 
   return (
-    <Loader isLoading={isLoading}>
+    // <Loader isLoading={isLoading}>
     <View style={{ marginTop: 10 }}>
-     <FlatList
+      <FlatList
         data={blogList?.records}
         // data={[1,4,5,4]}
         numColumns={2}
         columnWrapperStyle={styles.cardWrapper}
-        keyExtractor={(item,index)=>index.toString()}
+        keyExtractor={(item, index) => index.toString()}
         ListEmptyComponent={renderListEmptyComponent}
-        renderItem={({item}:any) => {
+        renderItem={({ item }: any) => {
           return (
             <View style={styles.cardContainer}>
-              <Image
-                source={{ uri: item?.photo ? item?.photo : 'https://picsum.photos/id/231/200/300' }}
-                resizeMode="cover"
-                style={styles.imageStyle}
-              />
-              <CaptionFour style={styles.textStyle}>
-                {item?.content}
-              </CaptionFour>
+              {item?.photo ? (
+                <Image
+                  source={{
+                    uri: item?.photo
+                      ? item?.photo
+                      : 'https://via.placeholder.com/200x300?text=Default',
+                  }}
+                  resizeMode="cover"
+                  style={styles.imageStyle}
+                />
+              ) : (
+                <View
+                  style={[styles.imageStyle, { alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.black4, }]}>
+                  <BodyThree style={{color:"#fff",fontSize:fontSize(20)}}>無照片</BodyThree>
+                </View>
+              )}
+              <CaptionFour style={styles.textStyle}>{item?.content}</CaptionFour>
               <View style={[styles.footerCard, { alignSelf: 'center', marginTop: 8 }]}>
                 <TouchableOpacity style={[styles.footerCard, { marginRight: 20 }]}>
                   {mapIcon.favoriteIcon({ size: 20 })}
-                  <BodyThree style={styles.textfavorite}>1290</BodyThree>
+                  <BodyThree style={styles.textfavorite}>0</BodyThree>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.footerCard}>
                   {mapIcon.commentIcon({ size: 20 })}
@@ -163,6 +174,6 @@ export default function SearchAboutPost(props: IAboutME) {
       />
     </View>
 
-    </Loader>
+    // </Loader>
   );
 }

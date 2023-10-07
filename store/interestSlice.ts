@@ -6,6 +6,7 @@ import { get, isEmpty } from 'lodash';
 import type { RootState } from './index';
 import HttpClient, { CancelToken } from '../axios/axios';
 import { getToken } from '~/storage/userToken';
+import { ActionResponse } from '~/types/custom';
 
 export const getInterestList = createAsyncThunk(
   'interest/getInterestList',

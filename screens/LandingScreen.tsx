@@ -58,6 +58,7 @@ import userSlice, {
   getUserLocation,
   getUserInfo,
   updateUserScrollValue,
+  getUserWatch,
 } from '~/store/userSlice';
 import Loader from '~/components/common/Loader';
 import { RootState, useAppDispatch } from '~/store';
@@ -308,7 +309,7 @@ export default function LandingScreen(props: LandingScreenProps) {
   } = useInfiniteQuery(
     ['searchUserInLandingScreen', distance, interested, endAge, startAge, hobbyIds],
     (pageObject) =>
-      userApi.fetchUser({ token, gender: interested, hobbyId: hobbyIds, distance }, pageObject),
+      userApi.fetchUserpair({ token, gender: interested, hobbyId: hobbyIds, distance }, pageObject),
     {
       getNextPageParam: (lastPage) => {
         if (lastPage.page.totalPage !== lastPage.page.currentPage) {
@@ -327,13 +328,14 @@ export default function LandingScreen(props: LandingScreenProps) {
       refetchOnMount: true,
     }
   );
+  
 
   const { data: favoriteList } = useQuery('getFavoriteUser', () =>
     userApi.getFavoriteUser({ token })
   );
 
-  const users = data?.pages.map((page) => page.records).flat();
-  const handlePressStory = (id: number) => {
+  const users = data?.pages.map((page) => page?.records).flat();
+    const handlePressStory = (id: number) => {
     if (id) {
       navigation.push('MatchingDetailScreen');
       dispatch(updateCurrentMatchingId(id));
@@ -546,8 +548,6 @@ export default function LandingScreen(props: LandingScreenProps) {
     return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
   };
   const onDislikePressed = (ref: any) => {
-    console.log('ref', ref);
-
     ref?.current?.swipeLeft();
   };
 
@@ -565,13 +565,14 @@ export default function LandingScreen(props: LandingScreenProps) {
     }
   };
 
-
-  const onSwipeLeft = () => {
+  const onSwipeLeft = () => {  
+    dispatch(getUserWatch({token, isLike:true, id:users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id}));
     dispatch(updateUserScrollValue(0));
     setItemCount(itemCount + 1);
   };
-
+  
   const onSwipeRight = () => {
+    dispatch(getUserWatch({token, isLike:true, id:users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id}));
     dispatch(updateUserScrollValue(0));
     setItemCount(itemCount + 1);
   };
@@ -584,7 +585,7 @@ export default function LandingScreen(props: LandingScreenProps) {
     <MatchCard
       index={index}
       refList={useSwiper}
-      user={item}
+      user={item?.user}
       favoriteList={favoriteList?.records}
       onPress={() => {
         setVipConnectModal(true);
@@ -646,7 +647,7 @@ export default function LandingScreen(props: LandingScreenProps) {
               />
             </>
           )} */}
-          {users?.length > 0 && (
+          {users?.length > 0 ? (
             <Swiper
               ref={useSwiper}
               animateCardOpacity={true}
@@ -670,7 +671,7 @@ export default function LandingScreen(props: LandingScreenProps) {
               }}
               swipeBackCard={true}
             />
-          )}
+          ) :renderListEmptyComponent()}
         </View>
       </ScrollView>
       <BannerModal

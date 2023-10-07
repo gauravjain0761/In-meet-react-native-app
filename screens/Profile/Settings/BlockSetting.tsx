@@ -96,10 +96,10 @@ export default function BlockSetting(props: ProfileStackScreenProps<'BlockSettin
   };
   const handleOpen = (record) => {
     // 刪除檢舉
-    // if (!record.id) return;
+    if (!record.id) return;
     setCollectionModal(true);
-    // setCurrentSelectedId(record.id);
-    // setCurrentName(record.user?.name);
+    setCurrentSelectedId(record.id);
+    setCurrentName(record?.blockUser?.name);
   };
   // useCustomHeader({ title: '已封鎖名單', navigation });
 
@@ -171,7 +171,7 @@ export default function BlockSetting(props: ProfileStackScreenProps<'BlockSettin
           onClose={handleCancel}
         /> */}
          <ReportModal
-        modalText={`要將${currentName}解除封鎖嗎？`}
+        modalText={`要將 ${currentName} 解除封鎖嗎？`}
         buttonOneTitle = '刪除'
         buttonTwoTitle = '取消'
         headerShow={true}

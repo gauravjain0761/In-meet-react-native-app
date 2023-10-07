@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ReactNativeModal from 'react-native-modal';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { SubTitleTwo } from './Text';
@@ -8,9 +8,6 @@ import { mapIcon } from '~/constants/IconsMapping';
 import Picker from 'react-native-picker-select';
 import { fontSize } from '~/helpers/Fonts';
 import DynamicallySelectedPicker from './DynamicallySelectedPicker';
-import InputField from './InputField';
-import { Feather } from '@expo/vector-icons';
-import { FormProvider } from 'react-hook-form';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -26,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingHorizontal: 24,
-    height:340
+    height:300
   },
   headerStyle: {
     flexDirection: 'row',
@@ -57,46 +54,43 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor:theme.colors.white,
     alignSelf:'center',
     marginTop:10
-  },
-  buttonStyle: {
-    paddingTop: 10,
-  },
-  textStyle: {
-    fontSize: fontSize(14),
-  },
+  }
 }));
 
 interface ICommonModal {
   onClose?: () => void;
-  onSubmitPress?: () => void;
   onConfirm: (value: any) => void;
   isVisible: boolean;
   modalText?: string;
   buttonOneTitle?: string;
   data?: any;
-  methods?:any
-  showPassword?:boolean
-  opnePassword?:() => void;
-  onSecondPress?:() => void;
 }
 export default function ChatBottomModal(props: ICommonModal) {
   //用CommonModalComponent out時如果會卡住就用這個
   const {
     onClose,
     isVisible,
-    methods,
-    onSubmitPress,
-    showPassword,
-    opnePassword,
-    onSecondPress,
+    onConfirm,
+    modalText = '選擇居住地區',
+    buttonOneTitle = '確定',
+    data,
   } = props;
   const styles = useStyles();
-  const [showEye, setShowEye] = useState<boolean>(false);
+  const [selectedItemIndex, setSelectedItemIndex] = useState<number>(4);
+  const windowWidth = Dimensions.get('window').width;
+  const height = 300;
 
   const handleCloseModal = () => {
     if (onClose) {
       onClose();
     }
+  };
+  const handleConfirmModal = () => {
+    const vlaue = data.filter((item: any, index: number) => {
+      return index === selectedItemIndex;
+    });
+
+    onConfirm(vlaue[0]);
   };
 
   return (
@@ -114,62 +108,14 @@ export default function ChatBottomModal(props: ICommonModal) {
         </TouchableOpacity>
         <View style={styles.cardContainer}>
           <View style={styles.diviedStyle}/>
-          {!showPassword ?<>
-            <TouchableOpacity onPress={opnePassword} style={[styles.headerStyle,{marginTop:20}]}>
+          <View style={[styles.headerStyle,{marginTop:20}]}>
             {mapIcon.inEyeIcon({size:20})}
             <SubTitleTwo style={styles.titleText}>{"隱藏對話（升級VIP可使用此功能）"}</SubTitleTwo>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onSecondPress} style={styles.headerStyle}>
+          </View>
+          <View style={styles.headerStyle}>
             {mapIcon.opneEmailIcon({size:20})}
             <SubTitleTwo style={styles.titleText}>{"全部標為已讀"}</SubTitleTwo>
-          </TouchableOpacity>
-          </>:
-          <FormProvider {...methods}>
-         <View style={{marginTop:30}}>
-         
-          <InputField
-             name="password"
-            keyboardType="default"
-            secureTextEntry={!showEye}
-            textContentType="password"
-            placeholder="輸入密碼"
-            label='輸入密碼查看隱藏對話'
-            // onSubmit={handleSubmit(onSubmit)}
-            rules={{
-              required: "錯誤密碼提示",
-            }}
-            styles={{}}
-            rightStyle={{top:"65%"}}
-            onRightPress={() => setShowEye(!showEye)}
-            containerStyle={{marginHorizontal:12}}
-            rightIconShow={true}
-            right={
-              showEye ? (
-                mapIcon.eyeIcon({size:24})
-              ) : (
-                mapIcon.invisiblePassword({size:24})
-              )
-            }
-          />
-          
-          <ButtonTypeTwo
-           containerStyle={[styles.buttonStyle, { marginBottom: 10, marginTop: 30 }]}
-           buttonStyle={{ height: 50,marginHorizontal:12 }}
-           titleStyle={styles.textStyle}
-               
-                title="確定"
-                onPress={onSubmitPress}
-              />
-              <UnChosenButton
-               titleStyle={styles.textStyle}
-               buttonStyle={{ height: 50, backgroundColor: 'transparent' ,marginHorizontal:12}}
-                title="取消"
-                onPress={handleCloseModal}
-              />
-         </View>
-              </FormProvider>
-        }
-       
+          </View>
         </View>
       </View>
     </ReactNativeModal>

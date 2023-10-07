@@ -354,7 +354,7 @@ console.log('stompClientRef',stompClientRef);
     let sub2;
     const stompConfig: StompConfig = {
       connectHeaders: {},
-      brokerURL: 'wss://api.inmeet.vip/ws',
+      brokerURL: 'wss://uat.inmeet.vip/ws',
       debug(debug) {
         console.log('debug: ', debug);
       },

@@ -69,7 +69,7 @@ export default function ProfileHeaderNew({
   const name = useSelector((state: RootState) => state.user.name);
   const birthday = useSelector((state: RootState) => state.user.birthday);
   const avatar = useSelector((state: RootState) => state.user.avatar);
-  const city = useSelector((state: RootState) => state.user.city);
+  const city = useSelector((state: RootState) => state.user?.city);
   const signature = useSelector((state: RootState) => state.user.signature);
   const navigation = useNavigation();
   const handlePressAvatar = () => {

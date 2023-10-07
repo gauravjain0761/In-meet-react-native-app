@@ -21,6 +21,7 @@ import { userApi } from '~/api/UserAPI';
 import { fontSize } from '~/helpers/Fonts';
 import ReportModal from '../ReportModal';
 import VIPModal from '../VIPModal';
+import { updateCurrentMatchingId } from '~/store/interestSlice';
 
 const { width } = Dimensions.get('window');
 const useStyles = makeStyles((theme) => ({
@@ -32,9 +33,9 @@ const useStyles = makeStyles((theme) => ({
     // maxWidth: '100%',
   },
   roomLeftContainer: {
-    borderWidth:1,
+    borderWidth: 1,
     borderRadius: 48,
-    borderColor:theme.colors.black2
+    borderColor: theme.colors.black2,
   },
   roomBodyContainer: {
     paddingLeft: 16,
@@ -67,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   unChosenBtnStyle: {
     marginTop: 15,
     width: 185,
-    alignSelf:'center'
+    alignSelf: 'center',
   },
 }));
 
@@ -124,7 +125,7 @@ export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomDat
 
   const handleRoomCardPress = () => {
     dispatch(updateCurrentChatId(otherSideUserId));
-     //@ts-ignore
+    //@ts-ignore
     navigation.navigate('RoomChatScreen', {
       recipientId: otherSideUserId,
     });
@@ -139,18 +140,18 @@ export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomDat
       Alert.alert('Something went wrong');
     }
     setCollectionModal(false);
-     //@ts-ignore
+    //@ts-ignore
     swipeRef.current.animateRow(-width, -80);
-     //@ts-ignore
+    //@ts-ignore
     swipeRef.current.close();
     setDeleteWidth(80);
     setIsLoading(false);
   };
   const handleCancel = () => {
     setCollectionModal(false);
-     //@ts-ignore
+    //@ts-ignore
     swipeRef.current.animateRow(-width, -80);
-     //@ts-ignore
+    //@ts-ignore
     swipeRef.current.close();
     setDeleteWidth(80);
   };
@@ -166,36 +167,40 @@ export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomDat
     swipeRef.current.animateRow(swipeRef.current.currentOffset(), -width);
     handleOpen();
   };
-  
+
   const handlePressInfo = () => {
     handleOpenInfo();
   };
 
   const rightAction = function () {
     return (
-      <View style={{flexDirection:'row'}}>
-      <TouchableOpacity
-        onPress={handlePressInfo}
-        style={{
-          backgroundColor: theme.colors.black2,
-          height: 100,
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: deleteWidth,
-        }}>
-        <View style={{ transform: [{ translateY: -12 }] }}>{mapIcon.inEyeIcon({size:20})}</View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={handlePressDelete}
-        style={{
-          backgroundColor: "#FF375F",
-          height: 100,
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: deleteWidth,
-        }}>
-        <View style={{ transform: [{ translateY: -12 }] }}>{mapIcon.deleteIcon({size:30})}</View>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          onPress={handlePressInfo}
+          style={{
+            backgroundColor: theme.colors.black2,
+            height: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: deleteWidth,
+          }}>
+          <View style={{ transform: [{ translateY: -12 }] }}>
+            {mapIcon.inEyeIcon({ size: 20 })}
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handlePressDelete}
+          style={{
+            backgroundColor: '#FF375F',
+            height: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: deleteWidth,
+          }}>
+          <View style={{ transform: [{ translateY: -12 }] }}>
+            {mapIcon.deleteIcon({ size: 30 })}
+          </View>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -217,46 +222,51 @@ export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomDat
 
   return (
     <GestureHandlerRootView>
-
-    
-    <Swipeable
-      // useNativeAnimations
-      // friction={1}
-       //@ts-ignore
-      ref={swipeRef}
-      overshootRight
-      renderRightActions={rightAction}>
-      <TouchableOpacity
-        onPress={handleRoomCardPress}
-        style={[styles.roomContainer, { backgroundColor: theme.colors.black1 }]}>
-        <View style={styles.roomLeftContainer}>
-          <Image
-            style={styles.roomAvatar}
-            source={otherSideAvatar ? { uri: otherSideAvatar } : defaultAvatar}
-          />
-        </View>
-        <View style={styles.roomBodyContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <BodyTwo style={[styles.roomName, { flex: 1 }]}>
-              {otherSideUserName || 'InMeet小幫手'}
-            </BodyTwo>
-            {renderTimeString()}
+      <Swipeable
+        // useNativeAnimations
+        // friction={1}
+        //@ts-ignore
+        ref={swipeRef}
+        overshootRight
+        renderRightActions={rightAction}>
+        <TouchableOpacity
+          onPress={handleRoomCardPress}
+          style={[styles.roomContainer, { backgroundColor: theme.colors.black1 }]}>
+          <TouchableOpacity
+            onPress={() => {
+              if (otherSideUserId) {
+                navigation.navigate('MatchingDetailScreen');
+                dispatch(updateCurrentMatchingId(otherSideUserId));
+              }
+            }}
+            style={styles.roomLeftContainer}>
+            <Image
+              style={styles.roomAvatar}
+              source={otherSideAvatar ? { uri: otherSideAvatar } : defaultAvatar}
+            />
+          </TouchableOpacity>
+          <View style={styles.roomBodyContainer}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <BodyTwo style={[styles.roomName, { flex: 1 }]}>
+                {otherSideUserName || 'InMeet小幫手'}
+              </BodyTwo>
+              {renderTimeString()}
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <CaptionFour numberOfLines={1} style={[styles.roomPreviewText, { flex: 1 }]}>
+                {type !== 'TEXT' ? '傳送一則檔案 ' : content}
+              </CaptionFour>
+              {notReadCount !== 0 && isNumber(notReadCount) && (
+                <Badge
+                  value={notReadCount}
+                  containerStyle={styles.badgeContainer}
+                  badgeStyle={styles.roomCountBadge}
+                  textStyle={{ fontSize: fontSize(12), fontFamily: 'roboto' }}
+                />
+              )}
+            </View>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <CaptionFour numberOfLines={1} style={[styles.roomPreviewText, { flex: 1 }]}>
-              {type !== 'TEXT' ? '傳送一則檔案 ' : content}
-            </CaptionFour>
-            {notReadCount !== 0 && isNumber(notReadCount) && (
-              <Badge
-                value={notReadCount}
-                containerStyle={styles.badgeContainer}
-                badgeStyle={styles.roomCountBadge}
-                textStyle={{ fontSize: fontSize(12), fontFamily: 'roboto' }}
-              />
-            )}
-          </View>
-        </View>
-        {/* <View style={styles.roomRightContainer}>
+          {/* <View style={styles.roomRightContainer}>
           {notReadCount !== 0 && isNumber(notReadCount) && (
             <Badge
               value={notReadCount}
@@ -265,51 +275,50 @@ export default function RoomCard({ onDelete = () => {}, onRoomCardPress, roomDat
             />
           )}
         </View> */}
-      </TouchableOpacity>
-      <View
-        style={{
-          // paddingTop: 10,
-          // marginTop: 3,
-          marginLeft: 90,
-          // marginBottom: 10,
-          height:1,
-          width:'72%',
-          borderWidth:0.5,
-          borderColor: theme.colors.black2,
-        }}
-      />
-      {/* <CommonModalComponent
+        </TouchableOpacity>
+        <View
+          style={{
+            // paddingTop: 10,
+            // marginTop: 3,
+            marginLeft: 90,
+            // marginBottom: 10,
+            height: 1,
+            width: '72%',
+            borderWidth: 0.5,
+            borderColor: theme.colors.black2,
+          }}
+        />
+        {/* <CommonModalComponent
         modalText="要刪除此對話嗎?刪除後無法再看到之前的聊天紀錄"
         isVisible={collectionModal}
         onConfirm={handleConfirm}
         onClose={handleCancel}
       /> */}
-      <ReportModal
-        modalText={'刪除後無法再看到之前的聊天紀錄'}
-        buttonOneTitle = '刪除'
-        buttonTwoTitle = '取消'
-        headerShow={true}
-        isVisible={collectionModal}
-        onConfirm={handleConfirm}
-        showCancel={true}
-        headerShowText={'要刪除此對話嗎？'}
-        unChosenBtnStyle={styles.unChosenBtnStyle}
-        chosenBtnStyle={styles.unChosenBtnStyle}
-        onClose={handleCancel}
-      />
-      <VIPModal
+        <ReportModal
+          modalText={'刪除後無法再看到之前的聊天紀錄'}
+          buttonOneTitle="刪除"
+          buttonTwoTitle="取消"
+          headerShow={true}
+          isVisible={collectionModal}
+          onConfirm={handleConfirm}
+          showCancel={true}
+          headerShowText={'要刪除此對話嗎？'}
+          unChosenBtnStyle={styles.unChosenBtnStyle}
+          chosenBtnStyle={styles.unChosenBtnStyle}
+          onClose={handleCancel}
+        />
+        <VIPModal
           isVisible={openVIP}
           textShow={true}
-          titleText="升級VIP即可【封鎖用戶】"
+          titleText="升級VIP即可使用此功能"
           onClose={() => setOpenVIP(false)}
-          onConfirmCallback={()=>{
+          onConfirmCallback={() => {
             setTimeout(() => {
-              setOpenVIP(false)
+              setOpenVIP(false);
             }, 1000);
-           
           }}
         />
-    </Swipeable>
+      </Swipeable>
     </GestureHandlerRootView>
   );
 }
