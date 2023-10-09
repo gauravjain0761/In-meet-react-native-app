@@ -31,7 +31,7 @@
       },
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "NSPhotoLibraryUsageDescription": "The app accesses your photos to let you share them with your friends.",
+        "NSPhotoLibraryUsageDescription": "InMeet 需要存取你的相片，以便創建頭貼、貼文、個人資料",
         "NSCameraUsageDescription": "允許系統存取 InMeet 上和相機相關的功能，例如拍攝個人頭貼",
         "NSMicrophoneUsageDescription": "此功能需要麥克風存取權，同意麥克風權限",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "推薦內容將根據你所在位置顯示",
@@ -48,7 +48,7 @@
       "buildNumber": "22"
     },
     "android": {
-      "versionCode": 71,
+      "versionCode": 74,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

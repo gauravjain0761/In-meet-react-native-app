@@ -109,7 +109,7 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
   //   ['searchInterest'],
   //   pageObject => userApi.findWhoLikeMe({ token, id }, pageObject),
   // );
-  const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
+  const {isLoading , isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
     ['searchInterest'],
     pageObject => userApi.findUserpairLikeMe({ token, id }, pageObject),
   );
@@ -124,6 +124,7 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
   //   userApi.findWhoWatchedMe({ token, id }, pageObject),
   // );
   const {
+    isLoading:watchedisLoading,
     isFetchingNextPage: watchedFetchingNextPage,
     fetchNextPage: watchedFetchNextPage,
     hasNextPage: watchedHasNextPage,
@@ -144,9 +145,12 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
     })
     .flat();
 
+
+    console.log('interests',watchedList);
+    
   const renderRow = ({ item }: { item: ILikeInfo }) => {
     return (
-      <LikeCard interest={{ ...item, ...item.user,}} hideLikeIcon={tabSelected === TABS.VISIT} />
+      <LikeCard interest={{ ...item?.user, ...item.user,}} hideLikeIcon={tabSelected === TABS.VISIT} />
     );
   };
 
@@ -180,7 +184,7 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
   };
 
   return (
-    <Loader isLoading={false}>
+    <Loader isLoading={isLoading || watchedisLoading}>
       <LikeModal isVisible={modalOpen} onClose={() => setModalOpen(false)} />
       <SafeAreaView  style={styles.header}>
         <BodyThree style={styles.topBarNavText}>LIKE</BodyThree>
@@ -224,7 +228,7 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
       </View>
       {tabSelected === TABS.LIKE ? (
         <>
-          {interests?.length > 0 ? (
+          {(interests?.length > 0)? (
             <KeyboardAwareFlatList
               numColumns={2}
               style={[
@@ -250,7 +254,7 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
         </>
       ) : (
         <>
-          {watchedList?.length > 0 ? (
+          {(watchedList?.length > 0) ? (
             <KeyboardAwareFlatList
               numColumns={2}
               style={[

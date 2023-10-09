@@ -383,11 +383,12 @@ export default function RegisterNameScreen(props: RegisterNameScreenProps) {
               rightIconShow={true}
               right={
                 state.visiblePassword ? (
-                  <Feather name="eye" size={24} color="#A8ABBD" />
+                  <Feather name="eye" size={22} color="#A8ABBD" />
                 ) : (
                   mapIcon.invisiblePassword()
                 )
               }
+              rightStyle={{marginTop:5}}
             />
             <InputField
               name="verifyPassword"
@@ -405,7 +406,7 @@ export default function RegisterNameScreen(props: RegisterNameScreenProps) {
               rightIconShow={true}
               right={
                 state.visibleVerifyPassword ? (
-                  mapIcon.eyeIcon({size:24})
+                  <Feather name="eye" size={22} color="#A8ABBD" />
                 ) : (
                   mapIcon.invisiblePassword()
                 )

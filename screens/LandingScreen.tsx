@@ -17,7 +17,7 @@ import {
   AsyncStorage,
   FlatList,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, makeStyles, useTheme } from '@rneui/themed';
 import {
@@ -32,7 +32,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import Toast from 'react-native-root-toast';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, useFocusEffect, useIsFocused } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
 import Svg, { Path } from 'react-native-svg';
 import { set } from 'lodash';
@@ -59,6 +59,7 @@ import userSlice, {
   getUserInfo,
   updateUserScrollValue,
   getUserWatch,
+  getUserLike,
 } from '~/store/userSlice';
 import Loader from '~/components/common/Loader';
 import { RootState, useAppDispatch } from '~/store';
@@ -107,6 +108,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.colors?.black1,
     // minHeight: height,
     flex: 1,
+    // paddingTop:10
   },
   swiperContainer: {
     marginTop: -hp(3.5),
@@ -297,6 +299,7 @@ export default function LandingScreen(props: LandingScreenProps) {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const useSwiper = useRef<any>(0);
+  const isFocused = useIsFocused();
 
   const {
     isLoading,
@@ -329,6 +332,11 @@ export default function LandingScreen(props: LandingScreenProps) {
     }
   );
   
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch, isFocused])
+  );
 
   const { data: favoriteList } = useQuery('getFavoriteUser', () =>
     userApi.getFavoriteUser({ token })
@@ -555,9 +563,10 @@ export default function LandingScreen(props: LandingScreenProps) {
     ref?.current?.swipeRight();
   };
 
+
   const onSwipe = (index: number) => {
     dispatch(updateUserScrollValue(0));
-    if (index == users?.length - 4) {
+    if (index == users?.length - 7) {
       if (isMorePage) {
         setPageCount(pageCount + 1);
         fetchNextPage();
@@ -566,13 +575,17 @@ export default function LandingScreen(props: LandingScreenProps) {
   };
 
   const onSwipeLeft = () => {  
-    dispatch(getUserWatch({token, isLike:true, id:users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id}));
+    let userID=users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id
+    dispatch(getUserLike({ token, isLike: true, id: userID }));
+    dispatch(getUserWatch({token, isLike:true, id:userID}));
     dispatch(updateUserScrollValue(0));
     setItemCount(itemCount + 1);
   };
   
   const onSwipeRight = () => {
-    dispatch(getUserWatch({token, isLike:true, id:users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id}));
+    let userID=users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id
+    dispatch(getUserLike({ token, isLike: false, id: userID }));
+    dispatch(getUserWatch({token, isLike:true, id:userID}));
     dispatch(updateUserScrollValue(0));
     setItemCount(itemCount + 1);
   };
@@ -647,7 +660,7 @@ export default function LandingScreen(props: LandingScreenProps) {
               />
             </>
           )} */}
-          {users?.length > 0 ? (
+          {(users?.length > 0 && users[0] !=="undefined") ? (
             <Swiper
               ref={useSwiper}
               animateCardOpacity={true}

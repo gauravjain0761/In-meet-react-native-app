@@ -332,7 +332,7 @@ const secondData=[
 
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: bottom }]}>
-      <ScrollView style={[styles.container, { top: -15 }]}>
+      <ScrollView style={[styles.container, { top: -10 }]}>
         <ProfileHeaderNew headerStyle={{}} />
         <VipContainer />
         {/* <View style={styles.bodyContainer}>

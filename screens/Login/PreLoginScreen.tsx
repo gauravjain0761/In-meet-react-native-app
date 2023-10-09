@@ -340,9 +340,9 @@ console.log('googleResponse',googleResponse);
             position: 'absolute',
             bottom: '4%',
           }}>
-          <BodyThree style={[styles.captionFourText, { marginTop: '2%' }]}>快速登入</BodyThree>
+          {/* <BodyThree style={[styles.captionFourText, { marginTop: '2%' }]}>快速登入</BodyThree> */}
           <View style={styles.socialMediaIconContainer}>
-            {socialMediaArray.filter(Boolean).map((mediaIcon, index) => (
+            {/* {socialMediaArray.filter(Boolean).map((mediaIcon, index) => (
               <View
                 style={{
                   flex: 1,
@@ -352,12 +352,12 @@ console.log('googleResponse',googleResponse);
                 key={index}>
                 {mediaIcon}
               </View>
-            ))}
+            ))} */}
           </View>
           <View style={styles.hairlineView}>
-          <View style={styles.hairline} />
+          {/* <View style={styles.hairline} />
           <BodyOne style={styles.bodyText}>{"或"}</BodyOne>
-          <View style={styles.hairline} />
+          <View style={styles.hairline} /> */}
 
           </View>
           <ChosenButton

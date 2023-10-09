@@ -242,7 +242,7 @@ export default function LikeModal(props: ILikeModal) {
           </View>
           {tabSelected === TABS.LIKE ? (
             <>
-              {interests?.length > 0 ? (
+              {(interests?.length > 0) ? (
                 <KeyboardAwareFlatList
                   numColumns={3}
                   style={[
@@ -270,7 +270,7 @@ export default function LikeModal(props: ILikeModal) {
             </>
           ) : (
             <>
-              {watchedList?.length > 0 ? (
+              {(watchedList?.length > 0) ? (
                 <KeyboardAwareFlatList
                   numColumns={3}
                   contentContainerStyle={{ justifyContent: 'flex-start' }}

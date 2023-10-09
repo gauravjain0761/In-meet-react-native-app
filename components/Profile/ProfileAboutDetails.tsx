@@ -261,7 +261,7 @@ export default function ProfileAboutDetails(props) {
     },
     {
       label: '簡介',
-      name: about,
+      name: about !== "" ? about : "尚未填寫",
       id: 2,
       filed: 'Btn',
       onEdit: () => {
