@@ -576,7 +576,7 @@ export default function LandingScreen(props: LandingScreenProps) {
 
   const onSwipeLeft = () => {  
     let userID=users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id
-    dispatch(getUserLike({ token, isLike: true, id: userID }));
+    dispatch(getUserLike({ token, isLike: false, id: userID }));
     dispatch(getUserWatch({token, isLike:true, id:userID}));
     dispatch(updateUserScrollValue(0));
     setItemCount(itemCount + 1);
@@ -584,7 +584,7 @@ export default function LandingScreen(props: LandingScreenProps) {
   
   const onSwipeRight = () => {
     let userID=users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id
-    dispatch(getUserLike({ token, isLike: false, id: userID }));
+    dispatch(getUserLike({ token, isLike: true, id: userID }));
     dispatch(getUserWatch({token, isLike:true, id:userID}));
     dispatch(updateUserScrollValue(0));
     setItemCount(itemCount + 1);
