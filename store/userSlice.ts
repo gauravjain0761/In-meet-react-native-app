@@ -213,6 +213,7 @@ export const socialLoginUser = createAsyncThunk(
   },
 );
 
+
 export const logoutUser = createAsyncThunk('user/logout', async (_, { signal }) => {
   const source = CancelToken.source();
   signal.addEventListener('abort', () => {
@@ -338,7 +339,8 @@ export const patchUserFastLogin = createAsyncThunk(
       google?: SocialLoginData;
       line?: SocialLoginData;
       facebook?: SocialLoginData;
-      userEmail: string;
+      userPhone: any;
+      token:any
     },
     { signal },
   ) => {
@@ -347,12 +349,15 @@ export const patchUserFastLogin = createAsyncThunk(
       source.cancel();
     });
     try {
-      const { userEmail, facebook, line, google, apple, type } = data;
-      const authToken = await getToken();
+      const { userPhone, facebook, line, google, apple, type,token } = data;
+      console.log(data);
+    
+      console.log('authToken',token);
+      
       const response = await HttpClient.post<ActionResponse<UserProfileResponse>>(
         `/user/social/bind`,
         {
-          email: userEmail,
+          account: userPhone,
           ...(facebook && { accessToken: facebook.accessToken, type: 'FACEBOOK' }),
           ...(line && { accessToken: line.accessToken, type: 'LINE' }),
           ...(google && { accessToken: google.accessToken, type: 'GOOGLE' }),
@@ -361,10 +366,12 @@ export const patchUserFastLogin = createAsyncThunk(
         {
           cancelToken: source.token,
           headers: {
-            Authorization: authToken,
+            Authorization: token,
           },
         },
       );
+      console.log('patchUserFastLogin',response);
+      
       return response.data;
     } catch (err: any) {
       const error: AxiosError<ActionResponse<{ data: any }>> = err;

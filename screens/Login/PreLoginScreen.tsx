@@ -124,15 +124,15 @@ console.log('googleResponse',googleResponse);
       
       const res = await dispatch(socialLoginUser({ type, accessToken })).unwrap();
       console.log("tokennnnn",res);
-      
+
       if (res.data.token) {
         // await dispatch(getUserInfo({ token: res.data.token })).unwrap();
         await dispatch(patchUserToken(res.data.token));
         await storeUserToken(res.data.token);
         return;
       }
-      dispatch(updateFastLoginType({ type }));
-      dispatch(updateAccessToken({ accessToken }));
+      await dispatch(updateFastLoginType({ type }));
+      await dispatch(updateAccessToken({ accessToken }));
       if (!res.data.email) {
         Toast.show('無法取得電子郵件，請確認是否有電子郵件');
         return;
@@ -340,9 +340,9 @@ console.log('googleResponse',googleResponse);
             position: 'absolute',
             bottom: '4%',
           }}>
-          {/* <BodyThree style={[styles.captionFourText, { marginTop: '2%' }]}>快速登入</BodyThree> */}
+          <BodyThree style={[styles.captionFourText, { marginTop: '2%' }]}>快速登入</BodyThree>
           <View style={styles.socialMediaIconContainer}>
-            {/* {socialMediaArray.filter(Boolean).map((mediaIcon, index) => (
+            {socialMediaArray.filter(Boolean).map((mediaIcon, index) => (
               <View
                 style={{
                   flex: 1,
@@ -352,12 +352,12 @@ console.log('googleResponse',googleResponse);
                 key={index}>
                 {mediaIcon}
               </View>
-            ))} */}
+            ))}
           </View>
           <View style={styles.hairlineView}>
-          {/* <View style={styles.hairline} />
+          <View style={styles.hairline} />
           <BodyOne style={styles.bodyText}>{"或"}</BodyOne>
-          <View style={styles.hairline} /> */}
+          <View style={styles.hairline} />
 
           </View>
           <ChosenButton

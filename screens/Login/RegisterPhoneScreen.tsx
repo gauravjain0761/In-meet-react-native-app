@@ -25,7 +25,7 @@ import { RegisterPhoneScreenProps } from '../../types';
 import { useAppDispatch } from '../../store';
 import { patchRegister, updatePhone } from '~/store/registerSlice';
 import { userApi } from '~/api/UserAPI';
-import { updateAccessToken } from '~/store/fastLoginSlice';
+
 import { recoverUser } from '~/store/userSlice';
 import Header from '~/components/common/Header';
 import { mapIcon } from '~/constants/IconsMapping';
@@ -139,7 +139,6 @@ export default function RegisterPhoneScreen(props: RegisterPhoneScreenProps): JS
       }
       handlePressNextStep();
       dispatch(updatePhone(phone));
-      dispatch(updateAccessToken({ accessToken: '' }));
     } catch (error) {
     } finally {
       setIsLoading(false);

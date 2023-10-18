@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     width: 50,
     borderRadius: 100,
   },
-  likeIconStyle:{
+  likeIconStyle: {
     width: 100,
     alignSelf: 'center',
     alignItems: 'center',
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
     height: 48,
     justifyContent: 'center',
     borderRadius: 20,
-  }
+  },
 }));
 enum LEVEL {
   NORMAL = 'NORMAL',
@@ -105,12 +105,11 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
   // const [routes] = React.useState([
   //   { key: 'first', title: '關於我' },
   //   { key: 'second', title: '動態' },
-   // { key: 'third', title: '相簿' },
+  // { key: 'third', title: '相簿' },
   // ]);
   const [routes] = React.useState([
     { key: 'first', title: '關於我' },
     { key: 'second', title: '動態' },
-   
   ]);
   const { bottom, top } = useSafeAreaInsets();
   const userId = useSelector(selectUserId);
@@ -127,8 +126,8 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
       refetchOnMount: true,
     }
   );
-  console.log("userInfoData",userInfoData);
-  
+  console.log('userInfoData', userInfoData);
+
   const { data: favoriteList } = useQuery('getFavoriteUser', () =>
     userApi.getFavoriteUser({ token })
   );
@@ -305,10 +304,10 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
             // if (!userInfoData?.isChatUnLockBefore && level !== LEVEL.VIP) {
             //   setChatModal(true);
             // } else {
-              dispatch(updateCurrentChatId(currentUserId));
-              navigation.navigate('RoomChatScreen', {
-                recipientId: currentUserId,
-              });
+            dispatch(updateCurrentChatId(currentUserId));
+            navigation.navigate('RoomChatScreen', {
+              recipientId: currentUserId,
+            });
             // }
           }}
           icon={mapIcon.chatIcon({
@@ -439,22 +438,27 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
         }}
         onClose={() => setJoinVIPModal(false)}
       /> */}
-      <VIPConnectLockModal isVisible={openLockVIP} onClose={()=>{setOpenLockVIP(false)}}/>
+        <VIPConnectLockModal
+          isVisible={openLockVIP}
+          onClose={() => {
+            setOpenLockVIP(false);
+          }}
+        />
         <VIPModal
           isVisible={openVIP}
           textShow={true}
           titleText="升級VIP即可使用此功能"
           onClose={() => setOpenVIP(false)}
-          onConfirmCallback={()=>{
+          onConfirmCallback={() => {
             setTimeout(() => {
-              setOpenVIP(false)
+              setOpenLockVIP(true);
             }, 1000);
-            setOpenLockVIP(true)
+            setOpenVIP(false);
           }}
         />
         <SelectModal
           isVisible={selectModalShow}
-          onDeletePress={()=>{
+          onDeletePress={() => {
             setSelectModalShow(false);
             //@ts-ignore
             navigation.navigate('ReportScreen', {
@@ -631,10 +635,10 @@ export default function MatchingDetailScreen(props: MatchingDetailScreenProps) {
           source={matchBg}
           resizeMode="cover"
           style={{ width: '100%', height: 60, position: 'absolute', bottom: 0 }}>
-          <TouchableOpacity
-          onPress={handleLike}
-            style={styles.likeIconStyle}>
-            { isCollected ?  mapIcon.likeIcon({ color: theme.colors.pink, size: 28 }):mapIcon.unlikeIcon({ color: theme.colors.black4, size: 28 })}
+          <TouchableOpacity onPress={handleLike} style={styles.likeIconStyle}>
+            {isCollected
+              ? mapIcon.likeIcon({ color: theme.colors.pink, size: 28 })
+              : mapIcon.unlikeIcon({ color: theme.colors.black4, size: 28 })}
           </TouchableOpacity>
         </ImageBackground>
       </View>

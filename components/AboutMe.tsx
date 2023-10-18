@@ -20,6 +20,7 @@ import { UN_FILLED, UN_KNOWN } from '~/constants/defaultValue';
 import { mapIcon } from '~/constants/IconsMapping';
 import { mapContactIcon } from '~/constants/contactIcons';
 import { RootState } from '~/store';
+import { calculateAge } from '~/helpers/convertDate';
 
 const { width } = Dimensions.get('window');
 interface IAboutME {
@@ -65,6 +66,8 @@ export default function AboutMe(props: IAboutME) {
   const level = useSelector((state: RootState) => state.user.level);
   const isVIP = level === 'VIP';
   const { theme } = useTheme();
+  console.log('userInfoData',userInfoData);
+  
   const columns = [
     { title: '名字', value: userInfoData?.name },
     { title: '身高', value: get(HeightValue, userInfoData?.height, UN_FILLED) },
@@ -144,22 +147,22 @@ export default function AboutMe(props: IAboutME) {
     <ScrollView style={{ flex: 1, marginHorizontal: 16, marginTop: 16 ,zIndex:-1}}>
       <Input label="居住地區" iconShow={true} icon={mapIcon.locationIcon1({})} title={get(CITYEnum, userInfoData?.city, UN_FILLED)} />
       <Input label="星座" iconShow={true} icon={mapIcon.starIcon1({})} title={userInfoData?.constellation} />
-      <Input label="年齡" iconShow={false} title="18 歲" />
+      <Input label="年齡" iconShow={false} title={calculateAge(userInfoData?.birthday) || UN_FILLED} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <InputSub label="身高" iconShow={false} title="159 cm" />
-        <InputSub label="體重" iconShow={false} title="48 kg" />
+        <InputSub label="身高" iconShow={false} title={get(HeightValue, userInfoData?.height, UN_FILLED)} />
+        <InputSub label="體重" iconShow={false} title={userInfoData?.weight || UN_FILLED} />
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <InputSub label="血型" iconShow={false} title={get(BLOOD_ENUM, userInfoData?.bloodType, UN_FILLED)} />
         <InputSub label="喝酒" iconShow={false} title="偶爾喝" />
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <InputSub label="抽菸習慣" iconShow={false} title="偶爾抽" />
-        <InputSub label="職業" iconShow={false} title="學生" />
+        <InputSub label="居住地" iconShow={false}title={get(CITYEnum, userInfoData?.city, UN_FILLED)}  />
+        <InputSub label="工作" iconShow={false} title={userInfoData?.job || UN_FILLED}  />
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <InputSub label="抽菸習慣" iconShow={false} title="學生" />
-        <InputSub label="年齡" iconShow={false} title="學生" />
+        <InputSub label="宗教" iconShow={false} title={get(ReligionValue, userInfoData?.religion, UN_FILLED) } />
+        <InputSub label="教育程度" iconShow={false} title={get(EducationValue, userInfoData?.education, UN_FILLED) } />
       </View>
       <View style={{height:90}}/>
     </ScrollView>

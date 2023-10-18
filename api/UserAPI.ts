@@ -491,6 +491,17 @@ export const userApi = {
       },
     ).then(res => res.data.data);
   },
+  UserpairremainChat: ({ token, chatId, vipTest }) => {
+    return HttpClient.get(
+      `userpair/remain?chatId=${chatId}&testMode%2C%E7%84%A1%E8%A6%96VIP=${vipTest}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    ).then(res =>{ 
+      return res.data.data});
+  },
   fetchUserRoomList: ({ token, userId }, pageObject) => {
     const { pageParam = 1 } = pageObject;
     return HttpClient.get(`/messages/list/${userId}`, {
@@ -755,7 +766,7 @@ export const userApi = {
   },
   findUserpairWatchedMe: ({ token, id }, pageObject) => {
     const { pageParam = 1 } = pageObject;
-    return HttpClient.get<ActionResponse<FavoriteListResponse>>(`https://uat.inmeet.vip/userpair/history?modeChange%E7%82%BAtrue%E6%99%82%20%E6%9C%83%E5%88%87%E6%8F%9B%E6%88%90%E6%9F%A5%E8%A9%A2%E8%A2%AB%E5%96%9C%E6%AD%A1%2F%E8%A2%AB%E7%9C%8B%E9%81%8E%20%E4%B8%A6%E7%A2%BA%E8%AA%8D%E5%85%B6%E6%9C%83%E5%93%A1%E6%98%AF%E5%90%A6%E7%82%BAVIP=true&isTest%20%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F%EF%BC%8C%E7%84%A1%E8%A6%96%E6%98%AF%E5%90%A6%E6%9C%89VIP=true&watched%20%E7%9C%8B%E9%81%8E%28%E4%BA%A4%E9%9B%86%29%2C%E5%BB%BA%E8%AD%B0%E5%96%9C%E6%AD%A1%2C%E7%9C%8B%E9%81%8E%E6%93%87%E4%B8%80%E4%BD%BF%E7%94%A8=true&page=${pageParam}&limit=20&order=asc&sort=id`, {
+    return HttpClient.get<ActionResponse<FavoriteListResponse>>(`https://uat.inmeet.vip/userpair/history?modeChange%E7%82%BAtrue%E6%99%82%20%E6%9C%83%E5%88%87%E6%8F%9B%E6%88%90%E6%9F%A5%E8%A9%A2%E8%A2%AB%E5%96%9C%E6%AD%A1%2F%E8%A2%AB%E7%9C%8B%E9%81%8E%20%E4%B8%A6%E7%A2%BA%E8%AA%8D%E5%85%B6%E6%9C%83%E5%93%A1%E6%98%AF%E5%90%A6%E7%82%BAVIP=false&isTest%20%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F%EF%BC%8C%E7%84%A1%E8%A6%96%E6%98%AF%E5%90%A6%E6%9C%89VIP=false&watched%20%E7%9C%8B%E9%81%8E%28%E4%BA%A4%E9%9B%86%29%2C%E5%BB%BA%E8%AD%B0%E5%96%9C%E6%AD%A1%2C%E7%9C%8B%E9%81%8E%E6%93%87%E4%B8%80%E4%BD%BF%E7%94%A8=true&page=${pageParam}&limit=20&order=asc&sort=id`, {
       headers: {
         Authorization: token,
       },

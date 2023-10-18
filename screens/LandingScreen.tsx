@@ -343,6 +343,8 @@ export default function LandingScreen(props: LandingScreenProps) {
   );
 
   const users = data?.pages.map((page) => page?.records).flat();
+  console.log('users',users);
+  
     const handlePressStory = (id: number) => {
     if (id) {
       navigation.push('MatchingDetailScreen');
@@ -573,16 +575,26 @@ export default function LandingScreen(props: LandingScreenProps) {
       }
     }
   };
+  
+  const onSwipedAll = (index: number) => {
+    dispatch(updateUserScrollValue(0));
+    if (index == users?.length - 7) {
+      if (isMorePage) {
+        setPageCount(pageCount + 1);
+        fetchNextPage();
+      }
+    }
+  };
 
-  const onSwipeLeft = () => {  
+  const onSwipeLeft = () => { 
     let userID=users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id
-    dispatch(getUserLike({ token, isLike: false, id: userID }));
+    dispatch(getUserLike({ token, isLike:false, id: userID }));
     dispatch(getUserWatch({token, isLike:true, id:userID}));
     dispatch(updateUserScrollValue(0));
     setItemCount(itemCount + 1);
   };
   
-  const onSwipeRight = () => {
+  const onSwipeRight = () => {    
     let userID=users?.[useSwiper?.current?.state?.firstCardIndex]?.user?.id
     dispatch(getUserLike({ token, isLike: true, id: userID }));
     dispatch(getUserWatch({token, isLike:true, id:userID}));
@@ -660,24 +672,27 @@ export default function LandingScreen(props: LandingScreenProps) {
               />
             </>
           )} */}
-          {(users?.length > 0 && users[0] !=="undefined") ? (
+          {users?.length > 0 ? (
             <Swiper
               ref={useSwiper}
               animateCardOpacity={true}
               containerStyle={styles.swiperContainer}
               cards={users}
+              infinite={true}
               renderCard={renderRow}
+              keyExtractor={(e)=>{return e.toString()}}
               cardIndex={0}
               backgroundColor="white"
-              stackSize={3}
+              stackSize={4}
+              swipeAnimationDuration={900}
               verticalSwipe={false}
-              infinite={false}
               showSecondCard={true}
               //   stackSeparation={-hp(3.07)}
               animateOverlayLabelsOpacity={true}
               onSwiped={onSwipe}
               onSwipedRight={onSwipeRight}
               onSwiping={onSwiping}
+              onSwipedAll={onSwipedAll}
               onSwipedLeft={onSwipeLeft}
               dragEnd={() => {
                 dispatch(updateUserScrollValue(0));

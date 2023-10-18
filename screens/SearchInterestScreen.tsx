@@ -153,6 +153,11 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
       <LikeCard interest={{ ...item?.user, ...item.user,}} hideLikeIcon={tabSelected === TABS.VISIT} />
     );
   };
+  const renderWatchedRow = ({ item }: { item: ILikeInfo }) => {
+    return (
+      <LikeCard   interest={{ ...item?.beenpairedUser}} hideLikeIcon={tabSelected === TABS.VISIT} />
+    );
+  };
 
   const renderEmpty = () => {
     return (
@@ -271,7 +276,7 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
               data={watchedList}
               columnWrapperStyle={{ justifyContent: 'space-between' }}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={renderRow}
+              renderItem={renderWatchedRow}
               ListFooterComponent={watchedFetchingNextPage ? <ActivityIndicator /> : null}
             />
           ) : (

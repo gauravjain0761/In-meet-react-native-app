@@ -41,11 +41,12 @@ import { RootState, useAppDispatch } from '~/store';
 import { cleanUpRegister, patchRegister, updateAvatar } from '~/store/registerSlice';
 import uploadFile from '~/store/fileSlice';
 import { clearUserStorage, storeUserIsFromRegistered, storeUserToken } from '~/storage/userToken';
-import { loginUser, patchUserFromRegister, patchUserToken } from '~/store/userSlice';
+import { loginUser, patchUserFastLogin, patchUserFromRegister, patchUserToken } from '~/store/userSlice';
 import useRequestLocation from '~/hooks/useRequestLocation';
 import Header from '~/components/common/Header';
 import { fontSize } from '~/helpers/Fonts';
 import dammyImage from '../../assets/images/firstLogin/bg.png';
+import { updateAccessToken } from '~/store/fastLoginSlice';
 const { height, width } = Dimensions.get('window');
 
 interface FormData {
@@ -185,6 +186,7 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
 
   const [openLocationAsync] = useRequestLocation();
   const register = useSelector((state: RootState) => state.register);
+  const { accessToken, type } = useSelector((rootState: RootState) => rootState.fastLogin);
 
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -307,9 +309,23 @@ export default function RegisterImageScreen(props: RegisterImageScreenProps) {
         if (loginResponse.code !== 20000) {
           throw loginResponse;
         }
+        if (type && accessToken) {
+          const socialData = {
+            ...(type === 'FACEBOOK' && { facebook: { accessToken, type } }),
+            ...(type === 'LINE' && { line: { accessToken, type } }),
+            ...(type === 'GOOGLE' && { google: { accessToken, type } }),
+            ...(type === 'APPLE' && { apple: { accessToken, type } }),
+          };
+          const ress = await dispatch(
+            patchUserFastLogin({ ...socialData, userPhone: register.phone,token: loginResponse.data}),
+          ).unwrap();
+          console.log('ressss',ress);
+          
+        }
         // await dispatch(getUserInfo({ token: loginResponse.data })).unwrap();
         dispatch(patchUserToken(loginResponse.data));
         dispatch(patchUserFromRegister(true));
+        dispatch(updateAccessToken({ accessToken: '' }));
         await storeUserToken(loginResponse.data);
       }
     } catch (error) {

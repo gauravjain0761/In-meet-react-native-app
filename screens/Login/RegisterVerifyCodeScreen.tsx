@@ -41,6 +41,7 @@ import { updatePassword } from '~/store/registerSlice';
 import { userApi } from '~/api/UserAPI';
 import Header from '~/components/common/Header';
 import { fontSize } from '~/helpers/Fonts';
+import { patchUserFastLogin} from '~/store/userSlice';
 
 const useStyles = makeStyles(theme => ({
   headerStyle: {
@@ -126,7 +127,6 @@ export default function RegisterVerifyCodeScreen(props: RegisterVerifyCodeProps)
   } = methods;
 
   const phone = useSelector((rootState: RootState) => rootState.register.phone);
-
   const onSubmit = async (data: any) => {
     const { verifyCode } = data;
     const res = await userApi.verification({ phone, verifyCode });

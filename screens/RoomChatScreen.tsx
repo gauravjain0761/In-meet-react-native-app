@@ -154,7 +154,6 @@ const useStyles = makeStyles((theme) => ({
     width: 40,
     height: 40,
     borderRadius: 40,
-    backgroundColor: theme.colors.pink,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
@@ -547,6 +546,8 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const [bottomHeight, setBottomHeight] = useState(0);
   const [visibleModal, setVisibleModal] = React.useState(false);
   const [blockChat, setBlockChat] = React.useState(false);
+  const [remainTime, setRemainTime] = React.useState(false);
+  const [remainTimeValue, setRemainTimeValue] = React.useState(0);
 
   const { handleSendWebSocket } = useStompClient();
   const openMenu = () => setVisible(true);
@@ -620,6 +621,23 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
       }
     );
   console.log('data', data);
+
+  const handleUserpairremain = async () => {
+    console.log('dasdadadasd');
+
+    try {
+      const res = await userApi.UserpairremainChat({ chatId, vipTest: isVIP, token });
+      console.log('UserpairremainChatressss', res);
+      setRemainTime(res?.limit);
+      queryClient.invalidateQueries('getRoomList');
+    } catch (error) {
+      // Toast.show(JSON.stringify(error));
+    }
+  };
+
+  useEffect(() => {
+    handleUserpairremain();
+  }, []);
 
   const convertFunction = (dataModel) => {
     const result = {};
@@ -720,6 +738,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
     setCollectionModal(false);
     setReportBlockModel(false);
   };
+
   const handleJoinVip = () => {
     navigation.push('VIPPurchaseScreen');
     // navigation.push('PurchaseVIPScreen');
@@ -863,7 +882,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   };
 
   const handleConfirm = async () => {
-    if(selectBtn){
+    if (selectBtn) {
       if (isBlocked) {
         if (isRemoveLoading) return;
         if (!isBlockedId) return;
@@ -875,8 +894,8 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         setReportBlockModel(false);
       }
       setReportBlockModel(false);
-    }else{
-      handleHideRoom()
+    } else {
+      handleHideRoom();
     }
     // setBlockChat(true);
   };
@@ -912,7 +931,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   };
   const onBloackPress = () => {
     if (isVIP) {
-      setSelectBtn(true)
+      setSelectBtn(true);
       setReportHeaderText('確定封鎖此用戶嗎？');
       setReportSubHeaderText('封鎖用戶後將無法傳送訊息給您');
       setTimeout(() => {
@@ -928,7 +947,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   };
   const onPasswordPress = () => {
     if (isVIP) {
-      setSelectBtn(false)
+      setSelectBtn(false);
       setReportHeaderText('確定要隱藏此對話嗎?');
       setReportSubHeaderText('隱藏對話後需輸入密碼才能恢復內容');
       setTimeout(() => {
@@ -984,13 +1003,13 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         keyboardVerticalOffset={headerHeight}
         style={{ flex: 1 }}>
         {/* {renderMenuComponent()} */}
-        {/* <View style={styles.headerViewStyle}>
+        <View style={styles.headerViewStyle}>
           <Text style={styles.headerTextStyle}>
-            限時
-            <Text style={[styles.headerTextStyle, { color: theme.colors.pink }]}>{' 14 '}</Text>
-            小時，抓緊時間開始聊天吧！
+            {"限時 "}
+            <Text style={[styles.headerTextStyle, { color: theme.colors.pink }]}>{remainTimeValue}</Text>
+            {" 小時，抓緊時間開始聊天吧！"}
           </Text>
-        </View> */}
+        </View>
         <View style={{ flex: 1 }}>
           <KeyboardAwareFlatList
             // data={updateMessage}
@@ -1148,11 +1167,23 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
                           multiline
                         />
                       </View>
-                      <View style={styles.sendBtn}>
-                        <Button buttonStyle={styles.sendBtnStyle} onPress={handleSendMessage}>
-                          {mapIcon.sendIcon({ color: theme.colors.white, size: 16 })}
-                        </Button>
-                      </View>
+                      <TouchableOpacity
+                        onPress={handleSendMessage}
+                        style={[
+                          styles.sendBtn,
+                          {
+                            backgroundColor: remainTime
+                              ? 'rgba(255, 78, 132, 0.6)'
+                              : theme.colors.pink,
+                          },
+                        ]}>
+                      
+                        {mapIcon.sendIcon({
+                          color: remainTime ? theme.colors.black4 : theme.colors.white,
+                          size: 16,
+                        })}
+                     
+                      </TouchableOpacity>
                     </>
                   ) : (
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -1232,9 +1263,9 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         onClose={() => setOpenVIP(false)}
         onConfirmCallback={() => {
           setTimeout(() => {
-            handleJoinVip()
+            handleJoinVip();
           }, 1000);
-          setOpenVIP(false)
+          setOpenVIP(false);
         }}
       />
     </SafeAreaView>

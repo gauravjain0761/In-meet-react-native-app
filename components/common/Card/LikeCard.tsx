@@ -61,12 +61,13 @@ const useStyles = makeStyles(theme => ({
 interface ILikeCard {
   interest: ILikeInfo;
   hideLikeIcon?: boolean;
+  isWatched?: boolean;
 }
 
 export default function LikeCard(props: ILikeCard) {
   const styles = useStyles();
   const { theme } = useTheme();
-  const { interest, hideLikeIcon } = props;
+  const { interest, hideLikeIcon,isWatched } = props;
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const { name, avatar, city, birthday, paired_percetage, id } = interest;
@@ -89,7 +90,7 @@ export default function LikeCard(props: ILikeCard) {
         <View style={styles.cardContainer}>
           <ImageBackground
             style={styles.cardImage}
-            source={{ uri: avatar || `https://picsum.photos/id/231/200/300` }}>
+            source={{ uri:   avatar || `https://picsum.photos/id/231/200/300` }}>
             <View
               style={{
                 position: 'absolute',

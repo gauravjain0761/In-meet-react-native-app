@@ -159,6 +159,16 @@ export default function LikeModal(props: ILikeModal) {
       />
     );
   };
+  const renderWatchedRow = ({ item, index }: { item: ILikeInfo }) => {
+    return (
+      <LikeCircleCard
+        index={index}
+        onClose={onClose}
+        interest={{ ...item?.beenpairedUser}}
+        hideLikeIcon={tabSelected === TABS.VISIT}
+      />
+    );
+  };
 
   const renderEmpty = () => {
     return (
@@ -290,7 +300,7 @@ export default function LikeModal(props: ILikeModal) {
                   onEndReachedThreshold={0.1}
                   data={watchedList}
                   keyExtractor={(item, index) => index.toString()}
-                  renderItem={renderRow}
+                  renderItem={renderWatchedRow}
                   ListFooterComponent={watchedFetchingNextPage ? <ActivityIndicator /> : null}
                 />
               ) : (
