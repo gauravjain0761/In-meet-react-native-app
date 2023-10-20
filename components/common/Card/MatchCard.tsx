@@ -343,15 +343,15 @@ export default function MatchCard(props: Props) {
                 {mapIcon.gobackIcon({ size: 22 })}
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => {
-                  dispatch(
+                onPress={async() => {
+                 await dispatch(
                     getUserWatch({
                       token,
                       isLike: true,
                       id:id,
                     })
                   );
-                  dispatch(getUserLike({ token, isLike: false, id: id }));
+                 await dispatch(getUserLike({ token, isLike: false, id: id }));
                   handleLike();
                   onClosePress();
                 }}
@@ -359,15 +359,15 @@ export default function MatchCard(props: Props) {
                 {mapIcon.closeIcon({ size: 38 })}
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => {
-                  dispatch(
+                onPress={async() => {
+                await  dispatch(
                     getUserWatch({
                       token,
                       isLike: true,
                       id:id,
                     })
                   );
-                  dispatch(getUserLike({ token, isLike: true, id: id }));
+                 await dispatch(getUserLike({ token, isLike: true, id: id }));
                   handleLike();
                   onLikePress();
                 }}
@@ -377,6 +377,13 @@ export default function MatchCard(props: Props) {
               <TouchableOpacity
                 onPress={() => {
                   if (id) {
+                    dispatch(
+                      getUserWatch({
+                        token,
+                        isLike: true,
+                        id:id,
+                      })
+                    );
                     navigation.navigate('MatchingDetailScreen');
                     dispatch(updateCurrentMatchingId(id));
                   }

@@ -627,8 +627,9 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
 
     try {
       const res = await userApi.UserpairremainChat({ chatId, vipTest: isVIP, token });
-      console.log('UserpairremainChatressss', res);
+      console.log('UserpairremainChatressss', res,chatId);
       setRemainTime(res?.limit);
+      setRemainTimeValue(remainTime?remainTime:0)
       queryClient.invalidateQueries('getRoomList');
     } catch (error) {
       // Toast.show(JSON.stringify(error));
@@ -1003,13 +1004,13 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         keyboardVerticalOffset={headerHeight}
         style={{ flex: 1 }}>
         {/* {renderMenuComponent()} */}
-        <View style={styles.headerViewStyle}>
+        {!isVIP && remainTimeValue !==null ? <View style={styles.headerViewStyle}>
           <Text style={styles.headerTextStyle}>
             {"限時 "}
             <Text style={[styles.headerTextStyle, { color: theme.colors.pink }]}>{remainTimeValue}</Text>
             {" 小時，抓緊時間開始聊天吧！"}
           </Text>
-        </View>
+        </View> :null}
         <View style={{ flex: 1 }}>
           <KeyboardAwareFlatList
             // data={updateMessage}

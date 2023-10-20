@@ -1,9 +1,9 @@
 import { View, Text, Image, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import ReactNativeModal from 'react-native-modal';
 import { makeStyles, useTheme } from '@rneui/themed';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import { useInfiniteQuery } from 'react-query';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
@@ -109,12 +109,13 @@ export default function LikeModal(props: ILikeModal) {
   const token = useSelector(selectToken);
   const id = useSelector(selectUserId);
   const [value, setValue] = useState('');
+  const isFocused = useIsFocused();
 
   // const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
   //   ['searchInterest', value],
   //   pageObject => userApi.findWhoLikeMe({ token, id }, pageObject),
   // );
-  const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
+  const { isFetchingNextPage,refetch , fetchNextPage, hasNextPage, data } = useInfiniteQuery(
     ['searchInterest'],
     pageObject => userApi.findUserpairLikeMe({ token, id}, pageObject),
   );
@@ -132,8 +133,16 @@ export default function LikeModal(props: ILikeModal) {
     fetchNextPage: watchedFetchNextPage,
     hasNextPage: watchedHasNextPage,
     data: watchedData,
+    refetch:watchedRefetch
   } = useInfiniteQuery(['searchWatched', value], pageObject =>
     userApi.findUserpairWatchedMe({ token, id }, pageObject),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+      watchedRefetch()
+    }, [refetch, watchedRefetch,isFocused])
   );
 
   const watchedList = watchedData?.pages

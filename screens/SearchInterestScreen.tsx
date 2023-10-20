@@ -22,6 +22,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 import Empty from '../assets/images/like-empty.png';
 import LikeModal from '~/components/LikeModal';
 import { fontSize } from '~/helpers/Fonts';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 const { height } = Dimensions.get('window');
 
@@ -104,16 +105,17 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
   const id = useSelector(selectUserId);
   const [tabSelected, setTabSelected] = useState(TABS.LIKE);
   const [modalOpen, setModalOpen] = useState(false);
+  const isFocused = useIsFocused();
 
   // const { isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
   //   ['searchInterest'],
   //   pageObject => userApi.findWhoLikeMe({ token, id }, pageObject),
   // );
-  const {isLoading , isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
+  const {isLoading,    refetch , isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
     ['searchInterest'],
     pageObject => userApi.findUserpairLikeMe({ token, id }, pageObject),
   );
-// console.log('data',data);
+console.log('data',token);
 
   // const {
   //   isFetchingNextPage: watchedFetchingNextPage,
@@ -129,8 +131,17 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
     fetchNextPage: watchedFetchNextPage,
     hasNextPage: watchedHasNextPage,
     data: watchedData,
+    refetch:watchedRefetch
   } = useInfiniteQuery(['searchWatched', value], pageObject =>
     userApi.findUserpairWatchedMe({ token, id }, pageObject),
+  );
+
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+      watchedRefetch()
+    }, [refetch, watchedRefetch,isFocused])
   );
 
   const watchedList = watchedData?.pages

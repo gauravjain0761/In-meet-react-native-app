@@ -484,7 +484,6 @@ export const getUserWatch = createAsyncThunk(
         },
         params:{
           id:id,
-          liked:isLike
         }
       });
       console.log('responsessss',response.data);
