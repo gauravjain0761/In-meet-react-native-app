@@ -114,6 +114,16 @@ export default function SearchInterestScreen(props: SearchInterestListProps) {
   const {isLoading,    refetch , isFetchingNextPage, fetchNextPage, hasNextPage, data } = useInfiniteQuery(
     ['searchInterest'],
     pageObject => userApi.findUserpairLikeMe({ token, id }, pageObject),
+    {
+      getNextPageParam: (lastPage:any) => {
+        if (lastPage.page.totalPage !== lastPage.page.currentPage) {
+          return lastPage.page.currentPage + 1;
+        }
+        return undefined;
+      },
+      retry: 2,
+      retryDelay: 3000,
+    }
   );
 console.log('data',token);
 
@@ -134,6 +144,16 @@ console.log('data',token);
     refetch:watchedRefetch
   } = useInfiniteQuery(['searchWatched', value], pageObject =>
     userApi.findUserpairWatchedMe({ token, id }, pageObject),
+    {
+      getNextPageParam: (lastPage:any) => {
+        if (lastPage.page.totalPage !== lastPage.page.currentPage) {
+          return lastPage.page.currentPage + 1;
+        }
+        return undefined;
+      },
+      retry: 2,
+      retryDelay: 3000,
+    }
   );
 
 

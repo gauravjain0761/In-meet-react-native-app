@@ -200,7 +200,7 @@ export default function EditProfilePhoto(props) {
         dispatch(
           uploadFile({
             fileData: photo,
-            fileType: 'AVATAR',
+            fileType: 'PHOTO',
             userId,
           })
         ).unwrap()

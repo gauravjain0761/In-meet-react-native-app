@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Image, Pressable, ActivityIndicator } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import ReactNativeModal from 'react-native-modal';
 import { makeStyles, useTheme } from '@rneui/themed';
@@ -118,6 +118,16 @@ export default function LikeModal(props: ILikeModal) {
   const { isFetchingNextPage,refetch , fetchNextPage, hasNextPage, data } = useInfiniteQuery(
     ['searchInterest'],
     pageObject => userApi.findUserpairLikeMe({ token, id}, pageObject),
+    {
+      getNextPageParam: (lastPage:any) => {
+        if (lastPage.page.totalPage !== lastPage.page.currentPage) {
+          return lastPage.page.currentPage + 1;
+        }
+        return undefined;
+      },
+      retry: 2,
+      retryDelay: 3000,
+    }
   );
 
   // const {
@@ -136,6 +146,16 @@ export default function LikeModal(props: ILikeModal) {
     refetch:watchedRefetch
   } = useInfiniteQuery(['searchWatched', value], pageObject =>
     userApi.findUserpairWatchedMe({ token, id }, pageObject),
+    {
+      getNextPageParam: (lastPage:any) => {
+        if (lastPage.page.totalPage !== lastPage.page.currentPage) {
+          return lastPage.page.currentPage + 1;
+        }
+        return undefined;
+      },
+      retry: 2,
+      retryDelay: 3000,
+    }
   );
 
   useFocusEffect(

@@ -547,7 +547,8 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
   const [visibleModal, setVisibleModal] = React.useState(false);
   const [blockChat, setBlockChat] = React.useState(false);
   const [remainTime, setRemainTime] = React.useState(false);
-  const [remainTimeValue, setRemainTimeValue] = React.useState(0);
+  const [loadingremain, setLoadingRemain] = React.useState(false);
+  const [remainTimeValue, setRemainTimeValue] = React.useState(null);
 
   const { handleSendWebSocket } = useStompClient();
   const openMenu = () => setVisible(true);
@@ -626,12 +627,15 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
     console.log('dasdadadasd');
 
     try {
+      setLoadingRemain(true)
       const res = await userApi.UserpairremainChat({ chatId, vipTest: isVIP, token });
-      console.log('UserpairremainChatressss', res,chatId);
+      console.log('UserpairremainChatressss', res);
       setRemainTime(res?.limit);
-      setRemainTimeValue(remainTime?remainTime:0)
+      setRemainTimeValue(res?.remainTime)
+      setLoadingRemain(false)
       queryClient.invalidateQueries('getRoomList');
     } catch (error) {
+      setLoadingRemain(false)
       // Toast.show(JSON.stringify(error));
     }
   };
@@ -749,7 +753,9 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
     const routePhotos = get(route, 'params.photos', []);
     if (!isEmpty(routePhotos)) {
       // setPhotos(routePhotos);
+       setLoadingRemain(true)
       handleSendWebSocket({ photos: routePhotos, type: MessageType.IMAGE });
+      setLoadingRemain(false)
 
       navigation.setParams({ photos: null });
     }
@@ -1004,7 +1010,7 @@ export default function RoomChatScreen(props: RootStackScreenProps<'RoomChatScre
         keyboardVerticalOffset={headerHeight}
         style={{ flex: 1 }}>
         {/* {renderMenuComponent()} */}
-        {!isVIP && remainTimeValue !==null ? <View style={styles.headerViewStyle}>
+        {!isVIP  && (remainTimeValue !==  null) ? <View style={styles.headerViewStyle}>
           <Text style={styles.headerTextStyle}>
             {"限時 "}
             <Text style={[styles.headerTextStyle, { color: theme.colors.pink }]}>{remainTimeValue}</Text>
