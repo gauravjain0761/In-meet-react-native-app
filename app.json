@@ -3,7 +3,7 @@
     "name": "InMeet",
     "slug": "inmeet",
     "originalFullName": "@sean_hsieh/inmeet-react-native",
-    "version": "1.2.3",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo/icon.png",
     "scheme": "com.inmeet.inmeet",
@@ -45,10 +45,10 @@
           }
         ]
       },
-      "buildNumber": "22"
+      "buildNumber": "26"
     },
     "android": {
-      "versionCode": 83,
+      "versionCode": 2,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -110,7 +110,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "0ba3593c-e736-4eca-b1d2-aae16351d208"
+        "projectId": "2d2b3f8e-39de-466c-802a-d25feb7d8ee3"
       }
     }
   }

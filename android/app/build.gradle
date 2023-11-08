@@ -136,8 +136,8 @@ android {
         applicationId 'com.inmeet.inmeet'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 83
-        versionName "1.2.3"
+        versionCode 1
+        versionName "1.0.0"
         missingDimensionStrategy "store", "play"
     }
     splits {
