@@ -45,7 +45,7 @@
           }
         ]
       },
-      "buildNumber": "26"
+      "buildNumber": "30"
     },
     "android": {
       "versionCode": 2,
@@ -110,7 +110,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2d2b3f8e-39de-466c-802a-d25feb7d8ee3"
+        "projectId": "0ba3593c-e736-4eca-b1d2-aae16351d208"
       }
     }
   }

@@ -34,7 +34,7 @@
       "autoIncrement": true,
       "channel": "production",
       "ios": {
-        "credentialsSource": "local"
+        "credentialsSource": "remote"
       },
       "android": {
         "buildType": "apk",
@@ -49,7 +49,7 @@
         "buildType": "apk"
       },
       "ios": {
-        "credentialsSource": "local"
+        "credentialsSource": "remote"
       }
     }
   },
