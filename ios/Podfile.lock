@@ -160,6 +160,9 @@ PODS:
     - FBSDKCoreKit/Basics
   - Firebase/CoreOnly (8.15.0):
     - FirebaseCore (= 8.15.0)
+  - Firebase/Crashlytics (8.15.0):
+    - Firebase/CoreOnly
+    - FirebaseCrashlytics (~> 8.15.0)
   - Firebase/Messaging (8.15.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 8.15.0)
@@ -172,6 +175,13 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
     - nanopb (~> 2.30908.0)
+  - FirebaseCrashlytics (8.15.0):
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleDataTransport (~> 9.1)
+    - GoogleUtilities/Environment (~> 7.7)
+    - nanopb (~> 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
   - FirebaseInstallations (8.15.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
@@ -489,6 +499,10 @@ PODS:
   - RNFBApp (14.12.0):
     - Firebase/CoreOnly (= 8.15.0)
     - React-Core
+  - RNFBCrashlytics (14.12.0):
+    - Firebase/Crashlytics (= 8.15.0)
+    - React-Core
+    - RNFBApp
   - RNFBMessaging (14.12.0):
     - Firebase/Messaging (= 8.15.0)
     - React-Core
@@ -581,6 +595,7 @@ DEPENDENCIES:
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNIap (from `../node_modules/react-native-iap`)
@@ -598,6 +613,7 @@ SPEC REPOS:
     - Firebase
     - FirebaseCore
     - FirebaseCoreDiagnostics
+    - FirebaseCrashlytics
     - FirebaseInstallations
     - FirebaseMessaging
     - GoogleDataTransport
@@ -745,6 +761,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/datetimepicker"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
+  RNFBCrashlytics:
+    :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNGestureHandler:
@@ -807,6 +825,7 @@ SPEC CHECKSUMS:
   Firebase: 5f8193dff4b5b7c5d5ef72ae54bb76c08e2b841d
   FirebaseCore: 5743c5785c074a794d35f2fff7ecc254a91e08b1
   FirebaseCoreDiagnostics: 92e07a649aeb66352b319d43bdd2ee3942af84cb
+  FirebaseCrashlytics: feb07e4e9187be3c23c6a846cce4824e5ce2dd0b
   FirebaseInstallations: 40bd9054049b2eae9a2c38ef1c3dd213df3605cd
   FirebaseMessaging: 5e5118a2383b3531e730d974680954c679ca0a13
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
@@ -845,6 +864,7 @@ SPEC CHECKSUMS:
   RNCPicker: cb57c823d5ce8d2d0b5dfb45ad97b737260dc59e
   RNDateTimePicker: 2224ee77a86b7123377597a015502435e2e49957
   RNFBApp: e4439717c23252458da2b41b81b4b475c86f90c4
+  RNFBCrashlytics: 94e1f78e2a9aa9e02edbfb0d3f1f0921ce00094b
   RNFBMessaging: 40dac204b4197a2661dec5be964780c6ec39bf65
   RNGestureHandler: e1099204721a17a89c81fcd1cc2e92143dc040fb
   RNIap: d248609d1b8937e63bd904e865c318e9b1457eff
